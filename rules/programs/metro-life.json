@@ -1,0 +1,29 @@
+{
+  "$schema": "../program.schema.json",
+  "id": "metro-life",
+  "name": "LA Metro LIFE",
+  "category": "transit",
+  "appliesTo": "household",
+  "audience": { "not": { "fact": "inLACounty", "eq": false } },
+  "apply": { "url": "https://www.metro.net/fares/life/", "phone": "1-866-827-8646", "where": "metroLife" },
+  "documents": ["id", "incomeOrBenefitLetter"],
+  "estimate": { "text": "metroLife" },
+  "rules": [
+    {
+      "id": "metro-life-income-or-program",
+      "effective": { "from": "2016-01-01", "to": null },
+      "conditions": { "any": [
+        { "fact": "annualIncome", "lte": { "table": "life-annual" } },
+        { "fact": "getsCalFresh", "eq": true },
+        { "fact": "anyoneHasMediCal", "eq": true },
+        { "fact": "getsSSI", "eq": true },
+        { "fact": "getsCalWORKs", "eq": true }
+      ]},
+      "explain": "life.eligible",
+      "notes": [{ "key": "life.everyone" }],
+      "source": "https://www.metro.net/fares/life/",
+      "lastVerified": "2026-10-07",
+      "verifiedBy": "claude-draft"
+    }
+  ]
+}

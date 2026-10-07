@@ -1,0 +1,29 @@
+{
+  "$schema": "../program.schema.json",
+  "id": "california-lifeline",
+  "name": "California LifeLine",
+  "category": "utility",
+  "appliesTo": "household",
+  "apply": { "url": "https://www.californialifeline.com", "phone": "1-866-272-0357", "where": "lifeline" },
+  "documents": ["id", "incomeOrBenefitLetter"],
+  "estimate": { "text": "lifeline" },
+  "rules": [
+    {
+      "id": "lifeline-income-or-program",
+      "effective": { "from": "2016-01-01", "to": null },
+      "conditions": { "any": [
+        { "fact": "annualIncome", "lte": { "table": "lifeline-annual" } },
+        { "fact": "anyoneHasMediCal", "eq": true },
+        { "fact": "getsCalFresh", "eq": true },
+        { "fact": "getsCalWORKs", "eq": true },
+        { "fact": "getsSSI", "eq": true },
+        { "fact": "getsWIC", "eq": true }
+      ]},
+      "explain": "ll.eligible",
+      "notes": [{ "key": "ll.onePerHome" }],
+      "source": "https://www.cpuc.ca.gov/-/media/cpuc-website/about-cpuc/documents/transparency-and-reporting/fact_sheets/california-lifeline/lifeline_onesheet_051126.pdf",
+      "lastVerified": "2026-10-07",
+      "verifiedBy": "claude-draft"
+    }
+  ]
+}

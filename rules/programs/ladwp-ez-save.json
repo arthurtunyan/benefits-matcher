@@ -1,0 +1,23 @@
+{
+  "$schema": "../program.schema.json",
+  "id": "ladwp-ez-save",
+  "name": "LADWP EZ-SAVE",
+  "category": "utility",
+  "appliesTo": "household",
+  "audience": { "fact": "electric", "eq": "ladwp" },
+  "apply": { "url": "https://www.ladwp.com/residential-services/assistance-programs/ez-save-program", "phone": "1-800-342-5397", "where": "utility" },
+  "documents": ["utilityBill"],
+  "estimate": { "text": "ezSave" },
+  "rules": [
+    {
+      "id": "ladwp-ez-save-income",
+      "effective": { "from": "2016-01-01", "to": null },
+      "conditions": { "fact": "annualIncome", "lte": { "table": "ezsave-annual" } },
+      "explain": "ezsave.eligible",
+      "notes": [{ "key": "ezsave.seniors", "when": { "fact": "householdHasElderlyOrDisabled", "eq": true } }],
+      "source": "https://www.ladwp.com/residential-services/assistance-programs/ez-save-program",
+      "lastVerified": "2026-10-07",
+      "verifiedBy": "claude-draft"
+    }
+  ]
+}

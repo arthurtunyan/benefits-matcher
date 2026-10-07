@@ -1,0 +1,25 @@
+{
+  "$schema": "../program.schema.json",
+  "id": "glendale-care",
+  "name": "Glendale Water & Power — Glendale Care",
+  "category": "utility",
+  "appliesTo": "household",
+  "audience": { "fact": "electric", "eq": "gwp" },
+  "apply": { "url": "https://www.glendaleca.gov/government/departments/glendale-water-and-power/residential-customers/low-income-programs/glendale-care", "phone": "1-855-550-4497", "where": "utility" },
+  "documents": ["utilityBill", "incomeOrBenefitLetter"],
+  "estimate": { "text": "glendaleCare" },
+  "rules": [
+    {
+      "id": "glendale-care-income-or-ssi",
+      "effective": { "from": "2016-01-01", "to": null },
+      "conditions": { "any": [
+        { "fact": "incomePctFPL", "lte": 200 },
+        { "fact": "getsSSI", "eq": true }
+      ]},
+      "explain": "gwp.eligible",
+      "source": "https://www.glendaleca.gov/government/departments/glendale-water-and-power/residential-customers/low-income-programs/glendale-care",
+      "lastVerified": "2026-10-07",
+      "verifiedBy": "claude-draft"
+    }
+  ]
+}

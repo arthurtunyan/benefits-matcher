@@ -1,0 +1,36 @@
+{
+  "$schema": "../program.schema.json",
+  "id": "wic",
+  "name": "WIC",
+  "category": "family",
+  "appliesTo": "person",
+  "audience": { "any": [{ "fact": "age", "lt": 5 }, { "fact": "pregnant", "eq": true }, { "fact": "recentBirth", "eq": true }] },
+  "apply": { "url": "https://www.phfewic.org/how-wic-works/", "phone": "1-888-942-2229", "where": "wic" },
+  "documents": ["id", "income", "address", "childRecords"],
+  "alternatives": ["foodbank", "211"],
+  "estimate": { "text": "wic" },
+  "rules": [
+    {
+      "id": "wic-income-or-adjunctive",
+      "effective": { "from": "2016-01-01", "to": null },
+      "conditions": { "all": [
+        { "any": [{ "fact": "age", "lt": 5 }, { "fact": "pregnant", "eq": true }, { "fact": "recentBirth", "eq": true }] },
+        { "any": [
+          { "fact": "monthlyIncome", "lte": { "table": "wic-monthly", "by": "householdSizeWithUnborn" } },
+          { "fact": "hasMediCal", "eq": true },
+          { "fact": "getsCalFresh", "eq": true },
+          { "fact": "getsCalWORKs", "eq": true },
+          { "fact": "getsWIC", "eq": true }
+        ]}
+      ]},
+      "explain": "wic.eligible",
+      "notes": [
+        { "key": "wic.noStatus" },
+        { "key": "wic.until5", "when": { "fact": "age", "lt": 5 } }
+      ],
+      "source": "https://www.fns.usda.gov/wic/fr-042926",
+      "lastVerified": "2026-10-07",
+      "verifiedBy": "claude-draft"
+    }
+  ]
+}

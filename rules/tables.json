@@ -1,0 +1,221 @@
+{
+  "fpl-annual": {
+    "id": "fpl-annual",
+    "unit": "year",
+    "description": "HHS poverty guidelines, 48 contiguous states, by household size. Used for every % of poverty level (FPL) check.",
+    "versions": [
+      {
+        "effective": { "from": "2025-01-15", "to": "2026-01-14" },
+        "values": { "1": 15650, "2": 21150, "3": 26650, "4": 32150, "5": 37650, "6": 43150, "7": 48650, "8": 54150 },
+        "each": 5500,
+        "source": "https://aspe.hhs.gov/topics/poverty-economic-mobility/poverty-guidelines",
+        "lastVerified": "2026-10-07"
+      },
+      {
+        "effective": { "from": "2026-01-15", "to": null },
+        "values": { "1": 15960, "2": 21640, "3": 27320, "4": 33000, "5": 38680, "6": 44360, "7": 50040, "8": 55720 },
+        "each": 5680,
+        "source": "https://aspe.hhs.gov/topics/poverty-economic-mobility/poverty-guidelines",
+        "lastVerified": "2026-10-07"
+      }
+    ]
+  },
+  "calfresh-gross-monthly": {
+    "id": "calfresh-gross-monthly",
+    "unit": "month",
+    "description": "CalFresh gross monthly income limit (200% FPL, broad-based categorical eligibility), by household size.",
+    "versions": [
+      {
+        "effective": { "from": "2025-10-01", "to": "2026-09-30" },
+        "values": { "1": 2610, "2": 3526, "3": 4442, "4": 5360, "5": 6276, "6": 7192, "7": 8110, "8": 9026 },
+        "each": 918,
+        "source": "https://www.fns.usda.gov/snap/allotment/cola",
+        "lastVerified": "2026-10-07"
+      },
+      {
+        "effective": { "from": "2026-10-01", "to": "2027-09-30" },
+        "values": { "1": 2660, "2": 3607, "3": 4554, "4": 5500, "5": 6447, "6": 7394, "7": 8340, "8": 9287 },
+        "each": 947,
+        "source": "https://my.dpss.lacounty.gov/public/en/home/epolicy/program/calfresh/calfresh-cola.html",
+        "lastVerified": "2026-10-07"
+      }
+    ]
+  },
+  "calfresh-max-allotment": {
+    "id": "calfresh-max-allotment",
+    "unit": "month",
+    "description": "CalFresh maximum monthly benefit by household size (USDA SNAP cost-of-living adjustment, 48 states).",
+    "versions": [
+      {
+        "effective": { "from": "2025-10-01", "to": "2026-09-30" },
+        "values": { "1": 298, "2": 546, "3": 785, "4": 994, "5": 1183, "6": 1421, "7": 1571, "8": 1789 },
+        "each": 218,
+        "source": "https://www.fns.usda.gov/snap/allotment/cola",
+        "lastVerified": "2026-10-07"
+      },
+      {
+        "effective": { "from": "2026-10-01", "to": "2027-09-30" },
+        "values": { "1": 306, "2": 562, "3": 808, "4": 1023, "5": 1217, "6": 1463, "7": 1616, "8": 1841 },
+        "each": 225,
+        "source": "https://www.usda.gov/sites/default/files/guidance-documents/fna.snap-cola2027.pdf",
+        "lastVerified": "2026-10-07"
+      }
+    ]
+  },
+  "wic-monthly": {
+    "id": "wic-monthly",
+    "unit": "month",
+    "description": "WIC income limit (185% FPL), by household size. A pregnant person counts the unborn baby.",
+    "versions": [
+      {
+        "effective": { "from": "2025-07-01", "to": "2026-06-30" },
+        "values": { "1": 2413, "2": 3261, "3": 4109, "4": 4957, "5": 5805, "6": 6653, "7": 7501, "8": 8349 },
+        "each": 848,
+        "source": "https://www.usda.gov/sites/default/files/guidance-documents/fns.wic-iegs-2025-26.pdf",
+        "lastVerified": "2026-10-07"
+      },
+      {
+        "effective": { "from": "2026-07-01", "to": "2027-06-30" },
+        "values": { "1": 2461, "2": 3337, "3": 4212, "4": 5088, "5": 5964, "6": 6839, "7": 7715, "8": 8591 },
+        "each": 876,
+        "source": "https://www.fns.usda.gov/wic/fr-042926",
+        "lastVerified": "2026-10-07"
+      }
+    ]
+  },
+  "calworks-mbsac": {
+    "id": "calworks-mbsac",
+    "unit": "month",
+    "description": "CalWORKs Region 1 (LA County) Minimum Basic Standard of Adequate Care. Applicant income (after $450 disregard per worker) must be below this.",
+    "versions": [
+      {
+        "effective": { "from": "2025-07-01", "to": "2026-06-30" },
+        "values": { "1": 930, "2": 1526, "3": 1892, "4": 2244, "5": 2561, "6": 2880, "7": 3166, "8": 3445 },
+        "source": "https://my.dpss.lacounty.gov/public/en/home/epolicy/program/calworks/composition/minimum-basic-standard-of-adequate-care.html",
+        "lastVerified": "2026-10-07"
+      },
+      {
+        "effective": { "from": "2026-07-01", "to": "2027-06-30" },
+        "values": { "1": 963, "2": 1581, "3": 1960, "4": 2325, "5": 2653, "6": 2983, "7": 3280, "8": 3569, "9": 3872, "10": 4202 },
+        "source": "https://my.dpss.lacounty.gov/public/en/home/epolicy/program/calworks/composition/minimum-basic-standard-of-adequate-care.html",
+        "lastVerified": "2026-10-07"
+      }
+    ]
+  },
+  "calworks-map": {
+    "id": "calworks-map",
+    "unit": "month",
+    "description": "CalWORKs Region 1 Maximum Aid Payment (non-exempt), by assistance unit size. Used only for the estimated value.",
+    "versions": [
+      {
+        "effective": { "from": "2024-10-01", "to": null },
+        "values": { "1": 734, "2": 930, "3": 1175, "4": 1416, "5": 1659, "6": 1902, "7": 2145, "8": 2389, "9": 2631, "10": 2876 },
+        "source": "https://my.dpss.lacounty.gov/public/en/home/epolicy/program/calworks/payments/calworks-maximum-aid-payment.html",
+        "lastVerified": "2026-10-07"
+      }
+    ]
+  },
+  "cspp-monthly": {
+    "id": "cspp-monthly",
+    "unit": "month",
+    "description": "California State Preschool Program income ceiling (100% of State Median Income), by family size.",
+    "versions": [
+      {
+        "effective": { "from": "2026-07-01", "to": "2027-06-30" },
+        "values": { "1": 8376, "2": 8376, "3": 9476, "4": 11337, "5": 13151, "6": 14965, "7": 15305, "8": 15645, "9": 15985, "10": 16325, "11": 16665, "12": 17006 },
+        "source": "https://www.cde.ca.gov/sp/cd/ci/mb2603.asp",
+        "lastVerified": "2026-10-07"
+      }
+    ]
+  },
+  "care-annual": {
+    "id": "care-annual",
+    "unit": "year",
+    "description": "CPUC CARE income limit (200% FPL), by household size. Same limits for SCE and SoCalGas.",
+    "versions": [
+      {
+        "effective": { "from": "2025-06-01", "to": "2026-05-31" },
+        "values": { "1": 42300, "2": 42300, "3": 53300, "4": 64300, "5": 75300, "6": 86300, "7": 97300, "8": 108300 },
+        "each": 11000,
+        "source": "https://www.cpuc.ca.gov/industries-and-topics/electrical-energy/electric-costs/care-fera-program",
+        "lastVerified": "2026-10-07"
+      },
+      {
+        "effective": { "from": "2026-06-01", "to": "2027-05-31" },
+        "values": { "1": 43280, "2": 43280, "3": 54640, "4": 66000, "5": 77360, "6": 88720, "7": 100080, "8": 111440 },
+        "each": 11360,
+        "source": "https://www.sce.com/save-money/income-qualified-programs/care-fera",
+        "lastVerified": "2026-10-07"
+      }
+    ]
+  },
+  "fera-annual": {
+    "id": "fera-annual",
+    "unit": "year",
+    "description": "SCE FERA upper income limit (250% FPL), by household size.",
+    "versions": [
+      {
+        "effective": { "from": "2026-06-01", "to": "2027-05-31" },
+        "values": { "1": 54100, "2": 54100, "3": 68300, "4": 82500, "5": 96700, "6": 110900, "7": 125100, "8": 139300 },
+        "each": 14200,
+        "source": "https://www.sce.com/save-money/income-qualified-programs/care-fera",
+        "lastVerified": "2026-10-07"
+      }
+    ]
+  },
+  "ezsave-annual": {
+    "id": "ezsave-annual",
+    "unit": "year",
+    "description": "LADWP EZ-SAVE maximum annual gross income, by household size.",
+    "versions": [
+      {
+        "effective": { "from": "2026-07-01", "to": null },
+        "values": { "1": 43280, "2": 43280, "3": 54640, "4": 66000, "5": 77360, "6": 88720, "7": 100080, "8": 111440 },
+        "each": 11360,
+        "source": "https://www.ladwp.com/residential-services/assistance-programs/ez-save-program",
+        "lastVerified": "2026-10-07"
+      }
+    ]
+  },
+  "lifeline-annual": {
+    "id": "lifeline-annual",
+    "unit": "year",
+    "description": "California LifeLine annual income limit, by household size.",
+    "versions": [
+      {
+        "effective": { "from": "2026-06-01", "to": "2027-05-31" },
+        "values": { "1": 24600, "2": 33300, "3": 42100, "4": 50800 },
+        "each": 8700,
+        "source": "https://www.cpuc.ca.gov/-/media/cpuc-website/about-cpuc/documents/transparency-and-reporting/fact_sheets/california-lifeline/lifeline_onesheet_051126.pdf",
+        "lastVerified": "2026-10-07"
+      }
+    ]
+  },
+  "life-annual": {
+    "id": "life-annual",
+    "unit": "year",
+    "description": "LA Metro LIFE household income limit, by household size. Start date not published; limits confirmed on metro.net.",
+    "versions": [
+      {
+        "effective": { "from": "2026-01-01", "to": null },
+        "values": { "1": 58300, "2": 66650, "3": 74950, "4": 83300 },
+        "each": 6650,
+        "source": "https://www.metro.net/fares/life/",
+        "lastVerified": "2026-10-07"
+      }
+    ]
+  },
+  "capi-max-monthly": {
+    "id": "capi-max-monthly",
+    "unit": "month",
+    "description": "CAPI maximum monthly payment, living independently (1 = individual, 2 = couple). Countable income must be below this.",
+    "versions": [
+      {
+        "effective": { "from": "2026-01-01", "to": "2026-12-31" },
+        "values": { "1": 1233.94, "2": 2098.83 },
+        "source": "https://ca.db101.org/ca/programs/income_support/capi/program.htm",
+        "lastVerified": "2026-10-07"
+      }
+    ]
+  }
+}

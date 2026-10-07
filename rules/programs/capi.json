@@ -1,0 +1,31 @@
+{
+  "$schema": "../program.schema.json",
+  "id": "capi",
+  "name": "CAPI (Cash Assistance Program for Immigrants)",
+  "category": "cash",
+  "appliesTo": "person",
+  "audience": { "all": [
+    { "any": [{ "fact": "age", "gte": 65 }, { "fact": "disabled", "eq": true }] },
+    { "not": { "fact": "status", "eq": "citizen" } }
+  ]},
+  "apply": { "url": "https://dpss.lacounty.gov/en/cash/capi.html", "phone": "1-866-613-3777", "where": "dpss" },
+  "documents": ["id", "income", "address", "immigration", "sponsor", "ssiDenial", "savings"],
+  "alternatives": ["ssi", "211"],
+  "estimate": { "table": "capi-max-monthly" },
+  "rules": [
+    {
+      "id": "capi-aged-blind-disabled",
+      "effective": { "from": "2016-01-01", "to": null },
+      "conditions": { "all": [
+        { "any": [{ "fact": "age", "gte": 65 }, { "fact": "disabled", "eq": true }] },
+        { "fact": "status", "in": ["lpr5", "lpr", "humanitarian"], "unsure": ["otherLawful"] },
+        { "fact": "monthlyIncome", "lt": { "table": "capi-max-monthly" } }
+      ]},
+      "explain": "capi.eligible",
+      "notes": [{ "key": "capi.ssiFirst" }, { "key": "capi.sponsor" }, { "key": "capi.savings" }],
+      "source": "https://dpss.lacounty.gov/en/cash/capi.html",
+      "lastVerified": "2026-10-07",
+      "verifiedBy": "claude-draft"
+    }
+  ]
+}

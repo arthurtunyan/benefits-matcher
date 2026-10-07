@@ -1,0 +1,28 @@
+{
+  "$schema": "../program.schema.json",
+  "id": "sun-bucks",
+  "name": "SUN Bucks",
+  "category": "food",
+  "appliesTo": "person",
+  "audience": { "all": [{ "fact": "age", "gte": 5 }, { "fact": "age", "lte": 18 }] },
+  "apply": { "url": "https://www.cdss.ca.gov/sunbucks", "where": "sunBucks" },
+  "documents": ["income"],
+  "alternatives": ["foodbank"],
+  "estimate": { "text": "sunBucks" },
+  "rules": [
+    {
+      "id": "sun-bucks-school-age",
+      "effective": { "from": "2024-06-01", "to": null },
+      "conditions": { "any": [
+        { "fact": "incomePctFPL", "lte": 185 },
+        { "fact": "getsCalFresh", "eq": true },
+        { "fact": "getsCalWORKs", "eq": true }
+      ]},
+      "explain": "sun.eligible",
+      "notes": [{ "key": "sun.automatic" }, { "key": "sun.yearly" }],
+      "source": "https://www.gov.ca.gov/2026/05/21/california-launches-sun-bucks-for-summer-2026-to-help-fight-childhood-food-insecurity/",
+      "lastVerified": "2026-10-07",
+      "verifiedBy": "claude-draft"
+    }
+  ]
+}

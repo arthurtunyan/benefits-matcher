@@ -1,0 +1,40 @@
+{
+  "$schema": "../program.schema.json",
+  "id": "sce-care-fera",
+  "name": "SCE CARE / FERA",
+  "category": "utility",
+  "appliesTo": "household",
+  "audience": { "fact": "electric", "eq": "sce" },
+  "apply": { "url": "https://www.sce.com/save-money/income-qualified-programs/care-fera", "phone": "1-800-798-5723", "where": "utility" },
+  "documents": ["utilityBill", "incomeOrBenefitLetter"],
+  "estimate": { "text": "sceCare" },
+  "rules": [
+    {
+      "id": "sce-care",
+      "variant": "care",
+      "effective": { "from": "2016-01-01", "to": null },
+      "conditions": { "any": [
+        { "fact": "annualIncome", "lte": { "table": "care-annual" } },
+        { "fact": "getsCalFresh", "eq": true },
+        { "fact": "getsCalWORKs", "eq": true },
+        { "fact": "anyoneHasMediCal", "eq": true },
+        { "fact": "getsSSI", "eq": true },
+        { "fact": "getsWIC", "eq": true }
+      ]},
+      "explain": "care.sce",
+      "source": "https://www.sce.com/save-money/income-qualified-programs/care-fera",
+      "lastVerified": "2026-10-07",
+      "verifiedBy": "claude-draft"
+    },
+    {
+      "id": "sce-fera",
+      "variant": "fera",
+      "effective": { "from": "2016-01-01", "to": null },
+      "conditions": { "fact": "annualIncome", "lte": { "table": "fera-annual" } },
+      "explain": "care.fera",
+      "source": "https://www.sce.com/save-money/income-qualified-programs/care-fera",
+      "lastVerified": "2026-10-07",
+      "verifiedBy": "claude-draft"
+    }
+  ]
+}

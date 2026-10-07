@@ -1,0 +1,180 @@
+{
+  "$schema": "../program.schema.json",
+  "id": "medi-cal",
+  "name": "Medi-Cal",
+  "category": "health",
+  "appliesTo": "person",
+  "apply": { "url": "https://benefitscal.com", "phone": "1-866-613-3777", "where": "benefitscal" },
+  "documents": ["id", "income", "address", "immigrationIfApplying"],
+  "alternatives": ["clinics", "hcc"],
+  "rules": [
+    {
+      "id": "medi-cal-child",
+      "variant": "full",
+      "effective": { "from": "2016-05-16", "to": null },
+      "conditions": { "all": [
+        { "fact": "age", "lt": 19 },
+        { "fact": "incomePctFPL", "lte": 266 }
+      ]},
+      "explain": "mc.child",
+      "notes": [{ "key": "mc.anyStatusKids" }],
+      "source": "https://healthconsumer.org/medi-cal-changes-and-what-you-need-to-know/",
+      "lastVerified": "2026-10-07",
+      "verifiedBy": "claude-draft"
+    },
+    {
+      "id": "medi-cal-pregnancy",
+      "variant": "full",
+      "effective": { "from": "2022-04-01", "to": null },
+      "conditions": { "all": [
+        { "any": [{ "fact": "pregnant", "eq": true }, { "fact": "recentBirth", "eq": true }] },
+        { "fact": "incomePctFPL", "lte": 213 }
+      ]},
+      "explain": "mc.pregnancy",
+      "notes": [{ "key": "mc.postpartum12" }, { "key": "mc.mcap" }],
+      "source": "https://healthconsumer.org/medi-cal-changes-and-what-you-need-to-know/",
+      "lastVerified": "2026-10-07",
+      "verifiedBy": "claude-draft"
+    },
+    {
+      "id": "medi-cal-adult-qualified",
+      "variant": "full",
+      "effective": { "from": "2016-01-01", "to": null },
+      "conditions": { "all": [
+        { "fact": "age", "gte": 19 },
+        { "fact": "status", "in": ["citizen", "lpr5", "lpr"] },
+        { "fact": "incomePctFPL", "lte": 138 }
+      ]},
+      "explain": "mc.adult",
+      "notes": [
+        { "key": "mc.assetTest", "when": { "all": [{ "fact": "asOf", "gte": "2026-01-01" }, { "any": [{ "fact": "age", "gte": 65 }, { "fact": "disabled", "eq": true }] }] } },
+        { "key": "mc.workRules2027", "when": { "all": [{ "fact": "asOf", "gte": "2027-01-01" }, { "fact": "age", "lt": 65 }, { "fact": "disabled", "eq": false }] } }
+      ],
+      "source": "https://www.dhcs.ca.gov/wp-content/uploads/2026/05/DHCS-TBL-May-Revise-HR-1_Fact-Sheet.pdf",
+      "lastVerified": "2026-10-07",
+      "verifiedBy": "claude-draft"
+    },
+    {
+      "id": "medi-cal-adult-humanitarian-federal",
+      "variant": "full",
+      "effective": { "from": "2016-01-01", "to": "2026-09-30" },
+      "conditions": { "all": [
+        { "fact": "age", "gte": 19 },
+        { "fact": "status", "eq": "humanitarian" },
+        { "fact": "incomePctFPL", "lte": 138 }
+      ]},
+      "explain": "mc.humanitarianFederal",
+      "source": "https://www.dhcs.ca.gov/wp-content/uploads/2026/05/DHCS-TBL-May-Revise-HR-1_Fact-Sheet.pdf",
+      "lastVerified": "2026-10-07",
+      "verifiedBy": "claude-draft"
+    },
+    {
+      "id": "medi-cal-adult-humanitarian-state",
+      "variant": "full",
+      "effective": { "from": "2026-10-01", "to": "2027-06-30" },
+      "conditions": { "all": [
+        { "fact": "age", "gte": 19 },
+        { "fact": "status", "eq": "humanitarian" },
+        { "fact": "incomePctFPL", "lte": 138 }
+      ]},
+      "explain": "mc.humanitarianState",
+      "notes": [{ "key": "mc.humanitarianChange2027" }],
+      "source": "https://health-access.org/governor-signs-budget-that-provides-short-term-health-care-relief-for-millions-of-californians/",
+      "lastVerified": "2026-10-07",
+      "verifiedBy": "claude-draft"
+    },
+    {
+      "id": "medi-cal-adult-other-lawful",
+      "variant": "full",
+      "effective": { "from": "2016-01-01", "to": null },
+      "outcome": "possibly",
+      "conditions": { "all": [
+        { "fact": "age", "gte": 19 },
+        { "fact": "status", "eq": "otherLawful" },
+        { "fact": "incomePctFPL", "lte": 138 }
+      ]},
+      "explain": "mc.otherLawful",
+      "source": "https://www.dhcs.ca.gov/wp-content/uploads/2026/05/DHCS-TBL-May-Revise-HR-1_Fact-Sheet.pdf",
+      "lastVerified": "2026-10-07",
+      "verifiedBy": "claude-draft"
+    },
+    {
+      "id": "medi-cal-adult-uis-before-freeze",
+      "variant": "full",
+      "effective": { "from": "2024-01-01", "to": "2025-12-31" },
+      "conditions": { "all": [
+        { "fact": "age", "gte": 19 },
+        { "fact": "status", "eq": "undocumented" },
+        { "fact": "incomePctFPL", "lte": 138 }
+      ]},
+      "explain": "mc.uisBeforeFreeze",
+      "notes": [{ "key": "mc.freezeComing" }],
+      "source": "https://healthconsumer.org/medi-cal-changes-and-what-you-need-to-know/",
+      "lastVerified": "2026-10-07",
+      "verifiedBy": "claude-draft"
+    },
+    {
+      "id": "medi-cal-adult-uis-enrolled",
+      "variant": "full",
+      "effective": { "from": "2026-01-01", "to": "2027-06-30" },
+      "conditions": { "all": [
+        { "fact": "age", "gte": 19 },
+        { "fact": "status", "eq": "undocumented" },
+        { "fact": "hasMediCal", "eq": true },
+        { "fact": "incomePctFPL", "lte": 138 }
+      ]},
+      "explain": "mc.uisEnrolled",
+      "notes": [{ "key": "mc.renewOnTime" }, { "key": "mc.dentalEnds2027" }, { "key": "mc.premiums2027", "when": { "fact": "age", "lt": 60 } }],
+      "source": "https://healthconsumer.org/medi-cal-changes-and-what-you-need-to-know/",
+      "lastVerified": "2026-10-07",
+      "verifiedBy": "claude-draft"
+    },
+    {
+      "id": "medi-cal-adult-uis-enrolled-2027",
+      "variant": "full",
+      "effective": { "from": "2027-07-01", "to": null },
+      "conditions": { "all": [
+        { "fact": "age", "gte": 19 },
+        { "fact": "status", "eq": "undocumented" },
+        { "fact": "hasMediCal", "eq": true },
+        { "fact": "incomePctFPL", "lte": 138 }
+      ]},
+      "explain": "mc.uisEnrolled2027",
+      "notes": [{ "key": "mc.noRoutineDental" }, { "key": "mc.premiumsNow", "when": { "fact": "age", "lt": 60 } }],
+      "source": "https://healthconsumer.org/medi-cal-changes-and-what-you-need-to-know/",
+      "lastVerified": "2026-10-07",
+      "verifiedBy": "claude-draft"
+    },
+    {
+      "id": "medi-cal-restricted-uis",
+      "variant": "restricted",
+      "effective": { "from": "2026-01-01", "to": null },
+      "conditions": { "all": [
+        { "fact": "age", "gte": 19 },
+        { "fact": "status", "eq": "undocumented" },
+        { "fact": "hasMediCal", "eq": false },
+        { "fact": "incomePctFPL", "lte": 138 }
+      ]},
+      "explain": "mc.restricted",
+      "notes": [{ "key": "mc.restrictedCovers" }],
+      "source": "https://healthconsumer.org/medi-cal-changes-and-what-you-need-to-know/",
+      "lastVerified": "2026-10-07",
+      "verifiedBy": "claude-draft"
+    },
+    {
+      "id": "medi-cal-restricted-humanitarian",
+      "variant": "restricted",
+      "effective": { "from": "2027-07-01", "to": null },
+      "conditions": { "all": [
+        { "fact": "age", "gte": 19 },
+        { "fact": "status", "eq": "humanitarian" },
+        { "fact": "incomePctFPL", "lte": 138 }
+      ]},
+      "explain": "mc.restrictedHumanitarian",
+      "notes": [{ "key": "mc.restrictedCovers" }, { "key": "mc.scheduledMayChange" }],
+      "source": "https://www.dhcs.ca.gov/wp-content/uploads/2026/05/DHCS-TBL-May-Revise-HR-1_Fact-Sheet.pdf",
+      "lastVerified": "2026-10-07",
+      "verifiedBy": "claude-draft"
+    }
+  ]
+}

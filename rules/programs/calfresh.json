@@ -1,0 +1,117 @@
+{
+  "$schema": "../program.schema.json",
+  "id": "calfresh",
+  "name": "CalFresh",
+  "category": "food",
+  "appliesTo": "person",
+  "apply": { "url": "https://benefitscal.com", "phone": "1-866-613-3777", "where": "benefitscal" },
+  "documents": ["id", "income", "address", "rent", "immigrationIfApplying"],
+  "alternatives": ["cfap", "foodbank", "211"],
+  "estimate": { "table": "calfresh-max-allotment" },
+  "rules": [
+    {
+      "id": "calfresh-citizen",
+      "effective": { "from": "2016-01-01", "to": null },
+      "conditions": { "all": [
+        { "fact": "status", "eq": "citizen" },
+        { "any": [{ "fact": "monthlyIncome", "lte": { "table": "calfresh-gross-monthly" } }, { "fact": "getsCalFresh", "eq": true }] }
+      ]},
+      "explain": "cf.citizen",
+      "notes": [
+        { "key": "cf.applyForKids", "when": { "all": [{ "fact": "age", "lt": 18 }, { "fact": "householdHasUndocumentedOrUnknown", "eq": true }] } },
+        { "key": "cf.workRules", "when": { "all": [{ "fact": "asOf", "gte": "2026-06-01" }, { "fact": "age", "gte": 18 }, { "fact": "age", "lt": 65 }, { "fact": "pregnant", "eq": false }, { "fact": "disabled", "eq": false }] } },
+        { "key": "cf.elderlyDisabledRules", "when": { "all": [{ "fact": "householdHasElderlyOrDisabled", "eq": true }, { "fact": "monthlyIncome", "gt": { "table": "calfresh-gross-monthly" } }] } }
+      ],
+      "source": "https://dpss.lacounty.gov/en/food/hr1.html",
+      "lastVerified": "2026-10-07",
+      "verifiedBy": "claude-draft"
+    },
+    {
+      "id": "calfresh-lpr-child",
+      "effective": { "from": "2016-01-01", "to": null },
+      "conditions": { "all": [
+        { "fact": "status", "in": ["lpr", "lpr5"] },
+        { "fact": "age", "lt": 18 },
+        { "any": [{ "fact": "monthlyIncome", "lte": { "table": "calfresh-gross-monthly" } }, { "fact": "getsCalFresh", "eq": true }] }
+      ]},
+      "explain": "cf.lprChild",
+      "notes": [
+        { "key": "cf.applyForKids", "when": { "fact": "householdHasUndocumentedOrUnknown", "eq": true } }
+      ],
+      "source": "https://dpss.lacounty.gov/en/food/hr1.html",
+      "lastVerified": "2026-10-07",
+      "verifiedBy": "claude-draft"
+    },
+    {
+      "id": "calfresh-lpr5-adult",
+      "effective": { "from": "2016-01-01", "to": null },
+      "conditions": { "all": [
+        { "fact": "status", "eq": "lpr5" },
+        { "fact": "age", "gte": 18 },
+        { "any": [{ "fact": "monthlyIncome", "lte": { "table": "calfresh-gross-monthly" } }, { "fact": "getsCalFresh", "eq": true }] }
+      ]},
+      "explain": "cf.lpr5",
+      "notes": [
+        { "key": "cf.workRules", "when": { "all": [{ "fact": "asOf", "gte": "2026-06-01" }, { "fact": "age", "lt": 65 }, { "fact": "pregnant", "eq": false }, { "fact": "disabled", "eq": false }] } },
+        { "key": "cf.elderlyDisabledRules", "when": { "all": [{ "fact": "householdHasElderlyOrDisabled", "eq": true }, { "fact": "monthlyIncome", "gt": { "table": "calfresh-gross-monthly" } }] } }
+      ],
+      "source": "https://dpss.lacounty.gov/en/food/hr1.html",
+      "lastVerified": "2026-10-07",
+      "verifiedBy": "claude-draft"
+    },
+    {
+      "id": "calfresh-lpr-disabled",
+      "effective": { "from": "2016-01-01", "to": null },
+      "outcome": "possibly",
+      "conditions": { "all": [
+        { "fact": "status", "eq": "lpr" },
+        { "fact": "age", "gte": 18 },
+        { "fact": "disabled", "eq": true },
+        { "any": [{ "fact": "monthlyIncome", "lte": { "table": "calfresh-gross-monthly" } }, { "fact": "getsCalFresh", "eq": true }] }
+      ]},
+      "explain": "cf.lprDisabled",
+      "source": "https://my.dpss.lacounty.gov/public/en/home/epolicy/program/calfresh/63-405-citizenship-or-eligible-non-citizen-status.html",
+      "lastVerified": "2026-10-07",
+      "verifiedBy": "claude-draft"
+    },
+    {
+      "id": "calfresh-humanitarian-before-hr1",
+      "effective": { "from": "2016-01-01", "to": "2026-03-31" },
+      "conditions": { "all": [
+        { "fact": "status", "eq": "humanitarian" },
+        { "any": [{ "fact": "monthlyIncome", "lte": { "table": "calfresh-gross-monthly" } }, { "fact": "getsCalFresh", "eq": true }] }
+      ]},
+      "explain": "cf.humanitarianBefore",
+      "notes": [{ "key": "cf.hr1Coming" }],
+      "source": "https://cdss.ca.gov/benefits-services/food-nutrition-services/calfresh/frequently-asked-questions",
+      "lastVerified": "2026-10-07",
+      "verifiedBy": "claude-draft"
+    },
+    {
+      "id": "calfresh-humanitarian-until-renewal",
+      "effective": { "from": "2026-04-01", "to": null },
+      "outcome": "possibly",
+      "conditions": { "all": [
+        { "fact": "status", "eq": "humanitarian" },
+        { "fact": "getsCalFresh", "eq": true }
+      ]},
+      "explain": "cf.humanitarianRenewal",
+      "source": "https://cdss.ca.gov/benefits-services/food-nutrition-services/calfresh/frequently-asked-questions",
+      "lastVerified": "2026-10-07",
+      "verifiedBy": "claude-draft"
+    },
+    {
+      "id": "calfresh-other-lawful",
+      "effective": { "from": "2016-01-01", "to": null },
+      "outcome": "possibly",
+      "conditions": { "all": [
+        { "fact": "status", "eq": "otherLawful" },
+        { "any": [{ "fact": "monthlyIncome", "lte": { "table": "calfresh-gross-monthly" } }, { "fact": "getsCalFresh", "eq": true }] }
+      ]},
+      "explain": "cf.otherLawful",
+      "source": "https://dpss.lacounty.gov/en/food/hr1.html",
+      "lastVerified": "2026-10-07",
+      "verifiedBy": "claude-draft"
+    }
+  ]
+}

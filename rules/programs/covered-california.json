@@ -1,0 +1,87 @@
+{
+  "$schema": "../program.schema.json",
+  "id": "covered-california",
+  "name": "Covered California",
+  "category": "health",
+  "appliesTo": "person",
+  "audience": { "all": [
+    { "not": { "fact": "status", "eq": "undocumented" } },
+    { "any": [
+      { "all": [{ "fact": "age", "gte": 19 }, { "fact": "incomePctFPL", "gt": 138 }] },
+      { "all": [{ "fact": "age", "lt": 19 }, { "fact": "incomePctFPL", "gt": 266 }] }
+    ]}
+  ]},
+  "apply": { "url": "https://www.coveredca.com", "phone": "1-800-300-1506", "where": "coveredCa" },
+  "documents": ["id", "income", "address", "immigration"],
+  "alternatives": ["clinics"],
+  "rules": [
+    {
+      "id": "covered-ca-help-2025",
+      "variant": "withHelp",
+      "effective": { "from": "2021-04-01", "to": "2025-12-31" },
+      "conditions": { "all": [
+        { "fact": "status", "in": ["citizen", "lpr5", "lpr", "humanitarian", "otherLawful"] },
+        { "any": [
+          { "all": [{ "fact": "age", "gte": 19 }, { "fact": "incomePctFPL", "gt": 138 }] },
+          { "all": [{ "fact": "age", "lt": 19 }, { "fact": "incomePctFPL", "gt": 266 }] }
+        ]}
+      ]},
+      "explain": "cc.withHelp2025",
+      "source": "https://www.coverhealthca.com/learn/how-subsidies-work?year=2026",
+      "lastVerified": "2026-10-07",
+      "verifiedBy": "claude-draft"
+    },
+    {
+      "id": "covered-ca-help-2026",
+      "variant": "withHelp",
+      "effective": { "from": "2026-01-01", "to": "2026-12-31" },
+      "conditions": { "all": [
+        { "fact": "status", "in": ["citizen", "lpr5", "lpr", "humanitarian", "otherLawful"] },
+        { "any": [
+          { "all": [{ "fact": "age", "gte": 19 }, { "fact": "incomePctFPL", "gt": 138 }] },
+          { "all": [{ "fact": "age", "lt": 19 }, { "fact": "incomePctFPL", "gt": 266 }] }
+        ]},
+        { "fact": "incomePctFPL", "lte": 400 }
+      ]},
+      "explain": "cc.withHelp",
+      "notes": [{ "key": "cc.cliff" }],
+      "source": "https://www.coverhealthca.com/learn/income-limits?year=2026",
+      "lastVerified": "2026-10-07",
+      "verifiedBy": "claude-draft"
+    },
+    {
+      "id": "covered-ca-help-2027",
+      "variant": "withHelp",
+      "effective": { "from": "2027-01-01", "to": null },
+      "conditions": { "all": [
+        { "fact": "status", "in": ["citizen", "lpr5", "lpr"], "unsure": ["otherLawful"] },
+        { "any": [
+          { "all": [{ "fact": "age", "gte": 19 }, { "fact": "incomePctFPL", "gt": 138 }] },
+          { "all": [{ "fact": "age", "lt": 19 }, { "fact": "incomePctFPL", "gt": 266 }] }
+        ]},
+        { "fact": "incomePctFPL", "lte": 400 }
+      ]},
+      "explain": "cc.withHelp2027",
+      "notes": [{ "key": "cc.cliff" }],
+      "source": "https://www.congress.gov/bill/119th-congress/house-bill/1/text",
+      "lastVerified": "2026-10-07",
+      "verifiedBy": "claude-draft"
+    },
+    {
+      "id": "covered-ca-full-price",
+      "variant": "fullPrice",
+      "effective": { "from": "2026-01-01", "to": null },
+      "conditions": { "all": [
+        { "fact": "status", "in": ["citizen", "lpr5", "lpr", "humanitarian", "otherLawful"] },
+        { "any": [
+          { "all": [{ "fact": "age", "gte": 19 }, { "fact": "incomePctFPL", "gt": 138 }] },
+          { "all": [{ "fact": "age", "lt": 19 }, { "fact": "incomePctFPL", "gt": 266 }] }
+        ]}
+      ]},
+      "explain": "cc.fullPrice",
+      "source": "https://www.coverhealthca.com/learn/income-limits?year=2026",
+      "lastVerified": "2026-10-07",
+      "verifiedBy": "claude-draft"
+    }
+  ]
+}

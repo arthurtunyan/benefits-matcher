@@ -1,0 +1,409 @@
+[
+  {
+    "id": "nh-worked-example",
+    "title": "North Hollywood mother (25, undocumented) with four children, statuses not given — brief section 6",
+    "source": "Project brief §6; https://healthconsumer.org/medi-cal-changes-and-what-you-need-to-know/",
+    "asOf": "2026-10-07",
+    "household": {
+      "zip": "91605", "electric": "ladwp", "gas": "socalgas", "monthlyIncome": 0,
+      "people": [
+        { "id": "m", "age": 25, "status": "undocumented" },
+        { "id": "c2", "age": 2 }, { "id": "c4", "age": 4 }, { "id": "c7", "age": 7 }, { "id": "c10", "age": 10 }
+      ]
+    },
+    "expect": {
+      "m": { "medi-cal": "likely:restricted", "calfresh": "not", "cfap": "not", "calworks": "not", "covered-california": "hidden", "wic": "hidden" },
+      "c2": { "medi-cal": "likely:full", "wic": "likely", "early-learning": "likely:earlyHeadStart", "calfresh": "possibly", "calworks": "possibly", "cfap": "hidden", "sun-bucks": "hidden" },
+      "c4": { "medi-cal": "likely:full", "wic": "likely", "early-learning": "likely:headStart", "calfresh": "possibly" },
+      "c7": { "medi-cal": "likely:full", "sun-bucks": "likely", "calfresh": "possibly", "calworks": "possibly", "wic": "hidden" },
+      "c10": { "medi-cal": "likely:full", "sun-bucks": "likely", "calfresh": "possibly" },
+      "household": { "california-lifeline": "likely", "metro-life": "likely", "socalgas-care": "likely", "ladwp-ez-save": "likely", "sce-care-fera": "hidden" }
+    }
+  },
+  {
+    "id": "nh-toggle-citizen-child",
+    "title": "Same family, the 2-year-old marked U.S.-born: new programs for that child, mother unchanged",
+    "source": "Project brief §6; https://dpss.lacounty.gov/en/food/hr1.html",
+    "asOf": "2026-10-07",
+    "household": {
+      "zip": "91605", "electric": "ladwp", "gas": "socalgas", "monthlyIncome": 0,
+      "people": [
+        { "id": "m", "age": 25, "status": "undocumented" },
+        { "id": "c2", "age": 2, "status": "citizen" }, { "id": "c4", "age": 4 }, { "id": "c7", "age": 7 }, { "id": "c10", "age": 10 }
+      ]
+    },
+    "expect": {
+      "m": { "medi-cal": "likely:restricted", "calfresh": "not" },
+      "c2": { "calfresh": "likely", "calworks": "likely", "medi-cal": "likely:full" },
+      "c4": { "calfresh": "possibly" }
+    }
+  },
+  {
+    "id": "nh-as-of-dec-2025",
+    "title": "Same family as of December 2025: mother gets full-scope Medi-Cal (freeze not started)",
+    "source": "https://healthconsumer.org/medi-cal-changes-and-what-you-need-to-know/",
+    "asOf": "2025-12-15",
+    "household": {
+      "zip": "91605", "electric": "ladwp", "gas": "socalgas", "monthlyIncome": 0,
+      "people": [
+        { "id": "m", "age": 25, "status": "undocumented" },
+        { "id": "c2", "age": 2 }, { "id": "c4", "age": 4 }, { "id": "c7", "age": 7 }, { "id": "c10", "age": 10 }
+      ]
+    },
+    "expect": {
+      "m": { "medi-cal": "likely:full" },
+      "c2": { "medi-cal": "likely:full", "wic": "likely" },
+      "household": { "socalgas-care": "likely", "california-lifeline": "possibly", "ladwp-ez-save": "possibly", "metro-life": "possibly" }
+    }
+  },
+  {
+    "id": "nh-pregnant-mother",
+    "title": "Undocumented mother who is pregnant: full-scope Medi-Cal, WIC, Early Head Start",
+    "source": "https://healthconsumer.org/medi-cal-changes-and-what-you-need-to-know/",
+    "asOf": "2026-10-07",
+    "household": {
+      "zip": "91605", "electric": "ladwp", "gas": "socalgas", "monthlyIncome": 0,
+      "people": [
+        { "id": "m", "age": 25, "status": "undocumented", "pregnant": true },
+        { "id": "c2", "age": 2 }, { "id": "c4", "age": 4 }, { "id": "c7", "age": 7 }, { "id": "c10", "age": 10 }
+      ]
+    },
+    "expect": {
+      "m": { "medi-cal": "likely:full", "wic": "likely", "calworks": "not", "early-learning": "likely:earlyHeadStart" }
+    }
+  },
+  {
+    "id": "uis-adult-already-enrolled",
+    "title": "Undocumented adult who already has Medi-Cal keeps full scope in 2026",
+    "source": "https://healthconsumer.org/medi-cal-changes-and-what-you-need-to-know/",
+    "asOf": "2026-10-07",
+    "household": { "monthlyIncome": 1000, "people": [{ "id": "a", "age": 40, "status": "undocumented", "hasMediCal": true }] },
+    "expect": { "a": { "medi-cal": "likely:full" } }
+  },
+  {
+    "id": "uis-adult-enrolled-july-2027",
+    "title": "Same adult in July 2027: still full scope (dental and premium changes apply)",
+    "source": "https://health-access.org/governor-signs-budget-that-provides-short-term-health-care-relief-for-millions-of-californians/",
+    "asOf": "2027-07-15",
+    "household": { "monthlyIncome": 1000, "people": [{ "id": "a", "age": 40, "status": "undocumented", "hasMediCal": true }] },
+    "expect": { "a": { "medi-cal": "likely:full" } }
+  },
+  {
+    "id": "glendale-refugees-new-applicants",
+    "title": "Glendale refugee family applying for food help after April 2026",
+    "source": "https://cdss.ca.gov/benefits-services/food-nutrition-services/calfresh/frequently-asked-questions",
+    "asOf": "2026-10-07",
+    "household": {
+      "zip": "91205", "electric": "gwp", "gas": "socalgas", "monthlyIncome": 2400, "hasEarnedIncome": true,
+      "people": [
+        { "id": "a1", "age": 38, "status": "humanitarian" },
+        { "id": "a2", "age": 36, "status": "humanitarian" },
+        { "id": "c9", "age": 9, "status": "humanitarian" }
+      ]
+    },
+    "expect": {
+      "a1": { "calfresh": "not", "cfap": "possibly", "medi-cal": "likely:full", "calworks": "likely", "covered-california": "hidden" },
+      "c9": { "calfresh": "not", "cfap": "hidden", "medi-cal": "likely:full", "calworks": "likely", "sun-bucks": "likely" },
+      "household": { "glendale-care": "likely", "socalgas-care": "likely", "california-lifeline": "likely", "metro-life": "likely", "ladwp-ez-save": "hidden" }
+    }
+  },
+  {
+    "id": "glendale-refugees-already-on-calfresh",
+    "title": "Refugee family already on CalFresh: keeps it until next renewal",
+    "source": "https://cdss.ca.gov/benefits-services/food-nutrition-services/calfresh/frequently-asked-questions",
+    "asOf": "2026-10-07",
+    "household": {
+      "zip": "91205", "electric": "gwp", "gas": "socalgas", "monthlyIncome": 2400, "hasEarnedIncome": true,
+      "benefits": { "calfresh": true },
+      "people": [
+        { "id": "a1", "age": 38, "status": "humanitarian" },
+        { "id": "a2", "age": 36, "status": "humanitarian" },
+        { "id": "c9", "age": 9, "status": "humanitarian" }
+      ]
+    },
+    "expect": { "a1": { "calfresh": "possibly" }, "c9": { "calfresh": "possibly" } }
+  },
+  {
+    "id": "glendale-refugees-before-hr1",
+    "title": "Same refugee family in March 2026, before H.R. 1 took effect for CalFresh",
+    "source": "https://dpss.lacounty.gov/en/food/hr1.html",
+    "asOf": "2026-03-15",
+    "household": {
+      "zip": "91205", "electric": "gwp", "gas": "socalgas", "monthlyIncome": 2400, "hasEarnedIncome": true,
+      "people": [
+        { "id": "a1", "age": 38, "status": "humanitarian" },
+        { "id": "a2", "age": 36, "status": "humanitarian" },
+        { "id": "c9", "age": 9, "status": "humanitarian" }
+      ]
+    },
+    "expect": {
+      "a1": { "calfresh": "likely", "medi-cal": "likely:full", "cfap": "not", "calworks": "not" },
+      "household": { "california-lifeline": "possibly", "glendale-care": "likely", "socalgas-care": "likely", "metro-life": "likely" }
+    }
+  },
+  {
+    "id": "refugee-adult-july-2027",
+    "title": "Refugee adult in July 2027: scheduled move to restricted-scope Medi-Cal",
+    "source": "https://www.dhcs.ca.gov/wp-content/uploads/2026/05/DHCS-TBL-May-Revise-HR-1_Fact-Sheet.pdf",
+    "asOf": "2027-07-15",
+    "household": { "monthlyIncome": 1500, "people": [{ "id": "a", "age": 30, "status": "humanitarian" }] },
+    "expect": { "a": { "medi-cal": "likely:restricted" } }
+  },
+  {
+    "id": "burbank-senior-lpr-capi",
+    "title": "Burbank green-card holder, 70, not eligible for SSI because of immigration rules — brief persona",
+    "source": "https://dpss.lacounty.gov/en/cash/capi.html",
+    "asOf": "2026-10-07",
+    "household": { "zip": "91502", "electric": "bwp", "gas": "socalgas", "monthlyIncome": 900, "people": [{ "id": "s", "age": 70, "status": "lpr5" }] },
+    "expect": {
+      "s": { "capi": "likely", "medi-cal": "likely:full", "calfresh": "likely", "cfap": "hidden", "calworks": "hidden", "covered-california": "hidden" },
+      "household": { "bwp-lifeline": "likely", "socalgas-care": "likely", "california-lifeline": "likely", "metro-life": "likely" }
+    }
+  },
+  {
+    "id": "senior-new-lpr-cfap",
+    "title": "Senior with a green card for under 5 years: CFAP instead of CalFresh, plus CAPI",
+    "source": "https://my.dpss.lacounty.gov/public/en/home/epolicy/program/calfresh/63-405-citizenship-or-eligible-non-citizen-status.html",
+    "asOf": "2026-10-07",
+    "household": { "monthlyIncome": 1000, "people": [{ "id": "s", "age": 68, "status": "lpr" }] },
+    "expect": { "s": { "capi": "likely", "calfresh": "not", "cfap": "likely", "medi-cal": "likely:full" } }
+  },
+  {
+    "id": "senior-citizen",
+    "title": "Senior U.S. citizen: CAPI is hidden (SSI applies instead)",
+    "source": "https://dpss.lacounty.gov/en/cash/capi.html",
+    "asOf": "2026-10-07",
+    "household": { "monthlyIncome": 1100, "people": [{ "id": "s", "age": 72, "status": "citizen" }] },
+    "expect": { "s": { "capi": "hidden", "medi-cal": "likely:full", "calfresh": "likely" }, "household": { "california-lifeline": "likely" } }
+  },
+  {
+    "id": "hollywood-working-parent",
+    "title": "Hollywood working parent with two citizen kids, income just above several limits — brief persona",
+    "source": "https://my.dpss.lacounty.gov/public/en/home/epolicy/program/calfresh/calfresh-cola.html",
+    "asOf": "2026-10-07",
+    "household": {
+      "zip": "90028", "electric": "ladwp", "gas": "socalgas", "monthlyIncome": 5000, "hasEarnedIncome": true,
+      "people": [
+        { "id": "p", "age": 34, "status": "citizen" },
+        { "id": "k6", "age": 6, "status": "citizen" },
+        { "id": "k9", "age": 9, "status": "citizen" }
+      ]
+    },
+    "expect": {
+      "p": { "medi-cal": "not", "covered-california": "likely:withHelp", "calfresh": "not", "calworks": "not" },
+      "k6": { "medi-cal": "likely:full", "calfresh": "not", "sun-bucks": "not", "covered-california": "hidden" },
+      "household": { "ladwp-ez-save": "not", "socalgas-care": "not", "california-lifeline": "not", "metro-life": "likely" }
+    },
+    "nearMiss": { "p": ["calfresh"] }
+  },
+  {
+    "id": "hollywood-parent-just-under",
+    "title": "Same family earning $4,500: now under the CalFresh and CARE limits",
+    "source": "https://my.dpss.lacounty.gov/public/en/home/epolicy/program/calfresh/calfresh-cola.html",
+    "asOf": "2026-10-07",
+    "household": {
+      "zip": "90028", "electric": "ladwp", "gas": "socalgas", "monthlyIncome": 4500, "hasEarnedIncome": true,
+      "people": [
+        { "id": "p", "age": 34, "status": "citizen" },
+        { "id": "k6", "age": 6, "status": "citizen" },
+        { "id": "k9", "age": 9, "status": "citizen" }
+      ]
+    },
+    "expect": {
+      "p": { "calfresh": "likely" },
+      "k6": { "calfresh": "likely", "sun-bucks": "not" },
+      "household": { "socalgas-care": "likely", "california-lifeline": "not" }
+    }
+  },
+  {
+    "id": "income-skipped",
+    "title": "Adult citizen who skips the income question: income-based results are 'possibly'",
+    "source": "Project brief §7 (unknown is different from no)",
+    "asOf": "2026-10-07",
+    "household": { "people": [{ "id": "a", "age": 30, "status": "citizen" }] },
+    "expect": { "a": { "medi-cal": "possibly:full", "calfresh": "possibly", "covered-california": "possibly" }, "household": { "california-lifeline": "possibly" } }
+  },
+  {
+    "id": "outside-la-county",
+    "title": "San Diego ZIP: statewide programs only, no LA Metro LIFE",
+    "source": "https://www.metro.net/fares/life/",
+    "asOf": "2026-10-07",
+    "household": { "zip": "92101", "monthlyIncome": 1000, "people": [{ "id": "a", "age": 30, "status": "citizen" }] },
+    "expect": { "a": { "medi-cal": "likely:full", "calfresh": "likely" }, "household": { "metro-life": "hidden", "sce-care-fera": "hidden", "ladwp-ez-save": "hidden" } }
+  },
+  {
+    "id": "west-hollywood-fera",
+    "title": "West Hollywood family of four just above CARE: FERA instead",
+    "source": "https://www.sce.com/save-money/income-qualified-programs/care-fera",
+    "asOf": "2026-10-07",
+    "household": {
+      "zip": "90069", "electric": "sce", "gas": "socalgas", "monthlyIncome": 6000, "hasEarnedIncome": true,
+      "people": [
+        { "id": "a1", "age": 40, "status": "citizen" }, { "id": "a2", "age": 38, "status": "citizen" },
+        { "id": "k10", "age": 10, "status": "citizen" }, { "id": "k12", "age": 12, "status": "citizen" }
+      ]
+    },
+    "expect": {
+      "a1": { "medi-cal": "not", "covered-california": "likely:withHelp", "calfresh": "not" },
+      "k10": { "medi-cal": "likely:full" },
+      "household": { "sce-care-fera": "likely:fera", "socalgas-care": "not" }
+    },
+    "nearMiss": { "a1": ["calfresh"] }
+  },
+  {
+    "id": "lpr-parent-and-child",
+    "title": "Parent and child with green cards under 5 years: child gets CalFresh, parent gets CFAP",
+    "source": "https://my.dpss.lacounty.gov/public/en/home/epolicy/program/calfresh/63-405-citizenship-or-eligible-non-citizen-status.html",
+    "asOf": "2026-10-07",
+    "household": { "monthlyIncome": 1500, "people": [{ "id": "p", "age": 35, "status": "lpr" }, { "id": "k", "age": 8, "status": "lpr" }] },
+    "expect": {
+      "p": { "calfresh": "not", "cfap": "likely", "medi-cal": "likely:full", "calworks": "likely" },
+      "k": { "calfresh": "likely", "calworks": "likely", "medi-cal": "likely:full" }
+    }
+  },
+  {
+    "id": "undocumented-adult-over-income",
+    "title": "Undocumented adult earning too much for Medi-Cal: not eligible, Covered California hidden",
+    "source": "https://healthconsumer.org/medi-cal-changes-and-what-you-need-to-know/",
+    "asOf": "2026-10-07",
+    "household": { "monthlyIncome": 3000, "people": [{ "id": "a", "age": 40, "status": "undocumented" }] },
+    "expect": { "a": { "medi-cal": "not", "covered-california": "hidden", "calfresh": "not" }, "household": { "california-lifeline": "not", "metro-life": "likely" } }
+  },
+  {
+    "id": "pregnant-citizen",
+    "title": "Pregnant citizen at 188% of poverty: pregnancy Medi-Cal, WIC, CalFresh",
+    "source": "https://www.fns.usda.gov/wic/fr-042926",
+    "asOf": "2026-10-07",
+    "household": { "monthlyIncome": 2500, "people": [{ "id": "a", "age": 28, "status": "citizen", "pregnant": true }] },
+    "expect": { "a": { "medi-cal": "likely:full", "wic": "likely", "calworks": "not", "calfresh": "likely", "early-learning": "not" } }
+  },
+  {
+    "id": "disabled-lpr-under-5",
+    "title": "Disabled adult with a green card under 5 years: CAPI, CFAP, and possibly CalFresh",
+    "source": "https://dpss.lacounty.gov/en/cash/capi.html",
+    "asOf": "2026-10-07",
+    "household": { "monthlyIncome": 1000, "people": [{ "id": "a", "age": 45, "status": "lpr", "disabled": true }] },
+    "expect": { "a": { "calfresh": "possibly", "capi": "likely", "cfap": "likely", "medi-cal": "likely:full" } }
+  },
+  {
+    "id": "infant-wic-through-medi-cal",
+    "title": "Infant on Medi-Cal gets WIC even though family income is above the WIC limit",
+    "source": "https://www.fns.usda.gov/wic/fr-042926",
+    "asOf": "2026-10-07",
+    "household": {
+      "monthlyIncome": 4000,
+      "people": [
+        { "id": "p", "age": 30, "status": "citizen", "recentBirth": true, "hasMediCal": true },
+        { "id": "b", "age": 0, "status": "citizen", "hasMediCal": true }
+      ]
+    },
+    "expect": { "p": { "wic": "likely" }, "b": { "wic": "likely", "medi-cal": "likely:full", "early-learning": "not" } }
+  },
+  {
+    "id": "state-preschool-band",
+    "title": "3-year-old at 122% of poverty: State Preschool instead of Head Start",
+    "source": "https://www.cde.ca.gov/sp/cd/ci/mb2603.asp",
+    "asOf": "2026-10-07",
+    "household": { "monthlyIncome": 2200, "people": [{ "id": "p", "age": 30, "status": "citizen" }, { "id": "k", "age": 3, "status": "citizen" }] },
+    "expect": { "k": { "early-learning": "likely:statePreschool" } }
+  },
+  {
+    "id": "early-head-start-130",
+    "title": "1-year-old at 116% of poverty: Early Head Start possible",
+    "source": "https://eclkc.ohs.acf.hhs.gov/policy/45-cfr-chap-xiii/1302-12-determining-verifying-documenting-eligibility",
+    "asOf": "2026-10-07",
+    "household": { "monthlyIncome": 2100, "people": [{ "id": "p", "age": 25, "status": "citizen" }, { "id": "k", "age": 1, "status": "citizen" }] },
+    "expect": { "k": { "early-learning": "possibly:earlyHeadStart" } }
+  },
+  {
+    "id": "calworks-earned-disregard",
+    "title": "Single parent earning $1,900 from work: $450 disregard brings income under MBSAC",
+    "source": "https://my.dpss.lacounty.gov/public/en/home/epolicy/program/calworks/composition/minimum-basic-standard-of-adequate-care.html",
+    "asOf": "2026-10-07",
+    "household": { "monthlyIncome": 1900, "hasEarnedIncome": true, "people": [{ "id": "p", "age": 30, "status": "citizen" }, { "id": "k", "age": 5, "status": "citizen" }] },
+    "expect": { "p": { "calworks": "likely" }, "k": { "calworks": "likely" } }
+  },
+  {
+    "id": "calworks-unearned",
+    "title": "Same $1,900 but not from work: no disregard, over MBSAC",
+    "source": "https://my.dpss.lacounty.gov/public/en/home/epolicy/program/calworks/composition/minimum-basic-standard-of-adequate-care.html",
+    "asOf": "2026-10-07",
+    "household": { "monthlyIncome": 1900, "people": [{ "id": "p", "age": 30, "status": "citizen" }, { "id": "k", "age": 5, "status": "citizen" }] },
+    "expect": { "p": { "calworks": "not" }, "k": { "calworks": "not" } }
+  },
+  {
+    "id": "other-lawful-adult",
+    "title": "Adult with another lawful status (e.g. TPS): Medi-Cal and CalFresh depend on exact status",
+    "source": "https://www.dhcs.ca.gov/wp-content/uploads/2026/05/DHCS-TBL-May-Revise-HR-1_Fact-Sheet.pdf",
+    "asOf": "2026-10-07",
+    "household": { "monthlyIncome": 1000, "people": [{ "id": "a", "age": 30, "status": "otherLawful" }] },
+    "expect": { "a": { "medi-cal": "possibly:full", "calfresh": "possibly", "cfap": "hidden", "covered-california": "hidden" } }
+  },
+  {
+    "id": "status-prefer-not",
+    "title": "Adult who prefers not to give status: status-based results are 'possibly', never 'not'",
+    "source": "Project brief §8 (immigration status optional)",
+    "asOf": "2026-10-07",
+    "household": { "monthlyIncome": 1000, "people": [{ "id": "a", "age": 30 }] },
+    "expect": { "a": { "medi-cal": "possibly:full", "calfresh": "possibly", "cfap": "possibly" } }
+  },
+  {
+    "id": "cfap-55-plus-oct-2027",
+    "title": "Undocumented 60-year-old in October 2027: planned CFAP expansion",
+    "source": "https://www.lao.ca.gov/Publications/Report/5126",
+    "asOf": "2027-10-15",
+    "household": { "monthlyIncome": 800, "people": [{ "id": "a", "age": 60, "status": "undocumented" }] },
+    "expect": { "a": { "cfap": "possibly", "medi-cal": "likely:restricted" } }
+  },
+  {
+    "id": "covered-ca-2027-humanitarian",
+    "title": "Asylee at 225% of poverty in 2027: Covered California without premium help",
+    "source": "https://www.congress.gov/bill/119th-congress/house-bill/1/text",
+    "asOf": "2027-02-01",
+    "household": { "monthlyIncome": 3000, "people": [{ "id": "a", "age": 40, "status": "humanitarian" }] },
+    "expect": { "a": { "covered-california": "likely:fullPrice", "medi-cal": "not" } }
+  },
+  {
+    "id": "covered-ca-above-400",
+    "title": "Single citizen at 451% of poverty in 2026: no premium help (subsidy cliff)",
+    "source": "https://www.coverhealthca.com/learn/income-limits?year=2026",
+    "asOf": "2026-10-07",
+    "household": { "monthlyIncome": 6000, "people": [{ "id": "a", "age": 35, "status": "citizen" }] },
+    "expect": { "a": { "covered-california": "likely:fullPrice" }, "household": { "metro-life": "not" } }
+  },
+  {
+    "id": "covered-ca-dec-2025",
+    "title": "Same person in December 2025: enhanced subsidies still in effect",
+    "source": "https://www.coverhealthca.com/learn/how-subsidies-work?year=2026",
+    "asOf": "2025-12-15",
+    "household": { "monthlyIncome": 6000, "people": [{ "id": "a", "age": 35, "status": "citizen" }] },
+    "expect": { "a": { "covered-california": "likely:withHelp" } }
+  },
+  {
+    "id": "burbank-calfresh-categorical",
+    "title": "Burbank couple on CalFresh: BWP Lifeline through program-based eligibility",
+    "source": "https://www.burbankwaterandpower.com/my-home/lifeline-program",
+    "asOf": "2026-10-07",
+    "household": {
+      "zip": "91505", "electric": "bwp", "gas": "socalgas", "monthlyIncome": 4000, "benefits": { "calfresh": true },
+      "people": [{ "id": "a1", "age": 50, "status": "citizen" }, { "id": "a2", "age": 48, "status": "citizen" }]
+    },
+    "expect": { "household": { "bwp-lifeline": "likely", "california-lifeline": "likely", "socalgas-care": "likely" } }
+  },
+  {
+    "id": "glendale-ssi",
+    "title": "Glendale senior on SSI: Glendale Care through SSI",
+    "source": "https://www.glendaleca.gov/government/departments/glendale-water-and-power/residential-customers/low-income-programs/glendale-care",
+    "asOf": "2026-10-07",
+    "household": { "zip": "91203", "electric": "gwp", "gas": "socalgas", "monthlyIncome": 1100, "benefits": { "ssi": true }, "people": [{ "id": "s", "age": 66, "status": "citizen" }] },
+    "expect": { "s": { "capi": "hidden" }, "household": { "glendale-care": "likely", "california-lifeline": "likely" } }
+  },
+  {
+    "id": "toddler-no-sun-bucks",
+    "title": "3-year-old: SUN Bucks is for school-age children, so it is hidden",
+    "source": "https://www.gov.ca.gov/2026/05/21/california-launches-sun-bucks-for-summer-2026-to-help-fight-childhood-food-insecurity/",
+    "asOf": "2026-10-07",
+    "household": { "monthlyIncome": 1200, "people": [{ "id": "p", "age": 29, "status": "citizen" }, { "id": "k", "age": 3, "status": "citizen" }] },
+    "expect": { "k": { "sun-bucks": "hidden", "early-learning": "likely:headStart", "wic": "likely" } }
+  }
+]

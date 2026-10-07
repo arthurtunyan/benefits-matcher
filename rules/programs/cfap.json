@@ -1,0 +1,55 @@
+{
+  "$schema": "../program.schema.json",
+  "id": "cfap",
+  "name": "CFAP (California Food Assistance Program)",
+  "category": "food",
+  "appliesTo": "person",
+  "audience": { "all": [{ "fact": "status", "in": ["lpr", "humanitarian", "undocumented"] }, { "fact": "age", "gte": 18 }] },
+  "apply": { "url": "https://benefitscal.com", "phone": "1-866-613-3777", "where": "benefitscal" },
+  "documents": ["id", "income", "address", "rent", "immigrationIfApplying"],
+  "alternatives": ["foodbank", "211"],
+  "estimate": { "table": "calfresh-max-allotment" },
+  "rules": [
+    {
+      "id": "cfap-lpr-under-5-years",
+      "effective": { "from": "2016-01-01", "to": null },
+      "conditions": { "all": [
+        { "fact": "status", "eq": "lpr" },
+        { "fact": "age", "gte": 18 },
+        { "fact": "monthlyIncome", "lte": { "table": "calfresh-gross-monthly" } }
+      ]},
+      "explain": "cfap.lpr",
+      "source": "https://my.dpss.lacounty.gov/public/en/home/epolicy/program/calfresh/63-405-citizenship-or-eligible-non-citizen-status.html",
+      "lastVerified": "2026-10-07",
+      "verifiedBy": "claude-draft"
+    },
+    {
+      "id": "cfap-humanitarian-after-hr1",
+      "effective": { "from": "2026-04-01", "to": null },
+      "outcome": "possibly",
+      "conditions": { "all": [
+        { "fact": "status", "eq": "humanitarian" },
+        { "fact": "monthlyIncome", "lte": { "table": "calfresh-gross-monthly" } }
+      ]},
+      "explain": "cfap.humanitarian",
+      "source": "https://my.dpss.lacounty.gov/public/en/home/epolicy/program/calfresh/63-405-citizenship-or-eligible-non-citizen-status.html",
+      "lastVerified": "2026-10-07",
+      "verifiedBy": "claude-draft"
+    },
+    {
+      "id": "cfap-55-plus-any-status",
+      "effective": { "from": "2027-10-01", "to": null },
+      "outcome": "possibly",
+      "conditions": { "all": [
+        { "fact": "status", "eq": "undocumented" },
+        { "fact": "age", "gte": 55 },
+        { "fact": "monthlyIncome", "lte": { "table": "calfresh-gross-monthly" } }
+      ]},
+      "explain": "cfap.age55",
+      "notes": [{ "key": "mc.scheduledMayChange" }],
+      "source": "https://www.lao.ca.gov/Publications/Report/5126",
+      "lastVerified": "2026-10-07",
+      "verifiedBy": "claude-draft"
+    }
+  ]
+}

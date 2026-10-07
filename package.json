@@ -1,0 +1,33 @@
+{
+  "name": "benefits-matcher",
+  "private": true,
+  "version": "0.1.0",
+  "description": "A private, multilingual screener that shows LA County families which public benefits each person in their household may qualify for under today's rules.",
+  "type": "module",
+  "license": "MIT",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@fontsource-variable/fraunces": "^5.3.0",
+    "@fontsource-variable/noto-sans-armenian": "^5.3.0",
+    "@fontsource-variable/noto-serif-armenian": "^5.3.0",
+    "@fontsource-variable/public-sans": "^5.3.0",
+    "lucide-react": "^1.52.0",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.1.2",
+    "ajv": "^8.20.0",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.3",
+    "vitest": "^5.0.3"
+  }
+}

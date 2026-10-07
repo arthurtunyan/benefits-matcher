@@ -1,0 +1,56 @@
+{
+  "$schema": "../program.schema.json",
+  "id": "calworks",
+  "name": "CalWORKs",
+  "category": "cash",
+  "appliesTo": "person",
+  "audience": { "any": [{ "fact": "age", "lt": 19 }, { "fact": "pregnant", "eq": true }, { "fact": "householdHasChild", "eq": true }] },
+  "apply": { "url": "https://benefitscal.com", "phone": "1-866-613-3777", "where": "benefitscal" },
+  "documents": ["id", "income", "address", "birthCertificates", "immigrationIfApplying"],
+  "alternatives": ["211"],
+  "estimate": { "table": "calworks-map" },
+  "rules": [
+    {
+      "id": "calworks-child",
+      "effective": { "from": "2016-01-01", "to": null },
+      "conditions": { "all": [
+        { "fact": "age", "lt": 18 },
+        { "fact": "status", "in": ["citizen", "lpr5", "lpr", "humanitarian"], "unsure": ["otherLawful"] },
+        { "any": [{ "fact": "calworksIncome", "lt": { "table": "calworks-mbsac" } }, { "fact": "getsCalWORKs", "eq": true }] }
+      ]},
+      "explain": "cw.child",
+      "notes": [{ "key": "cw.childOnly", "when": { "fact": "householdHasUndocumentedOrUnknown", "eq": true } }],
+      "source": "https://my.dpss.lacounty.gov/public/en/home/epolicy/program/calworks/composition/minimum-basic-standard-of-adequate-care.html",
+      "lastVerified": "2026-10-07",
+      "verifiedBy": "claude-draft"
+    },
+    {
+      "id": "calworks-pregnant",
+      "effective": { "from": "2016-01-01", "to": null },
+      "conditions": { "all": [
+        { "fact": "pregnant", "eq": true },
+        { "fact": "status", "in": ["citizen", "lpr5", "lpr", "humanitarian"], "unsure": ["otherLawful"] },
+        { "any": [{ "fact": "calworksIncome", "lt": { "table": "calworks-mbsac" } }, { "fact": "getsCalWORKs", "eq": true }] }
+      ]},
+      "explain": "cw.pregnant",
+      "source": "https://my.dpss.lacounty.gov/public/en/home/epolicy/program/calworks/composition/minimum-basic-standard-of-adequate-care.html",
+      "lastVerified": "2026-10-07",
+      "verifiedBy": "claude-draft"
+    },
+    {
+      "id": "calworks-caretaker",
+      "effective": { "from": "2016-01-01", "to": null },
+      "conditions": { "all": [
+        { "fact": "age", "gte": 18 },
+        { "fact": "householdHasChild", "eq": true },
+        { "fact": "status", "in": ["citizen", "lpr5", "lpr", "humanitarian"], "unsure": ["otherLawful"] },
+        { "any": [{ "fact": "calworksIncome", "lt": { "table": "calworks-mbsac" } }, { "fact": "getsCalWORKs", "eq": true }] }
+      ]},
+      "explain": "cw.caretaker",
+      "notes": [{ "key": "cw.workRules" }],
+      "source": "https://my.dpss.lacounty.gov/public/en/home/epolicy/program/calworks/composition/minimum-basic-standard-of-adequate-care.html",
+      "lastVerified": "2026-10-07",
+      "verifiedBy": "claude-draft"
+    }
+  ]
+}

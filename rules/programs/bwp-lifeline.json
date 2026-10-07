@@ -1,0 +1,26 @@
+{
+  "$schema": "../program.schema.json",
+  "id": "bwp-lifeline",
+  "name": "Burbank Water and Power Lifeline",
+  "category": "utility",
+  "appliesTo": "household",
+  "audience": { "fact": "electric", "eq": "bwp" },
+  "apply": { "url": "https://www.burbankwaterandpower.com/my-home/lifeline-program", "phone": "1-818-238-3700", "where": "utility" },
+  "documents": ["utilityBill", "secondProofOfAddress", "incomeOrBenefitLetter", "householdMembers"],
+  "estimate": { "text": "bwpLifeline" },
+  "rules": [
+    {
+      "id": "bwp-lifeline-income-or-program",
+      "effective": { "from": "2026-01-01", "to": null },
+      "conditions": { "any": [
+        { "fact": "incomePctFPL", "lte": 200 },
+        { "fact": "getsCalFresh", "eq": true }
+      ]},
+      "explain": "bwp.eligible",
+      "notes": [{ "key": "bwp.buss" }],
+      "source": "https://www.burbankwaterandpower.com/my-home/lifeline-program",
+      "lastVerified": "2026-10-07",
+      "verifiedBy": "claude-draft"
+    }
+  ]
+}

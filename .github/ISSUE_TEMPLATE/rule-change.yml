@@ -1,0 +1,30 @@
+name: A rule changed or looks wrong
+description: Report a benefit rule, income limit, or date that is out of date or incorrect.
+labels: [rules]
+body:
+  - type: input
+    id: program
+    attributes:
+      label: Program
+      placeholder: e.g. CalFresh
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What is wrong, and what should it be?
+      placeholder: e.g. The gross income limit for 3 people changed to $4,600 on October 1, 2027.
+    validations:
+      required: true
+  - type: input
+    id: source
+    attributes:
+      label: Official source (link)
+      description: A government or utility page, please — not a news article if possible.
+    validations:
+      required: true
+  - type: input
+    id: date
+    attributes:
+      label: Date the change takes effect
+      placeholder: YYYY-MM-DD
