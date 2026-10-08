@@ -23,7 +23,7 @@ Legend: ✅ done · 🟡 done as a draft, needs a human check · ⬜ to do · �
 | Privacy (on-device, CSP, no network) | ✅ |
 | Help directory with bus/rail directions | ✅ |
 | Quick exit, offline/installable app | ✅ |
-| Live website (GitHub Pages) | ⬜ make the repo public (one command, see below) |
+| Live website (GitHub Pages) | ✅ https://arthurtunyan.github.io/benefits-matcher/ |
 | Outside review, demo video, written answers | 🙋 |
 
 ---
@@ -35,7 +35,7 @@ Legend: ✅ done · 🟡 done as a draft, needs a human check · ⬜ to do · �
 - ✅ Vite + React + TypeScript, no backend
 - ✅ `npm test` (Vitest) — 483 tests passing
 - ✅ GitHub Actions: tests + type-check + build on every push and pull request, plus a **weekly run** so stale rules (not checked in 90 days) turn the badge red
-- ✅ Deploys to GitHub Pages automatically once the repo is public
+- ✅ Deploys to GitHub Pages on every push to `main`: https://arthurtunyan.github.io/benefits-matcher/
 - ✅ Issue form for reporting a rule change, pull-request checklist
 
 ### Rules engine (`src/engine.ts`)
@@ -67,14 +67,7 @@ Medi-Cal (full and restricted, with 2024–2027 dated rules), Covered California
 
 ## 🙋 What Arthur and Aiden need to do (in order)
 
-1. **Make the repo public so the site goes live.** GitHub Pages is free only for public repos. Run:
-   ```bash
-   gh repo edit arthurtunyan/benefits-matcher --visibility public --accept-visibility-change-consequences
-   ```
-   ```bash
-   gh api -X POST repos/arthurtunyan/benefits-matcher/pages -f build_type=workflow
-   ```
-   Then re-run the CI workflow (Actions tab → CI → Re-run). The site will be at `https://arthurtunyan.github.io/benefits-matcher/`.
+1. ✅ ~~Make the repo public so the site goes live.~~ Done Oct 7 — live at https://arthurtunyan.github.io/benefits-matcher/ (every push to `main` redeploys).
 2. **Arthur: check every rule yourself** (about 2–3 hours). For each rule in `rules/programs/*.json` and each table in `rules/tables.json`, open the `source`, confirm the numbers and dates, then change `"verifiedBy": "claude-draft"` to `"verifiedBy": "Arthur"` and set `lastVerified` to that day. Items flagged ⚠️ in [docs/SOURCES.md](docs/SOURCES.md) matter most.
 3. **Aiden: get native-speaker review** of `src/i18n/es.json` and `src/i18n/hy.json` (Armenian is Eastern Armenian; ask whether Western Armenian is better for your audience). Fix anything they mark. No legal term should go out unreviewed.
 4. **Test on a real, inexpensive Android phone** over cellular data. Add the app to the home screen, turn on airplane mode, and confirm it still opens.
@@ -140,4 +133,5 @@ These are honest shortcuts for a screener. Each is a good "what we'd build next"
 
 | Date | What happened |
 |---|---|
+| 2026-10-07 | Repo made public; site live on GitHub Pages. CI actions updated to current versions. |
 | 2026-10-07 | Repo created. Researched and encoded 16 programs with sources; built engine, interface, 3 languages, bilingual plan, 36 personas, rule linter, CI, and docs. |

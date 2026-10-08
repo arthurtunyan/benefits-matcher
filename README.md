@@ -13,6 +13,8 @@ English · Español · Հայերեն
 ![Privacy](https://img.shields.io/badge/data%20sent-0%20bytes-0b5d6b)
 ![License](https://img.shields.io/badge/license-MIT-e07a2e)
 
+**[Try it live →](https://arthurtunyan.github.io/benefits-matcher/)** · [Example family](https://arthurtunyan.github.io/benefits-matcher/#example)
+
 *2026 Congressional App Challenge · California's 30th District*
 
 <img src="docs/screenshots/results.png" width="720" alt="Results for the example family: the mother gets restricted Medi-Cal, her two-year-old gets full Medi-Cal, WIC, and Early Head Start." />
