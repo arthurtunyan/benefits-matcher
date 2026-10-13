@@ -1,19 +1,8 @@
 import { useState } from 'react'
-import {
-  Apple, Baby, Blocks, Bus, Check, ChevronDown, CircleHelp, ExternalLink, Flame, HandCoins, HeartPulse,
-  Phone, ShieldCheck, ShoppingBasket, Smartphone, Sun, Wallet, X, Zap, type LucideIcon,
-} from 'lucide-react'
+import { Check, ChevronDown, CircleHelp, ExternalLink, Phone, X } from 'lucide-react'
 import { useT, type T } from '../i18n'
 import { isChangeable, leaves, lookup, nearMiss, type CondResult, type Facts, type LeafResult, type ProgramResult } from '../engine'
 import { help, tables } from '../data'
-
-const ICONS: Record<string, LucideIcon> = {
-  'medi-cal': HeartPulse, 'covered-california': ShieldCheck, calfresh: ShoppingBasket, cfap: Apple,
-  'sun-bucks': Sun, calworks: Wallet, capi: HandCoins, wic: Baby, 'early-learning': Blocks,
-  'california-lifeline': Smartphone, 'metro-life': Bus, 'sce-care-fera': Zap, 'socalgas-care': Flame,
-  'ladwp-ez-save': Zap, 'bwp-lifeline': Zap, 'glendale-care': Zap,
-}
-export const programIcon = (id: string) => ICONS[id] ?? HeartPulse
 
 const MONEY = new Set(['monthlyIncome', 'annualIncome', 'calworksIncome'])
 
@@ -98,7 +87,6 @@ export default function ProgramCard({ r, facts, names }: { r: ProgramResult; fac
   const t = useT()
   const [open, setOpen] = useState(false)
   const { program: p, best, outcome } = r
-  const Icon = programIcon(p.id)
   const miss = outcome === 'not' ? nearMiss(best.tree) : undefined
   const variant = best.rule.variant && t.has(`variants.${best.rule.variant}`) ? t(`variants.${best.rule.variant}`) : null
   const est = r.estimate !== undefined ? t('ui.upTo', { amount: t.money(r.estimate) })
@@ -109,7 +97,10 @@ export default function ProgramCard({ r, facts, names }: { r: ProgramResult; fac
   return (
     <article className={`program program-${outcome}`}>
       <div className="program-head">
-        <span className={`program-icon cat-${p.category}`} aria-hidden="true"><Icon size={22} /></span>
+        <span className={`mark-box mark-box-${outcome}`} aria-hidden="true">
+          {outcome === 'likely' && <Check size={18} strokeWidth={3} />}
+          {outcome === 'possibly' && <span className="mark-q">?</span>}
+        </span>
         <div className="program-title">
           <h4 lang="en">{p.name}</h4>
           {variant && outcome !== 'not' && <p className="variant">{variant}</p>}

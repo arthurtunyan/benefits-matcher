@@ -128,7 +128,13 @@
     "addPerson": "Add a person",
     "skip": "Skip to content",
     "statusSkipped": "immigration status (you chose not to say)",
-    "steps": "Steps"
+    "steps": "Steps",
+    "next": "Next",
+    "qZip": "What's your ZIP code?",
+    "qBills": "Who sends your bills?",
+    "progress": "Question {n} of {total}",
+    "darkMode": "Dark mode",
+    "lightMode": "Light mode"
   },
   "status": {
     "preferNot": "Prefer not to say",

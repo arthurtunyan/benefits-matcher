@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { ExternalLink, MapPin, Phone, TramFront } from 'lucide-react'
+import { ExternalLink, Phone, TramFront } from 'lucide-react'
 import { useT } from '../i18n'
 import { help } from '../data'
 
@@ -17,7 +17,7 @@ export default function Help() {
     .sort((a, b) => Number(b.languages.includes(t.lang)) - Number(a.languages.includes(t.lang)))
   return (
     <section className="card help-section" aria-labelledby="help-title">
-      <h2 id="help-title" className="card-title"><MapPin size={20} aria-hidden="true" /> {t('ui.helpTitle')}</h2>
+      <h2 id="help-title" className="card-title">{t('ui.helpTitle')}</h2>
       <p className="help">{t('ui.helpIntro')}</p>
       <div className="area-chips" role="group" aria-label={t('ui.helpTitle')}>
         {AREAS.map((a) => (

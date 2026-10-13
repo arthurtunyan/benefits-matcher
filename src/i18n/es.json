@@ -120,7 +120,13 @@
     "addPerson": "Agregar una persona",
     "skip": "Ir al contenido",
     "statusSkipped": "estatus migratorio (prefirió no decir)",
-    "steps": "Pasos"
+    "steps": "Pasos",
+    "next": "Siguiente",
+    "qZip": "¿Cuál es su código postal?",
+    "qBills": "¿Quién le envía sus facturas?",
+    "progress": "Pregunta {n} de {total}",
+    "darkMode": "Modo oscuro",
+    "lightMode": "Modo claro"
   },
   "status": {
     "preferNot": "Prefiero no decir",
