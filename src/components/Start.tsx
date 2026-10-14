@@ -1,5 +1,7 @@
 import { LANGS, useT, type Lang } from '../i18n'
+import { Flame, Mail, MapPin, ShoppingBasket, Zap } from 'lucide-react'
 import { programs } from '../data'
+import House from './House'
 
 export default function Start({ onStart, onExample, setLang }: {
   onStart: () => void; onExample: () => void; setLang: (l: Lang) => void
@@ -27,6 +29,15 @@ export default function Start({ onStart, onExample, setLang }: {
             <button className="btn btn-ghost" onClick={onExample}>{t('ui.example')}</button>
           </div>
           <p className="muted small">{t('ui.programsCovered', { n: programs.length })}. {t('ui.minutes')}</p>
+        </div>
+        <div className="hero-house">
+          <House decorative parts={[
+            { id: 'zip', x: 7.5, y: 57, icon: <MapPin size={20} />, label: '', done: true },
+            { id: 'electric', x: 91.5, y: 22, icon: <Zap size={20} />, label: '', done: true },
+            { id: 'gas', x: 26.75, y: 80, icon: <Flame size={20} />, label: '', done: false },
+            { id: 'income', x: 85.5, y: 75, icon: <Mail size={20} />, label: '', done: false },
+            { id: 'benefits', x: 62, y: 82, icon: <ShoppingBasket size={20} />, label: '', done: false },
+          ]} windows={[{ id: 'a', letter: '', label: '' }, { id: 'b', letter: '', label: '' }, { id: 'c', letter: '', label: '' }]} />
         </div>
       </section>
 

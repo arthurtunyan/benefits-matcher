@@ -2,7 +2,8 @@ import { ArrowLeft, CalendarClock, Info, Printer, ShieldCheck } from 'lucide-rea
 import { useT } from '../i18n'
 import type { Outcome, Person, ProgramResult, Screening, Status } from '../engine'
 import { MAX_DATE, MIN_DATE, personLabel, todayISO } from '../App'
-import { Face, StatusSelect } from './HouseholdForm'
+import { Face, StatusSelect, initial } from './HouseholdForm'
+import House from './House'
 import ProgramCard from './ProgramCard'
 import Help from './Help'
 import { help } from '../data'
@@ -67,6 +68,20 @@ export default function Results({ screening: s, asOf, setAsOf, updatePerson, onB
         <h1 tabIndex={-1} className="view-heading">{t('ui.stepResults')}</h1>
         <p className="privacy-chip"><ShieldCheck size={16} aria-hidden="true" /> {t('ui.privacyChip')}</p>
       </div>
+
+      {people.length > 0 && (
+        <div className="results-house">
+          <House windows={people.map(({ person: p, results }, i) => {
+            const name = personLabel(p, i, t)
+            const summary = t('ui.summary', { likely: count(results, 'likely'), possibly: count(results, 'possibly') })
+            return {
+              id: p.id, letter: initial(p, i, t), caption: name, badge: String(count(results, 'likely')), done: true,
+              label: `${name}: ${summary}`,
+              onClick: () => document.getElementById(`pr-${p.id}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' }),
+            }
+          })} />
+        </div>
+      )}
 
       <section className="asof card" aria-labelledby="asof-label">
         <div className="asof-row">
