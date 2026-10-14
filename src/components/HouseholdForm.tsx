@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react'
-import { Check, Flame, Mail, MapPin, ShoppingBasket, Trash2, Zap } from 'lucide-react'
+import { Check, Flame, Mail, MapPin, ShoppingBasket, Zap } from 'lucide-react'
 import { useT, type T } from '../i18n'
 import { inLACounty, type Household, type Person, type Status, type Utility } from '../engine'
 import { zips } from '../data'
@@ -171,6 +171,13 @@ export default function HouseholdForm({ household: h, setHousehold, onDone }: {
     })
   }
   const updatePerson = (p: Person) => set({ people: h.people.map((x) => (x.id === p.id ? p : x)) })
+  // Removing the person on screen moves to the person before them (or the first one).
+  const removePerson = (id: string) => {
+    const n = h.people.findIndex((x) => x.id === id)
+    const rest = h.people.filter((x) => x.id !== id)
+    set({ people: rest })
+    if (current === `p:${id}`) setPart(`p:${rest[Math.max(0, n - 1)].id}`)
+  }
   const addPerson = () => { const np = newPerson(); set({ people: [...h.people, np] }); go(`p:${np.id}`) }
 
   // ---- What the house shows ----
@@ -195,6 +202,7 @@ export default function HouseholdForm({ household: h, setHousehold, onDone }: {
       id: p.id, letter: initial(p, n, t), caption: p.age !== undefined ? `${name}, ${p.age}` : name,
       label: p.age !== undefined ? `${name}, ${t('ui.age')} ${p.age}` : name,
       done: done(`p:${p.id}`), active: current === `p:${p.id}`, onClick: () => go(`p:${p.id}`),
+      ...(h.people.length > 1 ? { onRemove: () => removePerson(p.id), removeLabel: t('ui.removePerson', { name }) } : {}),
     }
   })
   const doneCount = order.filter(done).length
@@ -318,12 +326,6 @@ export default function HouseholdForm({ household: h, setHousehold, onDone }: {
             <Tile key={f} role="checkbox" selected={!!p[f]} onClick={() => updatePerson({ ...p, [f]: !p[f] })}>{t(`flags.${f}`)}</Tile>
           ))}
         </div>
-        {h.people.length > 1 && (
-          <button type="button" className="btn btn-ghost btn-small remove-person"
-            onClick={() => { const rest = h.people.filter((x) => x.id !== p.id); set({ people: rest }); setPart(`p:${rest[Math.max(0, n - 1)].id}`) }}>
-            <Trash2 size={16} aria-hidden="true" /> {t('ui.removePerson', { name: label })}
-          </button>
-        )}
       </>
     )
   }

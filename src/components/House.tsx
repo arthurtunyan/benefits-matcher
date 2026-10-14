@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { Check, Plus } from 'lucide-react'
+import { Check, Plus, X } from 'lucide-react'
 
 // The house drawing shared by the start screen, the questions, and the results.
 // Parts of the house are buttons laid over the drawing; positions are % of the 400 x 320 drawing.
@@ -25,6 +25,8 @@ export interface HouseWindow {
   done?: boolean
   active?: boolean
   onClick?: () => void
+  onRemove?: () => void // shows a small X on hover (or when selected) that removes this person
+  removeLabel?: string
 }
 
 function Art() {
@@ -74,12 +76,19 @@ export default function House({ parts = [], windows = [], onAdd, addLabel, decor
       ))}
       <div className="windows">
         {windows.map((w) => (
-          <Tag key={w.id} {...(decorative ? {} : { type: 'button' as const, onClick: w.onClick, 'aria-label': w.label, 'aria-current': w.active ? 'step' as const : undefined })}
-            className={`window ${w.active ? 'window-active' : ''} ${w.done ? 'window-done' : ''}`}>
-            <span className="window-pane" aria-hidden="true">{w.letter}</span>
-            {w.badge && <span className="window-badge" aria-hidden="true">{w.badge}</span>}
-            {w.caption && <span className="window-caption" aria-hidden="true">{w.caption}</span>}
-          </Tag>
+          <span key={w.id} className={`window-wrap ${w.active ? 'window-wrap-active' : ''}`}>
+            <Tag {...(decorative ? {} : { type: 'button' as const, onClick: w.onClick, 'aria-label': w.label, 'aria-current': w.active ? 'step' as const : undefined })}
+              className={`window ${w.active ? 'window-active' : ''} ${w.done ? 'window-done' : ''}`}>
+              <span className="window-pane" aria-hidden="true">{w.letter}</span>
+              {w.badge && <span className="window-badge" aria-hidden="true">{w.badge}</span>}
+              {w.caption && <span className="window-caption" aria-hidden="true">{w.caption}</span>}
+            </Tag>
+            {w.onRemove && !decorative && (
+              <button type="button" className="window-x" onClick={w.onRemove} aria-label={w.removeLabel}>
+                <X size={12} strokeWidth={4} aria-hidden="true" />
+              </button>
+            )}
+          </span>
         ))}
         {onAdd && (
           <button type="button" className="window window-add" onClick={onAdd} aria-label={addLabel}>
