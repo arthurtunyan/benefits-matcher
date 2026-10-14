@@ -2,7 +2,7 @@ import { ArrowLeft, CalendarClock, Info, Printer, ShieldCheck } from 'lucide-rea
 import { useT } from '../i18n'
 import type { Outcome, Person, ProgramResult, Screening, Status } from '../engine'
 import { MAX_DATE, MIN_DATE, personLabel, todayISO } from '../App'
-import { StatusSelect } from './HouseholdForm'
+import { Face, StatusSelect } from './HouseholdForm'
 import ProgramCard from './ProgramCard'
 import Help from './Help'
 import { help } from '../data'
@@ -93,6 +93,7 @@ export default function Results({ screening: s, asOf, setAsOf, updatePerson, onB
         return (
           <section key={p.id} className="person-results card" aria-labelledby={`pr-${p.id}`}>
             <header className="person-results-head">
+              <Face p={p} index={i} />
               <div className="person-results-name">
                 <h2 id={`pr-${p.id}`}>{name}{p.age !== undefined && <span className="age"> · {p.age}</span>}</h2>
                 <p className="summary" aria-live="polite">
