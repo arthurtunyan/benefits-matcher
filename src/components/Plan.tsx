@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { ArrowLeft, Printer, ShieldCheck } from 'lucide-react'
 import { I18n, makeT, useT, type T } from '../i18n'
 import type { Program, Screening } from '../engine'
@@ -23,7 +24,10 @@ function planItems(s: Screening, t: T): Item[] {
   return [...items.values()]
 }
 
-function PlanBody({ s, today }: { s: Screening; today: string }) {
+// Which documents the family already has. Kept in memory only, shared by both language columns.
+type Have = { has: Set<string>; toggle: (d: string) => void }
+
+function PlanBody({ s, today, have, side }: { s: Screening; today: string; have: Have; side: string }) {
   const t = useT()
   const items = planItems(s, t)
   const docs = [...new Set(items.flatMap((i) => i.program.documents))]
@@ -62,7 +66,16 @@ function PlanBody({ s, today }: { s: Screening; today: string }) {
       {docs.length > 0 && (
         <>
           <h3>{t('ui.planDocs')}</h3>
-          <ul className="checklist">{docs.map((d) => <li key={d}>{t(`docs.${d}`)}</li>)}</ul>
+          <ul className="checklist">
+            {docs.map((d) => (
+              <li key={d}>
+                <label>
+                  <input type="checkbox" id={`doc-${side}-${d}`} checked={have.has.has(d)} onChange={() => have.toggle(d)} />
+                  <span>{t(`docs.${d}`)}</span>
+                </label>
+              </li>
+            ))}
+          </ul>
         </>
       )}
 
@@ -85,6 +98,8 @@ function PlanBody({ s, today }: { s: Screening; today: string }) {
 export default function Plan({ screening, today, onBack }: { screening: Screening; today: string; onBack: () => void }) {
   const t = useT()
   const both = t.lang !== 'en'
+  const [has, setHas] = useState<Set<string>>(() => new Set())
+  const have: Have = { has, toggle: (d) => setHas((prev) => { const n = new Set(prev); if (n.has(d)) n.delete(d); else n.add(d); return n }) }
   return (
     <div className="plan">
       <div className="plan-toolbar no-print">
@@ -101,10 +116,10 @@ export default function Plan({ screening, today, onBack }: { screening: Screenin
           <strong>{t('ui.appName')}</strong> <span className="muted">· {t('ui.appPlace')}</span>
         </div>
         <div className={both ? 'plan-cols' : ''}>
-          <div lang={t.lang}><PlanBody s={screening} today={today} /></div>
+          <div lang={t.lang}><PlanBody s={screening} today={today} have={have} side="a" /></div>
           {both && (
             <I18n.Provider value={makeT('en')}>
-              <div lang="en"><PlanBody s={screening} today={today} /></div>
+              <div lang="en"><PlanBody s={screening} today={today} have={have} side="b" /></div>
             </I18n.Provider>
           )}
         </div>

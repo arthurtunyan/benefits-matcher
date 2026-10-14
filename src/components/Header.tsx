@@ -1,4 +1,4 @@
-import { LogOut } from 'lucide-react'
+import { LogOut, Moon, Sun } from 'lucide-react'
 import { LANGS, useT, type Lang } from '../i18n'
 import type { View } from '../App'
 
@@ -26,8 +26,9 @@ const STEPS: { view: View; key: string }[] = [
   { view: 'plan', key: 'ui.stepPlan' },
 ]
 
-export default function Header({ view, setView, setLang, canSee }: {
+export default function Header({ view, setView, setLang, canSee, dark, toggleDark }: {
   view: View; setView: (v: View) => void; setLang: (l: Lang) => void; canSee: boolean
+  dark: boolean; toggleDark: () => void
 }) {
   const t = useT()
   return (
@@ -49,6 +50,10 @@ export default function Header({ view, setView, setLang, canSee }: {
               </button>
             ))}
           </div>
+          <button className="theme-btn" onClick={toggleDark} aria-pressed={dark} aria-label={t('ui.darkMode')}
+            title={dark ? t('ui.lightMode') : t('ui.darkMode')}>
+            {dark ? <Sun size={20} aria-hidden="true" /> : <Moon size={20} aria-hidden="true" />}
+          </button>
           <button className="exit" onClick={quickExit} aria-label={t('ui.quickExit')}>
             <LogOut size={18} aria-hidden="true" />
             <span>{t('ui.quickExit')}</span>

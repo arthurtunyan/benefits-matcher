@@ -1,8 +1,9 @@
-import { ArrowLeft, Baby, CalendarClock, Home, Info, Printer, ShieldCheck, UserRound } from 'lucide-react'
+import { ArrowLeft, CalendarClock, Info, Printer, ShieldCheck } from 'lucide-react'
 import { useT } from '../i18n'
 import type { Outcome, Person, ProgramResult, Screening, Status } from '../engine'
 import { MAX_DATE, MIN_DATE, personLabel, todayISO } from '../App'
-import { StatusSelect } from './HouseholdForm'
+import { Face, StatusSelect, initial } from './HouseholdForm'
+import House from './House'
 import ProgramCard from './ProgramCard'
 import Help from './Help'
 import { help } from '../data'
@@ -68,6 +69,20 @@ export default function Results({ screening: s, asOf, setAsOf, updatePerson, onB
         <p className="privacy-chip"><ShieldCheck size={16} aria-hidden="true" /> {t('ui.privacyChip')}</p>
       </div>
 
+      {people.length > 0 && (
+        <div className="results-house">
+          <House windows={people.map(({ person: p, results }, i) => {
+            const name = personLabel(p, i, t)
+            const summary = t('ui.summary', { likely: count(results, 'likely'), possibly: count(results, 'possibly') })
+            return {
+              id: p.id, letter: initial(p, i, t), caption: name, badge: String(count(results, 'likely')), done: true,
+              label: `${name}: ${summary}`,
+              onClick: () => document.getElementById(`pr-${p.id}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' }),
+            }
+          })} />
+        </div>
+      )}
+
       <section className="asof card" aria-labelledby="asof-label">
         <div className="asof-row">
           <CalendarClock size={22} aria-hidden="true" className="asof-icon" />
@@ -89,14 +104,11 @@ export default function Results({ screening: s, asOf, setAsOf, updatePerson, onB
       {people.length === 0 && <p>{t('ui.noPeople')}</p>}
 
       {people.map(({ person: p, results }, i) => {
-        const child = p.age !== undefined && p.age < 18
         const name = personLabel(p, i, t)
         return (
           <section key={p.id} className="person-results card" aria-labelledby={`pr-${p.id}`}>
             <header className="person-results-head">
-              <span className={`avatar ${child ? 'avatar-child' : ''}`} aria-hidden="true">
-                {child ? <Baby size={22} /> : <UserRound size={22} />}
-              </span>
+              <Face p={p} index={i} />
               <div className="person-results-name">
                 <h2 id={`pr-${p.id}`}>{name}{p.age !== undefined && <span className="age"> · {p.age}</span>}</h2>
                 <p className="summary" aria-live="polite">
@@ -116,7 +128,6 @@ export default function Results({ screening: s, asOf, setAsOf, updatePerson, onB
       {s.household.length > 0 && (
         <section className="person-results card" aria-labelledby="pr-household">
           <header className="person-results-head">
-            <span className="avatar avatar-home" aria-hidden="true"><Home size={22} /></span>
             <div className="person-results-name">
               <h2 id="pr-household">{t('ui.householdGroup')}</h2>
               <p className="summary">{t('ui.summary', { likely: count(s.household, 'likely'), possibly: count(s.household, 'possibly') })}</p>
@@ -128,7 +139,7 @@ export default function Results({ screening: s, asOf, setAsOf, updatePerson, onB
       )}
 
       <section className="card good-to-know">
-        <h2 className="card-title"><Info size={20} aria-hidden="true" /> {t('ui.goodToKnow')}</h2>
+        <h2 className="card-title">{t('ui.goodToKnow')}</h2>
         <ul>
           {anyKid && <li>{t('ui.schoolMeals')}</li>}
           {anyNonCitizen && (

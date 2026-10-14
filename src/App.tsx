@@ -44,6 +44,10 @@ export default function App() {
   const [view, setView] = useState<View>(demo ? 'results' : 'start')
   const [household, setHousehold] = useState<Household>(demo ? exampleHousehold : emptyHousehold)
   const [asOf, setAsOf] = useState(todayISO)
+  // Light or dark. Starts from the phone's setting; the button in the top bar flips it.
+  // Kept in memory only, like everything else, so nothing is saved on the device.
+  const [dark, setDark] = useState(() => window.matchMedia('(prefers-color-scheme: dark)').matches)
+  useEffect(() => { document.documentElement.dataset.theme = dark ? 'dark' : 'light' }, [dark])
   const t = useMemo(() => makeT(lang), [lang])
   const screening = useMemo(() => screen(household, programs, tables, asOf), [household, asOf])
 
@@ -64,7 +68,8 @@ export default function App() {
   return (
     <I18n.Provider value={t}>
       <a className="skip" href="#main">{t('ui.skip')}</a>
-      <Header view={view} setView={setView} setLang={setLang} canSee={household.people.length > 0} />
+      <Header view={view} setView={setView} setLang={setLang} canSee={household.people.length > 0}
+        dark={dark} toggleDark={() => setDark((d) => !d)} />
       <main id="main" className={`view view-${view}`}>
         {view === 'start' && (
           <Start setLang={setLang} onStart={() => setView('household')}

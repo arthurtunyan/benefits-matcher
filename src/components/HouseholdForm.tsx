@@ -1,13 +1,16 @@
-import { ArrowRight, Baby, MapPin, Plus, Trash2, UserRound, Wallet } from 'lucide-react'
-import { useT } from '../i18n'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
+import { Check, Flame, Mail, MapPin, ShoppingBasket, Zap } from 'lucide-react'
+import { useT, type T } from '../i18n'
 import { inLACounty, type Household, type Person, type Status, type Utility } from '../engine'
 import { zips } from '../data'
 import { newPerson, personLabel } from '../App'
+import House, { type HousePart, type HouseWindow } from './House'
 
 export const STATUSES: Status[] = ['citizen', 'lpr5', 'lpr', 'humanitarian', 'otherLawful', 'undocumented']
 const ELECTRIC: Utility[] = ['ladwp', 'sce', 'bwp', 'gwp', 'pwp', 'other', 'unknown']
 const GAS: Utility[] = ['socalgas', 'other', 'unknown']
 const BENEFITS = ['calfresh', 'calworks', 'ssi', 'wic'] as const
+const FLAGS = ['pregnant', 'recentBirth', 'disabled', 'hasMediCal'] as const
 
 const num = (s: string) => (s.trim() === '' || isNaN(Number(s)) ? undefined : Number(s))
 
@@ -21,70 +24,142 @@ export function StatusSelect({ value, onChange, id }: { value?: Status; onChange
   )
 }
 
-function PersonCard({ p, index, update, remove, canRemove }: {
-  p: Person; index: number; update: (p: Person) => void; remove: () => void; canRemove: boolean
-}) {
+// First letter of a person's name (or "You" / "Person 2") for their window.
+export const initial = (p: Person, index: number, t: T) =>
+  personLabel(p, index, t).trim().charAt(0).toUpperCase() || String(index + 1)
+
+// A person shown as a round face with their first initial.
+export function Face({ p, index }: { p: Person; index: number }) {
   const t = useT()
-  const id = (f: string) => `p${p.id}-${f}`
-  const child = p.age !== undefined && p.age < 18
-  const canBePregnant = p.age === undefined || (p.age >= 10 && p.age <= 55)
-  const flags = (['pregnant', 'recentBirth', 'disabled', 'hasMediCal'] as const).filter(
-    (f) => canBePregnant || (f !== 'pregnant' && f !== 'recentBirth'),
-  )
-  const label = personLabel(p, index, t)
+  return <span className="face" aria-hidden="true">{initial(p, index, t)}</span>
+}
+
+// A big answer button. Single-choice tiles are radios; multi-choice tiles are checkboxes.
+function Tile({ selected, onClick, children, role = 'radio' }: {
+  selected: boolean; onClick: () => void; children: ReactNode; role?: 'radio' | 'checkbox'
+}) {
   return (
-    <li className="card person-card">
-      <div className="person-head">
-        <span className={`avatar ${child ? 'avatar-child' : ''}`} aria-hidden="true">
-          {child ? <Baby size={20} /> : <UserRound size={20} />}
-        </span>
-        <h3>{label}</h3>
-        {canRemove && (
-          <button className="icon-btn" onClick={remove} aria-label={t('ui.removePerson', { name: label })}>
-            <Trash2 size={18} aria-hidden="true" />
-          </button>
-        )}
-      </div>
-      <div className="grid-2">
-        <div className="field">
-          <label htmlFor={id('name')}>{t('ui.personName')}</label>
-          <input id={id('name')} value={p.name} placeholder={t('ui.personNamePlaceholder')} autoComplete="off"
-            onChange={(e) => update({ ...p, name: e.target.value })} />
-        </div>
-        <div className="field">
-          <label htmlFor={id('age')}>{t('ui.age')}</label>
-          <input id={id('age')} type="number" inputMode="numeric" min={0} max={120} value={p.age ?? ''}
-            aria-describedby={id('age-help')}
-            onChange={(e) => update({ ...p, age: num(e.target.value) })} />
-          <p className="help" id={id('age-help')}>{t('ui.ageHelp')}</p>
-        </div>
-      </div>
-      <div className="field">
-        <label htmlFor={id('status')}>{t('ui.status')}</label>
-        <StatusSelect id={id('status')} value={p.status} onChange={(status) => update({ ...p, status })} />
-        <p className="help">{t('ui.statusHelp')}</p>
-      </div>
-      <fieldset className="chips">
-        <legend>{t('ui.aboutPerson')}</legend>
-        {flags.map((f) => (
-          <label key={f} className="chip">
-            <input type="checkbox" checked={!!p[f]} onChange={(e) => update({ ...p, [f]: e.target.checked })} />
-            <span>{t(`flags.${f}`)}</span>
-          </label>
-        ))}
-      </fieldset>
-    </li>
+    <button type="button" role={role} aria-checked={selected} className="tile" onClick={onClick}>
+      <span>{children}</span>
+      <span className="tile-check" aria-hidden="true">{selected && <Check size={16} strokeWidth={3.5} />}</span>
+    </button>
   )
 }
+
+// Marks "we don't have gas at home" (counts as 'other' for the rules).
+const NO_GAS = '__none__'
+// Short name: "LADWP (Los Angeles Dept. of Water and Power)" shows as "LADWP".
+const shortUtility = (u: Utility, other: string | undefined, t: T) =>
+  u === 'other' && other?.trim() && other !== NO_GAS ? other.trim() : t(`utility.${u}`).replace(/\s*\(.*\)$/, '')
+
+// Opens below the answer tiles, so bring it into view on small screens.
+function useScrollIntoView() {
+  const ref = useRef<HTMLDivElement>(null)
+  useEffect(() => { ref.current?.scrollIntoView({ block: 'nearest', behavior: 'smooth' }) }, [])
+  return ref
+}
+
+// "Not sure" helper for the electric bill: guess from the ZIP, or ask which city.
+function ElectricHelper({ zip, pick }: { zip?: string; pick: (u: Utility) => void }) {
+  const t = useT()
+  const ref = useScrollIntoView()
+  const [guess, setGuess] = useState<Utility | null>(null)
+  const info = zip ? zips[zip] : undefined
+  const fromZip = info?.electric as Utility | undefined
+  const cities: [string, Utility | null][] = [
+    ['cityLA', 'ladwp'], ['cityBurbank', 'bwp'], ['cityGlendale', 'gwp'], ['cityPasadena', 'pwp'],
+    ['cityOther', 'sce'], ['cityDontKnow', null],
+  ]
+  return (
+    <div className="helper" role="group" aria-labelledby="helper-title" ref={ref}>
+      <p id="helper-title" className="helper-title">{t('ui.helpTitle')}</p>
+      <p className="help">{t('ui.helpBill')}</p>
+      {fromZip && info ? (
+        <div className="guess">
+          <p>{t('ui.guessFromZip', { city: info.city, name: t(`utility.${fromZip}`) })}</p>
+          <button type="button" className="btn btn-primary btn-small" onClick={() => pick(fromZip)}>{t('ui.useThis')}</button>
+        </div>
+      ) : (
+        <>
+          <p className="helper-q">{t('ui.cityQ')}</p>
+          <div className="tiles tiles-compact" role="radiogroup" aria-label={t('ui.cityQ')}>
+            {cities.map(([key, u]) => (
+              <Tile key={key} selected={guess === u && u !== null} onClick={() => (u ? setGuess(u) : pick('unknown'))}>{t(`ui.${key}`)}</Tile>
+            ))}
+          </div>
+          {guess && (
+            <div className="guess" role="status">
+              <p>{t('ui.guess', { name: t(`utility.${guess}`) })}</p>
+              <button type="button" className="btn btn-primary btn-small" onClick={() => pick(guess)}>{t('ui.useThis')}</button>
+            </div>
+          )}
+        </>
+      )}
+    </div>
+  )
+}
+
+// "Not sure" helper for the gas bill: SoCalGas serves LA County except Long Beach and Signal Hill.
+function GasHelper({ pick }: { pick: (u: Utility, other?: string) => void }) {
+  const t = useT()
+  const ref = useScrollIntoView()
+  return (
+    <div className="helper" role="group" aria-labelledby="helper-title" ref={ref}>
+      <p id="helper-title" className="helper-title">{t('ui.helpTitle')}</p>
+      <p className="help">{t('ui.helpBill')}</p>
+      <p className="helper-q">{t('ui.longBeachQ')}</p>
+      <div className="tiles tiles-compact" role="radiogroup" aria-label={t('ui.longBeachQ')}>
+        <Tile selected={false} onClick={() => pick('other', 'Long Beach Utilities')}>{t('ui.yes')}</Tile>
+        <Tile selected={false} onClick={() => pick('socalgas')}>{t('ui.no')}</Tile>
+        <Tile selected={false} onClick={() => pick('other', NO_GAS)}>{t('ui.noGas')}</Tile>
+      </div>
+    </div>
+  )
+}
+
+// Parts of the house, in the order "Next" walks through them. People are "p:<id>".
+type Part = 'zip' | 'electric' | 'gas' | 'income' | 'benefits' | `p:${string}`
 
 export default function HouseholdForm({ household: h, setHousehold, onDone }: {
   household: Household; setHousehold: (h: Household) => void; onDone: () => void
 }) {
   const t = useT()
   const set = (patch: Partial<Household>) => setHousehold({ ...h, ...patch })
+  const order: Part[] = ['zip', 'electric', 'gas', 'income', 'benefits', ...h.people.map((p) => `p:${p.id}` as Part)]
+  const [part, setPart] = useState<Part>('zip')
+  const [left, setLeft] = useState<Set<Part>>(() => new Set()) // parts the user has moved past
+  const [helper, setHelper] = useState(false)
+  const current: Part = order.includes(part) ? part : 'zip'
+  const at = order.indexOf(current)
+  const last = at === order.length - 1
+  const heading = useRef<HTMLHeadingElement>(null)
+  const panel = useRef<HTMLDivElement>(null)
+  const moved = useRef(false)
+  const advance = useRef<number | undefined>(undefined)
+
+  // A new part: screen readers hear the question; on phones the question scrolls into view.
+  useEffect(() => {
+    setHelper(false)
+    if (!moved.current) return
+    heading.current?.focus({ preventScroll: true })
+    // Phones: bring the question into view. Wide screens: everything fits, so go back to the top.
+    if (window.innerWidth < 900) panel.current?.scrollIntoView({ block: 'start', behavior: 'smooth' })
+    else window.scrollTo({ top: 0, behavior: 'smooth' })
+  }, [current])
+  useEffect(() => () => window.clearTimeout(advance.current), [])
+
+  const go = (p: Part) => {
+    window.clearTimeout(advance.current)
+    moved.current = true
+    setLeft((s) => new Set(s).add(current))
+    setPart(p)
+  }
+  const next = () => (last ? onDone() : go(order[at + 1]))
+  // Tapping a single-choice answer moves on by itself, after a beat so the check mark shows.
+  const nextSoon = () => { window.clearTimeout(advance.current); advance.current = window.setTimeout(next, 280) }
+
   const zipInfo = h.zip ? zips[h.zip] : undefined
   const outside = inLACounty(h.zip) === false
-
   function setZip(zip: string) {
     const z = zip.replace(/\D/g, '').slice(0, 5)
     const info = zips[z]
@@ -95,87 +170,195 @@ export default function HouseholdForm({ household: h, setHousehold, onDone }: {
       ...(z.length === 5 && inLACounty(z) ? { gas: z.startsWith('908') ? 'other' : 'socalgas' } : {}),
     })
   }
+  const updatePerson = (p: Person) => set({ people: h.people.map((x) => (x.id === p.id ? p : x)) })
+  // Removing the person on screen moves to the person before them (or the first one).
+  const removePerson = (id: string) => {
+    const n = h.people.findIndex((x) => x.id === id)
+    const rest = h.people.filter((x) => x.id !== id)
+    set({ people: rest })
+    if (current === `p:${id}`) setPart(`p:${rest[Math.max(0, n - 1)].id}`)
+  }
+  const addPerson = () => { const np = newPerson(); set({ people: [...h.people, np] }); go(`p:${np.id}`) }
 
-  const updatePerson = (i: number) => (p: Person) => set({ people: h.people.map((x, j) => (j === i ? p : x)) })
+  // ---- What the house shows ----
+  const gotBenefits = BENEFITS.filter((b) => h.benefits[b])
+  const answered: Record<string, boolean> = {
+    zip: !!h.zip, electric: h.electric !== 'unknown', gas: h.gas !== 'unknown',
+    income: h.monthlyIncome !== undefined, benefits: gotBenefits.length > 0,
+  }
+  const done = (p: Part) => (p.startsWith('p:') ? h.people.find((x) => `p:${x.id}` === p)?.age !== undefined : answered[p]) || (left.has(p) && p !== current)
+  const spot = (id: Part, x: number, y: number, icon: ReactNode, label: string, value?: string): HousePart =>
+    ({ id, x, y, icon, label, value, done: done(id), active: current === id, onClick: () => go(id) })
+  const parts: HousePart[] = [
+    spot('zip', 7.5, 57, <MapPin size={20} />, t('ui.stepZip'), h.zip),
+    spot('electric', 91.5, 22, <Zap size={20} />, t('ui.stepElectric'), answered.electric ? shortUtility(h.electric, h.electricOther, t) : undefined),
+    spot('gas', 26.75, 80, <Flame size={20} />, t('ui.stepGas'), answered.gas ? (h.gasOther === NO_GAS ? t('ui.noGas') : shortUtility(h.gas, h.gasOther, t)) : undefined),
+    spot('income', 85.5, 75, <Mail size={20} />, t('ui.stepIncome'), answered.income ? t.money(h.monthlyIncome!) : undefined),
+    spot('benefits', 62, 82, <ShoppingBasket size={20} />, t('ui.stepBenefits'), gotBenefits.length ? gotBenefits.map((b) => t(`benefits.${b}`).replace(/\s*\(.*\)$/, '')).join(', ') : undefined),
+  ]
+  const windows: HouseWindow[] = h.people.map((p, n) => {
+    const name = personLabel(p, n, t)
+    return {
+      id: p.id, letter: initial(p, n, t), caption: p.age !== undefined ? `${name}, ${p.age}` : name,
+      label: p.age !== undefined ? `${name}, ${t('ui.age')} ${p.age}` : name,
+      done: done(`p:${p.id}`), active: current === `p:${p.id}`, onClick: () => go(`p:${p.id}`),
+      ...(h.people.length > 1 ? { onRemove: () => removePerson(p.id), removeLabel: t('ui.removePerson', { name }) } : {}),
+    }
+  })
+  const doneCount = order.filter(done).length
 
-  return (
-    <form className="household" onSubmit={(e) => { e.preventDefault(); onDone() }}>
-      <h1 tabIndex={-1} className="view-heading">{t('ui.householdTitle')}</h1>
-      <p className="lead">{t('ui.householdIntro')}</p>
+  // ---- The question for the chosen part ----
+  let partName: string
+  let title: string
+  let body: ReactNode
 
-      <section className="card">
-        <h2 className="card-title"><MapPin size={20} aria-hidden="true" /> {t('ui.whereTitle')}</h2>
-        <div className="field">
-          <label htmlFor="zip">{t('ui.zip')}</label>
-          <input id="zip" className="input-zip" inputMode="numeric" autoComplete="off" value={h.zip ?? ''}
-            aria-describedby="zip-help zip-note" onChange={(e) => setZip(e.target.value)} />
-          <p className="help" id="zip-help">{t('ui.zipHelp')}</p>
-          <p id="zip-note" aria-live="polite" className={outside ? 'note-warn' : 'note-ok'}>
-            {outside ? t('ui.zipOutside') : zipInfo ? t('ui.zipArea', { city: zipInfo.city }) : ''}
-          </p>
+  if (current === 'zip') {
+    partName = t('ui.stepZip')
+    title = t('ui.qZip')
+    body = (
+      <div className="field">
+        <label htmlFor="zip" className="sr-only">{t('ui.zip')}</label>
+        <input id="zip" className="input-zip input-big" inputMode="numeric" autoComplete="off" value={h.zip ?? ''}
+          placeholder="91605" aria-describedby="zip-help zip-note" onChange={(e) => setZip(e.target.value)} />
+        <p id="zip-note" aria-live="polite" className={outside ? 'note-warn' : 'note-ok'}>
+          {outside ? t('ui.zipOutside') : zipInfo ? t('ui.zipArea', { city: zipInfo.city }) : ''}
+        </p>
+        <p className="help" id="zip-help">{t('ui.zipHelp')}</p>
+      </div>
+    )
+  } else if (current === 'electric' || current === 'gas') {
+    const kind = current
+    const options = kind === 'electric' ? ELECTRIC : GAS
+    const value = h[kind]
+    const otherKey = kind === 'electric' ? 'electricOther' : 'gasOther'
+    const choose = (u: Utility, other?: string) => {
+      set({ [kind]: u, ...(other !== undefined ? { [otherKey]: other } : u !== 'other' ? { [otherKey]: undefined } : {}) })
+      if (u === 'unknown') { setHelper(true); return }
+      setHelper(false)
+      if (u !== 'other' || other !== undefined) nextSoon()
+    }
+    partName = t(kind === 'electric' ? 'ui.stepElectric' : 'ui.stepGas')
+    title = t(kind === 'electric' ? 'ui.electric' : 'ui.gas')
+    body = (
+      <>
+        <div className="tiles" role="radiogroup" aria-label={title}>
+          {options.map((u) => (
+            <Tile key={u} selected={value === u} onClick={() => choose(u)}>{t(`utility.${u}`)}</Tile>
+          ))}
         </div>
-        <div className="grid-2">
-          <div className="field">
-            <label htmlFor="electric">{t('ui.electric')}</label>
-            <select id="electric" value={h.electric} onChange={(e) => set({ electric: e.target.value as Utility })}>
-              {ELECTRIC.map((u) => <option key={u} value={u}>{t(`utility.${u}`)}</option>)}
-            </select>
+        {value === 'other' && !helper && h[otherKey] !== NO_GAS && (
+          <div className="field other-field">
+            <label htmlFor={`${kind}-other`}>{t('ui.otherName')}</label>
+            <input id={`${kind}-other`} autoComplete="off" placeholder={t('ui.otherPlaceholder')} value={h[otherKey] ?? ''}
+              onChange={(e) => set({ [otherKey]: e.target.value })} />
           </div>
-          <div className="field">
-            <label htmlFor="gas">{t('ui.gas')}</label>
-            <select id="gas" value={h.gas} onChange={(e) => set({ gas: e.target.value as Utility })}>
-              {GAS.map((u) => <option key={u} value={u}>{t(`utility.${u}`)}</option>)}
-            </select>
-          </div>
-        </div>
-      </section>
-
-      <section className="card">
-        <h2 className="card-title"><Wallet size={20} aria-hidden="true" /> {t('ui.moneyTitle')}</h2>
+        )}
+        {helper && value === 'unknown' && (kind === 'electric'
+          ? <ElectricHelper zip={h.zip} pick={(u) => (u === 'unknown' ? (setHelper(false), nextSoon()) : choose(u))} />
+          : <GasHelper pick={(u, other) => choose(u, other)} />)}
+      </>
+    )
+  } else if (current === 'income') {
+    partName = t('ui.stepIncome')
+    title = t('ui.income')
+    body = (
+      <>
         <div className="field">
-          <label htmlFor="income">{t('ui.income')}</label>
+          <label htmlFor="income" className="sr-only">{t('ui.income')}</label>
           <div className="money-input">
             <span aria-hidden="true">$</span>
-            <input id="income" inputMode="decimal" autoComplete="off" placeholder={t('ui.incomePlaceholder')}
+            <input id="income" className="input-big" inputMode="decimal" autoComplete="off" placeholder={t('ui.incomePlaceholder')}
               value={h.monthlyIncome ?? ''} aria-describedby="income-help"
               onChange={(e) => set({ monthlyIncome: num(e.target.value.replace(/[$,\s]/g, '')) })} />
           </div>
           <p className="help" id="income-help">{t('ui.incomeHelp')}</p>
         </div>
-        <label className="chip">
-          <input type="checkbox" checked={!!h.hasEarnedIncome} onChange={(e) => set({ hasEarnedIncome: e.target.checked })} />
-          <span>{t('ui.earned')}</span>
-        </label>
-        <fieldset className="chips">
-          <legend>{t('ui.benefitsQ')}</legend>
-          {BENEFITS.map((b) => (
-            <label key={b} className="chip">
-              <input type="checkbox" checked={!!h.benefits[b]}
-                onChange={(e) => set({ benefits: { ...h.benefits, [b]: e.target.checked } })} />
-              <span>{t(`benefits.${b}`)}</span>
-            </label>
+        <div className="tiles">
+          <Tile role="checkbox" selected={!!h.hasEarnedIncome} onClick={() => set({ hasEarnedIncome: !h.hasEarnedIncome })}>{t('ui.earned')}</Tile>
+        </div>
+      </>
+    )
+  } else if (current === 'benefits') {
+    partName = t('ui.stepBenefits')
+    title = t('ui.benefitsQ')
+    body = (
+      <div className="tiles" role="group" aria-label={title}>
+        {BENEFITS.map((b) => (
+          <Tile key={b} role="checkbox" selected={!!h.benefits[b]}
+            onClick={() => set({ benefits: { ...h.benefits, [b]: !h.benefits[b] } })}>{t(`benefits.${b}`)}</Tile>
+        ))}
+      </div>
+    )
+  } else {
+    const n = h.people.findIndex((x) => `p:${x.id}` === current)
+    const p = h.people[n]
+    const label = personLabel(p, n, t)
+    const canBePregnant = p.age === undefined || (p.age >= 10 && p.age <= 55)
+    const flags = FLAGS.filter((f) => canBePregnant || (f !== 'pregnant' && f !== 'recentBirth'))
+    partName = t('ui.peopleTitle')
+    title = label
+    body = (
+      <>
+        <div className="person-editor-row">
+          <div className="field">
+            <label htmlFor={`p${p.id}-name`}>{t('ui.personName')}</label>
+            <input id={`p${p.id}-name`} value={p.name} placeholder={t('ui.personNamePlaceholder')} autoComplete="off"
+              onChange={(e) => updatePerson({ ...p, name: e.target.value })} />
+          </div>
+          <div className="field field-age">
+            <label htmlFor={`p${p.id}-age`}>{t('ui.age')}</label>
+            <input id={`p${p.id}-age`} type="number" inputMode="numeric" min={0} max={120} value={p.age ?? ''}
+              aria-describedby="age-help" onChange={(e) => updatePerson({ ...p, age: num(e.target.value) })} />
+          </div>
+        </div>
+        <p className="help" id="age-help">{t('ui.ageHelp')}</p>
+        <p className="question-sub" id="status-q">{t('ui.status')}</p>
+        <div className="tiles tiles-compact" role="radiogroup" aria-labelledby="status-q">
+          <Tile selected={p.status === undefined} onClick={() => updatePerson({ ...p, status: undefined })}>{t('status.preferNot')}</Tile>
+          {STATUSES.map((s) => (
+            <Tile key={s} selected={p.status === s} onClick={() => updatePerson({ ...p, status: s })}>{t(`status.${s}`)}</Tile>
           ))}
-        </fieldset>
-      </section>
+        </div>
+        <p className="help">{t('ui.statusHelp')}</p>
+        <p className="question-sub" id="flags-q">{t('ui.aboutPerson')}</p>
+        <div className="tiles tiles-compact" role="group" aria-labelledby="flags-q">
+          {flags.map((f) => (
+            <Tile key={f} role="checkbox" selected={!!p[f]} onClick={() => updatePerson({ ...p, [f]: !p[f] })}>{t(`flags.${f}`)}</Tile>
+          ))}
+        </div>
+      </>
+    )
+  }
 
-      <section>
-        <h2 className="section-title">{t('ui.peopleTitle')}</h2>
-        <p className="help">{t('ui.peopleHelp')}</p>
-        <ul className="people">
-          {h.people.map((p, i) => (
-            <PersonCard key={p.id} p={p} index={i} update={updatePerson(i)} canRemove={h.people.length > 1}
-              remove={() => set({ people: h.people.filter((x) => x.id !== p.id) })} />
-          ))}
-        </ul>
-        <button type="button" className="btn btn-soft" onClick={() => set({ people: [...h.people, newPerson()] })}>
-          <Plus size={18} aria-hidden="true" /> {t('ui.addPerson')}
-        </button>
-      </section>
+  return (
+    <form className="household home" onSubmit={(e) => { e.preventDefault(); next() }}>
+      <div className="home-intro">
+        <h1 tabIndex={-1} className="view-heading page-title">{t('ui.householdTitle')}</h1>
+        <p className="page-lead">{t('ui.tapHouse')} {t('ui.householdIntro')}</p>
+      </div>
+
+      <div className="home-grid">
+        <div className="home-house">
+          <House parts={parts} windows={windows} onAdd={addPerson} addLabel={t('ui.addPerson')} />
+          <p className="home-hint">{t('ui.peopleHelp')}</p>
+        </div>
+
+        <div className="home-panel bubble" ref={panel}>
+          <div className="panel-top">
+            <span className="panel-part">{partName}</span>
+            <span className="panel-count">{t('ui.partsDone', { n: doneCount, total: order.length })}</span>
+          </div>
+          <div className="panel-dots" aria-hidden="true">
+            {order.map((p) => <span key={p} className={`pdot ${done(p) ? 'pdot-done' : ''} ${p === current ? 'pdot-now' : ''}`} />)}
+          </div>
+          <h2 tabIndex={-1} ref={heading} className="question" key={`q-${current}`}>{title}</h2>
+          <div className="answer" key={`a-${current}`}>{body}</div>
+        </div>
+      </div>
 
       <div className="action-bar">
-        <button type="submit" className="btn btn-primary btn-lg">
-          {t('ui.seeResults')} <ArrowRight size={20} aria-hidden="true" />
-        </button>
+        {!last && <button type="button" className="btn btn-ghost" onClick={onDone}>{t('ui.seeResults')}</button>}
+        <button type="submit" className="btn btn-primary btn-lg">{last ? t('ui.seeResults') : t('ui.next')}</button>
       </div>
     </form>
   )

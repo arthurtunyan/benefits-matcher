@@ -19,6 +19,8 @@ export interface Household {
   zip?: string
   electric: Utility
   gas: Utility
+  electricOther?: string // company name typed in when electric is 'other' (display only)
+  gasOther?: string // same for gas
   monthlyIncome?: number // gross, whole household; undefined = skipped
   hasEarnedIncome?: boolean
   benefits: { calfresh?: boolean; calworks?: boolean; ssi?: boolean; wic?: boolean }
