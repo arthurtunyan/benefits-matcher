@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react'
-import { ArrowLeft, Check, DoorOpen, Flame, Mail, MapPin, ShoppingBasket, Zap } from 'lucide-react'
+import { ArrowLeft, Check, DoorOpen, Flame, DollarSign, MapPin, ShoppingBasket, Zap } from 'lucide-react'
 import { useT, type T } from '../i18n'
 import { inLACounty, type Household, type Person, type Status, type Utility } from '../engine'
 import { zips } from '../data'
@@ -235,7 +235,7 @@ export default function HouseholdForm({ household: h, setHousehold, onDone, unlo
       fill: peopleFill, done: h.people.every((p) => done(`p:${p.id}`)), active: false, onClick: () => go(`p:${h.people[0].id}`),
     },
     spot('benefits', 64, 82, <ShoppingBasket size={20} />, t('ui.stepBenefits'), gotBenefits.length ? gotBenefits.map((b) => t(`benefits.${b}`).replace(/\s*\(.*\)$/, '')).join(', ') : undefined),
-    spot('income', 84.5, 61, <Mail size={20} />, t('ui.stepIncome'), h.monthlyIncome !== undefined ? t.money(h.monthlyIncome) : undefined),
+    spot('income', 84.5, 61, <DollarSign size={20} />, t('ui.stepIncome'), h.monthlyIncome !== undefined ? t.money(h.monthlyIncome) : undefined),
     spot('electric', 87.5, 22, <Zap size={20} />, t('ui.stepElectric'), fill('electric') ? shortUtility(h.electric, h.electricOther, t) : undefined),
   ]
   const personColor = (n: number) => PERSON_COLORS[n % PERSON_COLORS.length]

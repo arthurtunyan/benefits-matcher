@@ -1,5 +1,5 @@
 import { LANGS, useT, type Lang } from '../i18n'
-import { DoorOpen, Flame, Mail, MapPin, ShoppingBasket, Zap } from 'lucide-react'
+import { DoorOpen, Flame, DollarSign, MapPin, ShoppingBasket, Zap } from 'lucide-react'
 import { programs } from '../data'
 import House from './House'
 
@@ -36,7 +36,7 @@ export default function Start({ onStart, onExample, setLang }: {
             { id: 'gas', x: 26.75, y: 80, icon: <Flame size={20} />, color: 'var(--c-gas)', label: '', fill: 1, done: true },
             { id: 'home', x: 47.5, y: 80, icon: <DoorOpen size={20} />, color: 'var(--c-home)', label: '', fill: 0, done: false },
             { id: 'benefits', x: 64, y: 82, icon: <ShoppingBasket size={20} />, color: 'var(--c-benefits)', label: '', fill: 0.5, done: false },
-            { id: 'income', x: 84.5, y: 61, icon: <Mail size={20} />, color: 'var(--c-income)', label: '', fill: 0, done: false },
+            { id: 'income', x: 84.5, y: 61, icon: <DollarSign size={20} />, color: 'var(--c-income)', label: '', fill: 0, done: false },
             { id: 'electric', x: 87.5, y: 22, icon: <Zap size={20} />, color: 'var(--c-electric)', label: '', fill: 0, done: false },
           ]} windows={[{ id: 'a', letter: '', label: '' }, { id: 'b', letter: '', label: '' }, { id: 'c', letter: '', label: '' }]} />
         </div>
