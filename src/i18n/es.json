@@ -127,6 +127,8 @@
     "lightMode": "Modo claro",
     "tapHouse": "Toque cualquier parte de la casa para responder.",
     "partsDone": "{n} de {total} listos",
+    "stepOutside": "Salir de la casa",
+    "finishFirst": "Primero responda cada parte de la casa. Puede saltar una pregunta con Siguiente.",
     "stepZip": "Código postal",
     "stepElectric": "Factura de luz",
     "stepGas": "Factura de gas",

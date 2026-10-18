@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { I18n, LANGS, makeT, type Lang, type T } from './i18n'
 import { screen, type Household, type Person } from './engine'
 import { lastFullCheck, programs, tables } from './data'
@@ -44,6 +44,9 @@ export default function App() {
   const [view, setView] = useState<View>(demo ? 'results' : 'start')
   const [household, setHousehold] = useState<Household>(demo ? exampleHousehold : emptyHousehold)
   const [asOf, setAsOf] = useState(todayISO)
+  // Results unlock once every part of the house is done (or right away for the example family).
+  const [formDone, setFormDone] = useState(demo)
+  const markDone = useCallback(() => setFormDone(true), [])
   // Light or dark. Starts from the phone's setting; the button in the top bar flips it.
   // Kept in memory only, like everything else, so nothing is saved on the device.
   const [dark, setDark] = useState(() => window.matchMedia('(prefers-color-scheme: dark)').matches)
@@ -68,14 +71,15 @@ export default function App() {
   return (
     <I18n.Provider value={t}>
       <a className="skip" href="#main">{t('ui.skip')}</a>
-      <Header view={view} setView={setView} setLang={setLang} canSee={household.people.length > 0}
+      <Header view={view} setView={setView} setLang={setLang} canSee={formDone && household.people.length > 0}
         dark={dark} toggleDark={() => setDark((d) => !d)} />
       <main id="main" className={`view view-${view}`}>
         {view === 'start' && (
           <Start setLang={setLang} onStart={() => setView('household')}
-            onExample={() => { setHousehold(exampleHousehold()); setAsOf(todayISO()); setView('results') }} />
+            onExample={() => { setHousehold(exampleHousehold()); setAsOf(todayISO()); setFormDone(true); setView('results') }} />
         )}
-        {view === 'household' && <HouseholdForm household={household} setHousehold={setHousehold} onDone={() => setView('results')} />}
+        {view === 'household' && <HouseholdForm household={household} setHousehold={setHousehold} onDone={() => setView('results')}
+          unlocked={formDone} onComplete={markDone} />}
         {view === 'results' && (
           <Results screening={screening} asOf={asOf} setAsOf={setAsOf} updatePerson={updatePerson}
             onBack={() => setView('household')} onPlan={() => setView('plan')} />

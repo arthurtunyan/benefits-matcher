@@ -2,7 +2,7 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 // Fonts are bundled with the app (no Google Fonts request). Armenian files
 // download only when Armenian text is on screen, thanks to unicode-range.
-import '@fontsource-variable/figtree'
+import '@fontsource-variable/bricolage-grotesque'
 import '@fontsource-variable/noto-sans-armenian'
 import './styles.css'
 import App from './App'

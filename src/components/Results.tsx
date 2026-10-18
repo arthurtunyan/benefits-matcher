@@ -2,7 +2,7 @@ import { ArrowLeft, CalendarClock, Info, Printer, ShieldCheck } from 'lucide-rea
 import { useT } from '../i18n'
 import type { Outcome, Person, ProgramResult, Screening, Status } from '../engine'
 import { MAX_DATE, MIN_DATE, personLabel, todayISO } from '../App'
-import { Face, StatusSelect, initial } from './HouseholdForm'
+import { Face, PERSON_COLORS, StatusSelect, initial } from './HouseholdForm'
 import House from './House'
 import ProgramCard from './ProgramCard'
 import Help from './Help'
@@ -75,7 +75,7 @@ export default function Results({ screening: s, asOf, setAsOf, updatePerson, onB
             const name = personLabel(p, i, t)
             const summary = t('ui.summary', { likely: count(results, 'likely'), possibly: count(results, 'possibly') })
             return {
-              id: p.id, letter: initial(p, i, t), caption: name, badge: String(count(results, 'likely')), done: true,
+              id: p.id, letter: initial(p, i, t), color: PERSON_COLORS[i % PERSON_COLORS.length], fill: 1, badge: String(count(results, 'likely')),
               label: `${name}: ${summary}`,
               onClick: () => document.getElementById(`pr-${p.id}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' }),
             }

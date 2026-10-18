@@ -1,10 +1,11 @@
-import { useEffect, useRef, useState, type ReactNode } from 'react'
-import { Check, Flame, Mail, MapPin, ShoppingBasket, Zap } from 'lucide-react'
+import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react'
+import { ArrowLeft, Check, DoorOpen, Flame, Mail, MapPin, ShoppingBasket, Zap } from 'lucide-react'
 import { useT, type T } from '../i18n'
 import { inLACounty, type Household, type Person, type Status, type Utility } from '../engine'
 import { zips } from '../data'
 import { newPerson, personLabel } from '../App'
 import House, { type HousePart, type HouseWindow } from './House'
+import Room, { type RoomPerson } from './Room'
 
 export const STATUSES: Status[] = ['citizen', 'lpr5', 'lpr', 'humanitarian', 'otherLawful', 'undocumented']
 const ELECTRIC: Utility[] = ['ladwp', 'sce', 'bwp', 'gwp', 'pwp', 'other', 'unknown']
@@ -117,24 +118,38 @@ function GasHelper({ pick }: { pick: (u: Utility, other?: string) => void }) {
   )
 }
 
-// Parts of the house, in the order "Next" walks through them. People are "p:<id>".
-type Part = 'zip' | 'electric' | 'gas' | 'income' | 'benefits' | `p:${string}`
+// Parts of the house, in the order Next walks them: left to right across the house,
+// then in through the door to the people. People are "p:<id>".
+type Part = 'zip' | 'gas' | 'benefits' | 'income' | 'electric' | `p:${string}`
+const OUTSIDE: Part[] = ['zip', 'gas', 'benefits', 'income', 'electric']
+const isPerson = (p: Part) => p.startsWith('p:')
+// Each part of the house has its own color; people take turns through these.
+const PART_COLOR: Record<string, string> = {
+  zip: 'var(--c-zip)', gas: 'var(--c-gas)', benefits: 'var(--c-benefits)', income: 'var(--c-income)', electric: 'var(--c-electric)', home: 'var(--c-home)',
+}
+export const PERSON_COLORS = ['var(--c-home)', 'var(--c-zip)', 'var(--c-income)', 'var(--c-gas)', 'var(--c-benefits)', 'var(--c-electric)']
+const reducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
-export default function HouseholdForm({ household: h, setHousehold, onDone }: {
+export default function HouseholdForm({ household: h, setHousehold, onDone, unlocked, onComplete }: {
   household: Household; setHousehold: (h: Household) => void; onDone: () => void
+  unlocked: boolean // results already reached once, e.g. coming back to edit
+  onComplete: () => void
 }) {
   const t = useT()
   const set = (patch: Partial<Household>) => setHousehold({ ...h, ...patch })
-  const order: Part[] = ['zip', 'electric', 'gas', 'income', 'benefits', ...h.people.map((p) => `p:${p.id}` as Part)]
+  const order: Part[] = [...OUTSIDE, ...h.people.map((p) => `p:${p.id}` as Part)]
   const [part, setPart] = useState<Part>('zip')
   const [left, setLeft] = useState<Set<Part>>(() => new Set()) // parts the user has moved past
   const [helper, setHelper] = useState(false)
+  const [entering, setEntering] = useState(false) // the door is opening
   const current: Part = order.includes(part) ? part : 'zip'
   const at = order.indexOf(current)
   const last = at === order.length - 1
+  const inside = isPerson(current)
   const heading = useRef<HTMLHeadingElement>(null)
   const panel = useRef<HTMLDivElement>(null)
   const moved = useRef(false)
+  const wasInside = useRef(false)
   const advance = useRef<number | undefined>(undefined)
 
   // A new part: screen readers hear the question; on phones the question scrolls into view.
@@ -146,17 +161,25 @@ export default function HouseholdForm({ household: h, setHousehold, onDone }: {
     if (window.innerWidth < 900) panel.current?.scrollIntoView({ block: 'start', behavior: 'smooth' })
     else window.scrollTo({ top: 0, behavior: 'smooth' })
   }, [current])
+  useEffect(() => { wasInside.current = inside })
   useEffect(() => () => window.clearTimeout(advance.current), [])
 
   const go = (p: Part) => {
     window.clearTimeout(advance.current)
     moved.current = true
     setLeft((s) => new Set(s).add(current))
+    // Going from outside to a person: the door opens first, then we step in.
+    if (!inside && isPerson(p) && !reducedMotion()) {
+      setEntering(true)
+      advance.current = window.setTimeout(() => { setEntering(false); setPart(p) }, 520)
+      return
+    }
     setPart(p)
   }
-  const next = () => (last ? onDone() : go(order[at + 1]))
+  const back = () => at > 0 && go(order[at - 1])
+  const next = () => (last ? finish() : go(order[at + 1]))
   // Tapping a single-choice answer moves on by itself, after a beat so the check mark shows.
-  const nextSoon = () => { window.clearTimeout(advance.current); advance.current = window.setTimeout(next, 280) }
+  const nextSoon = () => { window.clearTimeout(advance.current); advance.current = window.setTimeout(next, 320) }
 
   const zipInfo = h.zip ? zips[h.zip] : undefined
   const outside = inLACounty(h.zip) === false
@@ -180,32 +203,58 @@ export default function HouseholdForm({ household: h, setHousehold, onDone }: {
   }
   const addPerson = () => { const np = newPerson(); set({ people: [...h.people, np] }); go(`p:${np.id}`) }
 
-  // ---- What the house shows ----
+  // ---- How filled in each part is (the circles fill up as you answer) ----
   const gotBenefits = BENEFITS.filter((b) => h.benefits[b])
-  const answered: Record<string, boolean> = {
-    zip: !!h.zip, electric: h.electric !== 'unknown', gas: h.gas !== 'unknown',
-    income: h.monthlyIncome !== undefined, benefits: gotBenefits.length > 0,
+  const personFill = (p: Person) => (Number(p.name.trim() !== '') + Number(p.age !== undefined)) / 2
+  const fill = (p: Part): number => {
+    if (isPerson(p)) { const x = h.people.find((y) => `p:${y.id}` === p); return x ? personFill(x) : 0 }
+    switch (p) {
+      case 'zip': return (h.zip?.length ?? 0) / 5
+      case 'gas': return h.gas !== 'unknown' ? 1 : 0
+      case 'electric': return h.electric !== 'unknown' ? 1 : 0
+      case 'benefits': return gotBenefits.length > 0 ? 1 : 0
+      case 'income': return h.monthlyIncome === undefined ? 0 : Math.min(1, String(Math.round(h.monthlyIncome)).length / 4)
+    }
+    return 0
   }
-  const done = (p: Part) => (p.startsWith('p:') ? h.people.find((x) => `p:${x.id}` === p)?.age !== undefined : answered[p]) || (left.has(p) && p !== current)
+  // Done = fully answered, or skipped by moving past it with Next.
+  const done = (p: Part) => (isPerson(p) ? h.people.find((x) => `p:${x.id}` === p)?.age !== undefined : fill(p) >= 1) || (left.has(p) && p !== current)
+  // See results unlocks once every part is done (the part on screen counts, since See results moves past it).
+  const complete = unlocked || order.every((p) => p === current || done(p))
+  useEffect(() => { if (complete && !unlocked) onComplete() }, [complete, unlocked, onComplete])
+  const finish = () => { if (complete) onDone() }
+
   const spot = (id: Part, x: number, y: number, icon: ReactNode, label: string, value?: string): HousePart =>
-    ({ id, x, y, icon, label, value, done: done(id), active: current === id, onClick: () => go(id) })
+    ({ id, x, y, icon, label, value, color: PART_COLOR[id], fill: fill(id), done: done(id), active: current === id, onClick: () => go(id) })
+  const peopleFill = h.people.reduce((sum, p) => sum + personFill(p), 0) / Math.max(1, h.people.length)
   const parts: HousePart[] = [
     spot('zip', 7.5, 57, <MapPin size={20} />, t('ui.stepZip'), h.zip),
-    spot('electric', 91.5, 22, <Zap size={20} />, t('ui.stepElectric'), answered.electric ? shortUtility(h.electric, h.electricOther, t) : undefined),
-    spot('gas', 26.75, 80, <Flame size={20} />, t('ui.stepGas'), answered.gas ? (h.gasOther === NO_GAS ? t('ui.noGas') : shortUtility(h.gas, h.gasOther, t)) : undefined),
-    spot('income', 85.5, 75, <Mail size={20} />, t('ui.stepIncome'), answered.income ? t.money(h.monthlyIncome!) : undefined),
-    spot('benefits', 62, 82, <ShoppingBasket size={20} />, t('ui.stepBenefits'), gotBenefits.length ? gotBenefits.map((b) => t(`benefits.${b}`).replace(/\s*\(.*\)$/, '')).join(', ') : undefined),
+    spot('gas', 26.75, 80, <Flame size={20} />, t('ui.stepGas'), fill('gas') ? (h.gasOther === NO_GAS ? t('ui.noGas') : shortUtility(h.gas, h.gasOther, t)) : undefined),
+    {
+      id: 'home', x: 47.5, y: 80, icon: <DoorOpen size={20} />, label: t('ui.peopleTitle'), color: PART_COLOR.home,
+      fill: peopleFill, done: h.people.every((p) => done(`p:${p.id}`)), active: false, onClick: () => go(`p:${h.people[0].id}`),
+    },
+    spot('benefits', 64, 82, <ShoppingBasket size={20} />, t('ui.stepBenefits'), gotBenefits.length ? gotBenefits.map((b) => t(`benefits.${b}`).replace(/\s*\(.*\)$/, '')).join(', ') : undefined),
+    spot('income', 85.5, 75, <Mail size={20} />, t('ui.stepIncome'), h.monthlyIncome !== undefined ? t.money(h.monthlyIncome) : undefined),
+    spot('electric', 91.5, 22, <Zap size={20} />, t('ui.stepElectric'), fill('electric') ? shortUtility(h.electric, h.electricOther, t) : undefined),
   ]
+  const personColor = (n: number) => PERSON_COLORS[n % PERSON_COLORS.length]
   const windows: HouseWindow[] = h.people.map((p, n) => {
     const name = personLabel(p, n, t)
     return {
-      id: p.id, letter: initial(p, n, t), caption: p.age !== undefined ? `${name}, ${p.age}` : name,
+      id: p.id, letter: initial(p, n, t), color: personColor(n), fill: personFill(p),
+      label: p.age !== undefined ? `${name}, ${t('ui.age')} ${p.age}` : name, onClick: () => go(`p:${p.id}`),
+    }
+  })
+  const roomPeople: RoomPerson[] = h.people.map((p, n) => {
+    const name = personLabel(p, n, t)
+    return {
+      id: p.id, letter: initial(p, n, t), name, color: personColor(n), fill: personFill(p), active: current === `p:${p.id}`,
       label: p.age !== undefined ? `${name}, ${t('ui.age')} ${p.age}` : name,
-      done: done(`p:${p.id}`), active: current === `p:${p.id}`, onClick: () => go(`p:${p.id}`),
-      ...(h.people.length > 1 ? { onRemove: () => removePerson(p.id), removeLabel: t('ui.removePerson', { name }) } : {}),
     }
   })
   const doneCount = order.filter(done).length
+  const panelColor = inside ? personColor(Math.max(0, h.people.findIndex((x) => `p:${x.id}` === current))) : PART_COLOR[current]
 
   // ---- The question for the chosen part ----
   let partName: string
@@ -334,16 +383,22 @@ export default function HouseholdForm({ household: h, setHousehold, onDone }: {
     <form className="household home" onSubmit={(e) => { e.preventDefault(); next() }}>
       <div className="home-intro">
         <h1 tabIndex={-1} className="view-heading page-title">{t('ui.householdTitle')}</h1>
-        <p className="page-lead">{t('ui.tapHouse')} {t('ui.householdIntro')}</p>
+        <p className="page-lead">{inside ? t('ui.peopleHelp') : `${t('ui.tapHouse')} ${t('ui.householdIntro')}`}</p>
       </div>
 
       <div className="home-grid">
-        <div className="home-house">
-          <House parts={parts} windows={windows} onAdd={addPerson} addLabel={t('ui.addPerson')} />
-          <p className="home-hint">{t('ui.peopleHelp')}</p>
+        <div className={`home-house ${inside ? 'home-inside' : wasInside.current ? 'home-back-out' : ''}`} key={inside ? 'in' : 'out'}>
+          {inside ? (
+            <Room title={t('ui.peopleTitle')} people={roomPeople} onSelect={(id) => go(`p:${id}`)}
+              onAdd={addPerson} addLabel={t('ui.addPerson')}
+              onRemove={h.people.length > 1 ? removePerson : undefined} removeLabel={(name) => t('ui.removePerson', { name })}
+              onExit={() => go('electric')} exitLabel={t('ui.stepOutside')} />
+          ) : (
+            <House parts={parts} windows={windows} entering={entering} />
+          )}
         </div>
 
-        <div className="home-panel bubble" ref={panel}>
+        <div className="home-panel bubble" ref={panel} style={{ '--part': panelColor } as CSSProperties}>
           <div className="panel-top">
             <span className="panel-part">{partName}</span>
             <span className="panel-count">{t('ui.partsDone', { n: doneCount, total: order.length })}</span>
@@ -357,8 +412,15 @@ export default function HouseholdForm({ household: h, setHousehold, onDone }: {
       </div>
 
       <div className="action-bar">
-        {!last && <button type="button" className="btn btn-ghost" onClick={onDone}>{t('ui.seeResults')}</button>}
-        <button type="submit" className="btn btn-primary btn-lg">{last ? t('ui.seeResults') : t('ui.next')}</button>
+        {at > 0 && (
+          <button type="button" className="btn btn-ghost" onClick={back}>
+            <ArrowLeft size={18} aria-hidden="true" /> {inside && at === OUTSIDE.length ? t('ui.stepOutside') : t('ui.back')}
+          </button>
+        )}
+        {last && !complete && <p className="finish-first" id="finish-first">{t('ui.finishFirst')}</p>}
+        <button type="submit" className="btn btn-primary btn-lg" disabled={last && !complete} aria-describedby={last && !complete ? 'finish-first' : undefined}>
+          {last ? t('ui.seeResults') : t('ui.next')}
+        </button>
       </div>
     </form>
   )

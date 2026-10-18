@@ -135,6 +135,8 @@
     "lightMode": "Light mode",
     "tapHouse": "Tap any part of the house to answer it.",
     "partsDone": "{n} of {total} done",
+    "stepOutside": "Step outside",
+    "finishFirst": "Answer every part of the house first. You can skip a question with Next.",
     "stepZip": "ZIP code",
     "stepElectric": "Electric bill",
     "stepGas": "Gas bill",

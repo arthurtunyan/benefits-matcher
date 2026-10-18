@@ -1,7 +1,7 @@
 /* Benefits Matcher — design tokens first, then layout, then components.
-   Theme: "fill in your home". A bright blue page with white bubbles on it, orange for whatever is
-   picked, and a house drawing whose parts are the questions. Dark mode is black, white, and gray.
-   One friendly typeface (Figtree). Text colors meet WCAG 2.1 AA (4.5:1) in both themes. */
+   Theme: "fill in your home". A bright blue page with white bubbles on it, a house drawing whose
+   parts are the questions, and one color per part of the house (yellow, teal, orange, green, pink,
+   purple). Dark mode is black, white, and gray with the same part colors. Typeface: Bricolage Grotesque. Text colors meet WCAG 2.1 AA (4.5:1) in both themes. */
 
 :root {
   --page: #2563d9;          /* the blue page */
@@ -21,9 +21,9 @@
   --btn: #14213a;           /* main buttons */
   --btn-ink: #ffffff;
   --btn-hover: #24375c;
-  --pick: #ff7a45;          /* whatever is picked */
-  --pick-ink: #1f0d04;
-  --pick-soft: #ffe3d6;
+  --pick: #ffd23f;          /* yellow: whatever is picked (light mode) */
+  --pick-ink: #14110a;
+  --pick-soft: #fff3c2;
   --pick-strong: #d4501a;   /* orange icons on white */
   --focus: #14213a;
   --focus-halo: #ffffff;
@@ -42,11 +42,21 @@
   --house-door: #c9d8f5;
   --house-window: #dbe7ff;
   --house-ground: #4a80e6;
-  --accent: #ff7a45; /* logo sun */
+  --accent: #ffd23f; /* logo sun */
+  /* One color per part of the house. Text and icons on them use --part-ink. */
+  --c-zip: #3fd0c9;
+  --c-gas: #ff8a4c;
+  --c-benefits: #5bd08d;
+  --c-income: #ff94c2;
+  --c-electric: #ffd23f;
+  --c-home: #b39bff;
+  --part-ink: #14110a;
+  --room-wall: #fff6d6;
+  --room-floor: #f2c879;
   --radius: 24px;
   --radius-md: 16px;
   --radius-sm: 12px;
-  --font-body: 'Figtree Variable', 'Noto Sans Armenian Variable', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-body: 'Bricolage Grotesque Variable', 'Noto Sans Armenian Variable', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --tap: 48px;
   color-scheme: light;
 }
@@ -89,6 +99,8 @@
   --house-door: #8a8a8a;
   --house-window: #1c1c1c;
   --house-ground: #1c1c1c;
+  --room-wall: #1c1c1c;
+  --room-floor: #2e2e2e;
   color-scheme: dark;
 }
 /* Before the app loads, follow the phone's setting. */
@@ -101,6 +113,7 @@
     --likely: #7ad5a2; --likely-bg: #13301f; --likely-ink: #0b2416; --possibly: #f2d16b; --possibly-bg: #332a0c;
     --not: #a6b1bc; --not-bg: #262626; --warn-bg: #2f2511; --warn-ink: #f4cb8f; --warn-line: #a8771f;
     --house-wall: #f2f2f2; --house-dark: #5c5c5c; --house-door: #8a8a8a; --house-window: #1c1c1c; --house-ground: #1c1c1c;
+    --room-wall: #1c1c1c; --room-floor: #2e2e2e;
     color-scheme: dark;
   }
 }
@@ -213,6 +226,8 @@ main.view-start, main.view-household { max-width: 1120px; }
   background: var(--page);
 }
 .action-bar .btn-primary { margin-left: auto; }
+.btn:disabled, .btn:disabled:hover { opacity: .45; cursor: not-allowed; transform: none; background: var(--btn); }
+.finish-first { flex: 1 1 200px; align-self: center; text-align: right; color: var(--on-page); font-size: .85rem; font-weight: 700; }
 
 /* ---------- Start ---------- */
 .hero { display: grid; gap: 28px; align-items: center; padding: 12px 0 8px; }
@@ -233,58 +248,115 @@ main.view-start, main.view-household { max-width: 1120px; }
 .disclaimer { margin: 16px 0; padding: 14px 18px; border: 2px solid var(--warn-line); background: var(--warn-bg); color: var(--warn-ink); border-radius: var(--radius-md); font-size: .92rem; font-weight: 600; }
 
 /* ---------- The house ---------- */
-.house { position: relative; width: 100%; aspect-ratio: 400 / 320; container-type: inline-size; }
+.house { position: relative; width: 100%; aspect-ratio: 400 / 320; container-type: inline-size; transform-origin: 47.5% 82%; }
 .house-art { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
 .h-wall { fill: var(--house-wall); }
 .h-dark { fill: var(--house-dark); }
 .h-door { fill: var(--house-door); }
+.h-doorway { fill: var(--house-dark); }
 .h-ground { fill: var(--house-ground); }
 .h-wire { fill: none; stroke: var(--house-dark); stroke-width: 3; stroke-linecap: round; }
+.h-door-panel { transform-box: fill-box; transform-origin: left center; }
 
-/* House parts you can tap. */
+/* House parts you can tap. The inner circle fills up as the answer is filled in, then pops when done. */
 .spot { position: absolute; transform: translate(-50%, -50%); display: grid; justify-items: center; gap: 4px; border: 0; padding: 0; background: none; color: var(--ink); z-index: 1; }
 .spot-bubble {
-  position: relative; display: grid; place-items: center; width: clamp(38px, 11.5cqw, 54px); aspect-ratio: 1; border-radius: 50%;
-  background: var(--surface); color: var(--pick-strong); border: 3px solid var(--pick);
+  position: relative; isolation: isolate; display: grid; place-items: center; width: clamp(38px, 11.5cqw, 54px); aspect-ratio: 1; border-radius: 50%;
+  background: var(--surface); color: var(--part-ink); border: 3px solid var(--c);
 }
+.spot-fill { position: absolute; inset: 0; z-index: -1; border-radius: 50%; background: var(--c); transform: scale(var(--f)); }
+.spot-icon { display: grid; }
 .spot:hover .spot-bubble { transform: scale(1.08); }
-.spot-done .spot-bubble { background: var(--pick); color: var(--pick-ink); }
 .spot-active .spot-bubble { transform: scale(1.14); box-shadow: 0 0 0 4px var(--surface), 0 0 0 7px var(--house-dark); }
 .spot-check { position: absolute; top: -5px; right: -5px; display: grid; place-items: center; width: 19px; height: 19px; border-radius: 50%; background: var(--btn); color: var(--btn-ink); }
 .spot-label { display: none; max-width: 120px; padding: 2px 9px; border-radius: 99px; background: var(--surface); color: var(--ink); font-size: .72rem; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 @container (min-width: 460px) { .spot-label { display: block; } }
 .house-static .spot-bubble { transform: none; }
 
-/* Windows: one per person. */
+/* Windows: one per person, filling up from the bottom as their answers are filled in. */
 .windows { position: absolute; left: 22%; top: 45%; width: 51%; height: 28%; display: flex; flex-wrap: wrap; align-content: flex-start; justify-content: center; gap: 2cqw; }
-/* Small X to remove a person: shows on hover, on keyboard focus, and on the selected window (phones can't hover). */
-.window-wrap { position: relative; display: inline-grid; }
-.window-x {
-  position: absolute; top: -8px; left: -8px; z-index: 2; display: grid; place-items: center; width: 22px; height: 22px;
-  padding: 0; border: 0; border-radius: 50%; background: var(--btn); color: var(--btn-ink); box-shadow: 0 0 0 2px var(--house-wall);
-  opacity: 0; transform: scale(.6); pointer-events: none;
-}
-.window-x::before { content: ''; position: absolute; inset: -10px; } /* bigger tap area */
-.window-wrap:hover .window-x, .window-wrap-active .window-x, .window-x:focus-visible {
-  opacity: 1; transform: none; pointer-events: auto;
-}
-.window-x:hover { background: #c62828; color: #fff; }
-@media (prefers-reduced-motion: no-preference) { .window-x { transition: opacity .15s ease, transform .15s ease; } }
 .window { position: relative; display: grid; justify-items: center; border: 0; padding: 0; background: none; color: var(--ink); }
 .window-pane {
-  display: grid; place-items: center; width: clamp(30px, 10.5cqw, 56px); aspect-ratio: 1; border-radius: 30%;
+  position: relative; isolation: isolate; overflow: hidden; display: grid; place-items: center; width: clamp(30px, 10.5cqw, 56px); aspect-ratio: 1; border-radius: 30%;
   background: var(--house-window); color: var(--ink); border: 3px solid var(--house-dark); font-weight: 800; font-size: clamp(14px, 4.6cqw, 22px);
 }
+.window-pane::before { content: ''; position: absolute; left: 0; right: 0; bottom: 0; z-index: -1; height: calc(var(--f) * 100%); background: var(--c); }
 .window-pane:empty {
   background: linear-gradient(var(--house-dark), var(--house-dark)) center / 3px 100% no-repeat,
               linear-gradient(var(--house-dark), var(--house-dark)) center / 100% 3px no-repeat, var(--house-window);
 }
+.window-pane:empty::before { display: none; }
+.window-full .window-pane { color: var(--part-ink); }
 .window:hover .window-pane { transform: scale(1.06); }
-.window-active .window-pane { background: var(--pick); border-color: var(--pick); color: var(--pick-ink); transform: scale(1.1); }
-.window-add .window-pane { background: transparent; border-style: dashed; color: var(--house-dark); }
 .window-badge { position: absolute; top: -7px; right: -7px; display: grid; place-items: center; min-width: 22px; height: 22px; padding: 0 6px; border-radius: 99px; background: var(--likely); color: var(--likely-ink); font-size: .75rem; font-weight: 800; box-shadow: 0 0 0 2px var(--house-wall); }
-.window-caption { display: none; }
 .house-static .window-pane { transform: none; }
+
+/* Inside the house. */
+.room { border-radius: var(--radius); overflow: hidden; background: var(--room-wall); color: var(--ink); }
+.room-top { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; padding: 14px 16px 0; }
+.room-title { font-weight: 800; font-size: 1.1rem; }
+.room-exit { background: var(--surface); }
+.room-exit svg { color: var(--ink-2); }
+.room-scene { position: relative; min-height: 270px; padding: 92px 14px 0; }
+.room-window {
+  position: absolute; left: 10%; top: 16px; width: 76px; height: 60px; border-radius: 16px; border: 4px solid var(--house-dark);
+  background: linear-gradient(var(--house-dark), var(--house-dark)) center / 4px 100% no-repeat,
+              linear-gradient(var(--house-dark), var(--house-dark)) center / 100% 4px no-repeat, var(--page);
+}
+.room-lamp { position: absolute; right: 16%; top: 0; width: 4px; height: 34px; background: var(--house-dark); }
+.room-lamp::after { content: ''; position: absolute; left: 50%; top: 30px; width: 44px; height: 24px; transform: translateX(-50%); border-radius: 24px 24px 6px 6px; background: var(--c-electric); }
+.room-floor { position: absolute; left: 0; right: 0; bottom: 0; height: 64px; background: var(--room-floor); }
+.room-people { position: relative; z-index: 1; list-style: none; margin: 0; padding: 0 0 16px; display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-end; gap: 16px 18px; }
+.figure-wrap { position: relative; }
+.figure { display: grid; justify-items: center; gap: 4px; border: 0; padding: 0; background: none; color: var(--ink); }
+.figure-head {
+  display: grid; place-items: center; width: 50px; height: 50px; border-radius: 30%; border: 3px solid var(--house-dark);
+  background: var(--c); color: var(--part-ink); font-weight: 800; font-size: 1.3rem;
+}
+.figure-body {
+  position: relative; isolation: isolate; overflow: hidden; width: 66px; height: 52px; margin-top: -2px;
+  border-radius: 26px 26px 10px 10px; border: 3px solid var(--house-dark); background: var(--surface);
+}
+.figure-body::before { content: ''; position: absolute; left: 0; right: 0; bottom: 0; z-index: -1; height: calc(var(--f) * 100%); background: var(--c); }
+.figure-name { max-width: 90px; padding: 2px 9px; border-radius: 99px; background: var(--surface); font-size: .78rem; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.figure:hover .figure-head { transform: translateY(-3px); }
+.figure[aria-current='step'] .figure-head { box-shadow: 0 0 0 4px var(--room-wall), 0 0 0 7px var(--house-dark); }
+.figure[aria-current='step'] .figure-name { background: var(--btn); color: var(--btn-ink); }
+.figure-add .figure-name { max-width: 130px; }
+.figure-add .figure-head, .figure-add .figure-body { background: transparent; border-style: dashed; color: var(--ink-2); }
+/* Small X to remove a person: shows on hover, keyboard focus, and on the selected person (phones can't hover). */
+.figure-x {
+  position: absolute; top: -8px; left: -6px; z-index: 2; display: grid; place-items: center; width: 24px; height: 24px;
+  padding: 0; border: 0; border-radius: 50%; background: var(--btn); color: var(--btn-ink); box-shadow: 0 0 0 2px var(--room-wall);
+  opacity: 0; transform: scale(.6); pointer-events: none;
+}
+.figure-x::before { content: ''; position: absolute; inset: -10px; } /* bigger tap area */
+.figure-wrap:hover .figure-x, .figure-wrap-active .figure-x, .figure-x:focus-visible { opacity: 1; transform: none; pointer-events: auto; }
+.figure-x:hover { background: #c62828; color: #fff; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .spot-fill { transition: transform .45s cubic-bezier(.34, 1.56, .64, 1); }
+  .window-pane::before, .figure-body::before { transition: height .45s cubic-bezier(.34, 1.4, .64, 1); }
+  .figure-head, .figure-x { transition: transform .15s ease, opacity .15s ease; }
+  /* Finishing a part: the icon pops and a ring bursts out. */
+  .spot-full .spot-icon { animation: icon-pop .5s ease-out; }
+  .spot-full .spot-bubble::after {
+    content: ''; position: absolute; inset: -3px; border-radius: 50%; border: 3px solid var(--c); pointer-events: none;
+    animation: ring-out .7s ease-out forwards;
+  }
+  .window-full .window-pane, .figure-full .figure-body { animation: icon-pop .5s ease-out; }
+  @keyframes icon-pop { 0% { transform: scale(1); } 35% { transform: scale(1.3); } 100% { transform: scale(1); } }
+  @keyframes ring-out { from { transform: scale(1); opacity: .9; } to { transform: scale(1.9); opacity: 0; } }
+  /* The door swings open and the house zooms in toward it. */
+  .h-door-panel { transition: transform .3s ease-in; }
+  .house-entering .h-door-panel { transform: scaleX(.1); }
+  .house-entering { transform: scale(1.6); opacity: 0; transition: transform .45s ease-in .12s, opacity .3s ease-in .27s; }
+  .house-entering .spot, .house-entering .windows { opacity: 0; transition: opacity .15s; }
+  .home-inside { animation: room-in .4s ease-out; transform-origin: 50% 85%; }
+  .home-back-out .house { animation: house-out .4s ease-out; }
+  @keyframes room-in { from { opacity: 0; transform: scale(.55); } }
+  @keyframes house-out { from { opacity: 0; transform: scale(1.6); } }
+}
 
 /* ---------- Your home (the questions) ---------- */
 .home-intro { margin-bottom: 18px; }
@@ -298,11 +370,11 @@ main.view-start, main.view-household { max-width: 1120px; }
 .home-hint { margin-top: 10px; color: var(--on-page-2); font-size: .88rem; text-align: center; }
 .home-panel { padding: 24px; min-width: 0; scroll-margin-top: 120px; }
 .panel-top { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
-.panel-part { padding: 4px 12px; border-radius: 99px; background: var(--pick-soft); color: var(--ink); font-weight: 800; font-size: .85rem; }
+.panel-part { padding: 4px 12px; border-radius: 99px; background: var(--part, var(--pick)); color: var(--part-ink); font-weight: 800; font-size: .85rem; }
 .panel-count { color: var(--ink-2); font-size: .85rem; font-weight: 700; }
 .panel-dots { display: flex; gap: 5px; margin: 12px 0 20px; }
 .pdot { flex: 1; height: 7px; border-radius: 99px; background: var(--bg-2); }
-.pdot-done { background: var(--pick); }
+.pdot-done { background: var(--part, var(--pick)); }
 .pdot-now { background: var(--btn); }
 .question { font-size: clamp(1.6rem, 4.6vw, 2.2rem); font-weight: 800; letter-spacing: -0.025em; line-height: 1.1; margin-bottom: 18px; }
 .question-sub { font-weight: 800; font-size: 1.02rem; margin: 18px 0 10px; }
@@ -321,11 +393,11 @@ main.view-start, main.view-household { max-width: 1120px; }
   border: 0; border-radius: var(--radius-md); background: var(--bg-2); color: var(--ink);
   text-align: left; font-size: 1rem; font-weight: 700;
 }
-.tile:hover { background: var(--pick-soft); }
-.tile[aria-checked='true'] { background: var(--pick); color: var(--pick-ink); }
+.tile:hover { background: color-mix(in srgb, var(--part, var(--pick)) 25%, var(--bg-2)); }
+.tile[aria-checked='true'] { background: var(--part, var(--pick)); color: var(--part-ink); }
 .tile-check { flex: none; display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; border: 2px solid var(--line-strong); background: var(--surface); }
 .tile[role='checkbox'] .tile-check { border-radius: 7px; }
-.tile[aria-checked='true'] .tile-check { border-color: var(--pick-ink); background: var(--pick-ink); color: var(--pick); }
+.tile[aria-checked='true'] .tile-check { border-color: var(--part-ink); background: var(--part-ink); color: var(--part, var(--pick)); }
 .tiles-compact .tile { min-height: 48px; padding: 10px 14px; font-size: .95rem; }
 .other-field { margin-top: 14px; }
 
@@ -337,7 +409,7 @@ main.view-start, main.view-household { max-width: 1120px; }
 
 /* Person questions. */
 .person-editor-row { display: grid; grid-template-columns: minmax(0, 1fr) 100px; gap: 0 12px; align-items: end; }
-.face { flex: none; display: grid; place-items: center; width: 48px; height: 48px; border-radius: 30%; background: var(--pick); color: var(--pick-ink); font-weight: 800; font-size: 1.2rem; }
+.face { flex: none; display: grid; place-items: center; width: 48px; height: 48px; border-radius: 30%; background: var(--c-home); color: var(--part-ink); font-weight: 800; font-size: 1.2rem; }
 
 /* ---------- Bubbles & forms ---------- */
 .card { padding: 22px; margin: 16px 0; }
@@ -352,7 +424,7 @@ input:not([type='checkbox']), select {
   background: var(--bg-2); color: var(--ink); font-size: 1rem;
 }
 input:not([type='checkbox']):hover, select:hover { border-color: var(--line-strong); }
-input:not([type='checkbox']):focus, select:focus { border-color: var(--pick); outline: none; box-shadow: 0 0 0 4px var(--pick-soft); }
+input:not([type='checkbox']):focus, select:focus { border-color: var(--part, var(--pick)); outline: none; box-shadow: 0 0 0 4px color-mix(in srgb, var(--part, var(--pick)) 35%, transparent); }
 .input-zip { max-width: 160px; letter-spacing: .12em; font-weight: 700; }
 .money-input { position: relative; max-width: 260px; }
 .money-input span { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--ink-2); font-weight: 800; }
