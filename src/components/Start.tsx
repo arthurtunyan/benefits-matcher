@@ -32,12 +32,12 @@ export default function Start({ onStart, onExample, setLang }: {
         </div>
         <div className="hero-house">
           <House decorative parts={[
-            { id: 'zip', x: 7.5, y: 57, icon: <MapPin size={20} />, color: 'var(--c-zip)', label: '', fill: 1, done: true },
+            { id: 'zip', x: 7.5, y: 42, icon: <MapPin size={20} />, color: 'var(--c-zip)', label: '', fill: 1, done: true },
             { id: 'gas', x: 26.75, y: 80, icon: <Flame size={20} />, color: 'var(--c-gas)', label: '', fill: 1, done: true },
             { id: 'home', x: 47.5, y: 80, icon: <DoorOpen size={20} />, color: 'var(--c-home)', label: '', fill: 0, done: false },
             { id: 'benefits', x: 64, y: 82, icon: <ShoppingBasket size={20} />, color: 'var(--c-benefits)', label: '', fill: 0.5, done: false },
-            { id: 'income', x: 85.5, y: 75, icon: <Mail size={20} />, color: 'var(--c-income)', label: '', fill: 0, done: false },
-            { id: 'electric', x: 91.5, y: 22, icon: <Zap size={20} />, color: 'var(--c-electric)', label: '', fill: 0, done: false },
+            { id: 'income', x: 84.5, y: 61, icon: <Mail size={20} />, color: 'var(--c-income)', label: '', fill: 0, done: false },
+            { id: 'electric', x: 87.5, y: 22, icon: <Zap size={20} />, color: 'var(--c-electric)', label: '', fill: 0, done: false },
           ]} windows={[{ id: 'a', letter: '', label: '' }, { id: 'b', letter: '', label: '' }, { id: 'c', letter: '', label: '' }]} />
         </div>
       </section>

@@ -2,14 +2,16 @@ import { LogOut, Moon, Sun } from 'lucide-react'
 import { LANGS, useT, type Lang } from '../i18n'
 import type { View } from '../App'
 
-export function Logo({ size = 36 }: { size?: number }) {
-  // An open doorway with the sun rising behind it.
+export function Logo({ size = 40 }: { size?: number }) {
+  // A house inside a circle, with a door and three dots for the kinds of help (food, health, family).
   return (
     <svg width={size} height={size} viewBox="0 0 48 48" aria-hidden="true" className="logo">
-      <rect width="48" height="48" rx="13" fill="var(--brand)" />
-      <circle cx="31" cy="17" r="6.5" fill="var(--accent)" />
-      <path d="M14 39V21a10 10 0 0 1 20 0v18" fill="none" stroke="var(--brand-ink)" strokeWidth="4" strokeLinecap="round" />
-      <path d="M24 39V25l7 3v11" fill="var(--brand-ink)" opacity=".9" />
+      <circle cx="24" cy="24" r="22" fill="#fff" stroke="#2f4a27" strokeWidth="3" />
+      <path d="M11.5 23.5 L24 12.5 L36.5 23.5 M15 21 V35.5 H33 V21" fill="none" stroke="#2f4a27" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" />
+      <rect x="27" y="28.5" width="4.6" height="7" rx="0.8" fill="#fff" stroke="#2f4a27" strokeWidth="1.8" />
+      <circle cx="18.6" cy="25.6" r="2" fill="#5bd08d" />
+      <circle cx="23.2" cy="25.6" r="2" fill="#ff6fa3" />
+      <circle cx="20.9" cy="30.4" r="2" fill="#ffd23f" />
     </svg>
   )
 }

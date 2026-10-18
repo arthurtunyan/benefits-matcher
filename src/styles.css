@@ -4,9 +4,9 @@
    purple). Dark mode is black, white, and gray with the same part colors. Typeface: Bricolage Grotesque. Text colors meet WCAG 2.1 AA (4.5:1) in both themes. */
 
 :root {
-  --page: #2563d9;          /* the blue page */
+  --page: #4f7942;          /* Mana Tree green */
   --on-page: #ffffff;       /* text straight on the blue */
-  --on-page-2: #e3ecff;
+  --on-page-2: #f2f9ee;
   --bg: #ffffff;            /* bubbles */
   --bg-2: #eef3fb;          /* fills inside bubbles */
   --surface: #ffffff;
@@ -18,14 +18,14 @@
   --brand-hover: #174bb0;
   --brand-ink: #ffffff;
   --brand-soft: #e6efff;
-  --btn: #14213a;           /* main buttons */
+  --btn: #1c2b19;           /* main buttons: deep forest */
   --btn-ink: #ffffff;
-  --btn-hover: #24375c;
+  --btn-hover: #2c4227;
   --pick: #ffd23f;          /* yellow: whatever is picked (light mode) */
   --pick-ink: #14110a;
   --pick-soft: #fff3c2;
   --pick-strong: #d4501a;   /* orange icons on white */
-  --focus: #14213a;
+  --focus: #1c2b19;
   --focus-halo: #ffffff;
   --likely: #1b6e44;
   --likely-bg: #e3f1e8;
@@ -37,11 +37,14 @@
   --warn-bg: #fff5de;
   --warn-ink: #6b4300;
   --warn-line: #d79a2b;
-  --house-wall: #ffffff;
-  --house-dark: #14213a;
-  --house-door: #c9d8f5;
-  --house-window: #dbe7ff;
-  --house-ground: #4a80e6;
+  /* The drawing keeps the same colors in both themes, like a picture. */
+  --house-wall: #f7ecc4;
+  --house-line: #2b2b2b;
+  --house-dark: #2b2b2b;
+  --house-ink: #14213a;
+  --house-door: #7aaecb;
+  --house-window: #e6eef2;
+  --house-ground: #3b5e31;
   --accent: #ffd23f; /* logo sun */
   /* One color per part of the house. Text and icons on them use --part-ink. */
   --c-zip: #3fd0c9;
@@ -94,11 +97,8 @@
   --warn-bg: #2f2511;
   --warn-ink: #f4cb8f;
   --warn-line: #a8771f;
-  --house-wall: #f2f2f2;
-  --house-dark: #5c5c5c;
-  --house-door: #8a8a8a;
-  --house-window: #1c1c1c;
-  --house-ground: #1c1c1c;
+  --house-ground: #1f2e1b;
+  --house-dark: #6b6b6b; /* room outlines and the selected-part ring */
   --room-wall: #1c1c1c;
   --room-floor: #2e2e2e;
   color-scheme: dark;
@@ -112,7 +112,7 @@
     --pick: #ff8f5e; --pick-ink: #1a0d06; --pick-soft: #3a2216; --pick-strong: #ff8f5e; --focus: #ff8f5e; --focus-halo: #0b0b0b;
     --likely: #7ad5a2; --likely-bg: #13301f; --likely-ink: #0b2416; --possibly: #f2d16b; --possibly-bg: #332a0c;
     --not: #a6b1bc; --not-bg: #262626; --warn-bg: #2f2511; --warn-ink: #f4cb8f; --warn-line: #a8771f;
-    --house-wall: #f2f2f2; --house-dark: #5c5c5c; --house-door: #8a8a8a; --house-window: #1c1c1c; --house-ground: #1c1c1c;
+    --house-ground: #1f2e1b; --house-dark: #6b6b6b;
     --room-wall: #1c1c1c; --room-floor: #2e2e2e;
     color-scheme: dark;
   }
@@ -155,7 +155,7 @@ button { cursor: pointer; }
 .topbar { position: sticky; top: 0; z-index: 20; background: var(--page); }
 .topbar-inner { max-width: 1120px; margin: 0 auto; padding: 12px 16px; display: flex; align-items: center; gap: 10px; justify-content: space-between; }
 .brand { display: flex; align-items: center; gap: 10px; background: none; border: 0; padding: 4px; text-align: left; color: var(--on-page); }
-.brand .logo { border-radius: 13px; box-shadow: 0 0 0 3px var(--surface); }
+.brand .logo { flex: none; }
 .brand-text { display: flex; flex-direction: column; line-height: 1.15; }
 .brand-text strong { font-size: 1.05rem; font-weight: 800; letter-spacing: -0.01em; }
 .brand-text small { color: var(--on-page-2); font-size: .8rem; }
@@ -250,12 +250,35 @@ main.view-start, main.view-household { max-width: 1120px; }
 /* ---------- The house ---------- */
 .house { position: relative; width: 100%; aspect-ratio: 400 / 320; container-type: inline-size; transform-origin: 47.5% 82%; }
 .house-art { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.h-lined rect, .h-lined path, .h-tree rect, .h-tree circle { stroke: var(--house-line); stroke-width: 3; stroke-linejoin: round; }
 .h-wall { fill: var(--house-wall); }
-.h-dark { fill: var(--house-dark); }
+.h-roof { fill: #c8705f; }
+.h-brick { fill: #b5533c; }
+.h-mortar { fill: none; stroke-width: 1.4 !important; }
 .h-door { fill: var(--house-door); }
-.h-doorway { fill: var(--house-dark); }
+.h-doorway, .h-line-fill { fill: var(--house-line); }
+.h-line-fill { stroke: none !important; }
+.h-meter { fill: #a3abb3; }
 .h-ground { fill: var(--house-ground); }
-.h-wire { fill: none; stroke: var(--house-dark); stroke-width: 3; stroke-linecap: round; }
+.h-trunk { fill: #7a4b2a; }
+.h-leaf { fill: #74b354; }
+.h-leaf-2 { fill: #5e9c43; }
+.h-wood-dark { fill: #6b4226; }
+.h-sign-a { fill: #c96a32; }
+.h-sign-b { fill: #e09445; }
+.h-sign-c { fill: #a9512b; }
+.h-post { fill: #2b2b2b; }
+.h-mail { fill: #a3a9af; }
+.h-flag-red { fill: #d63a2f; }
+/* The mailbox flag lies flat until income is answered, then goes up. */
+.h-flag { transform-box: view-box; transform-origin: 360px 234px; transform: rotate(90deg); }
+.house-flag-up .h-flag { transform: none; }
+/* The bulb lights up once the electric bill is answered. */
+.h-bulb { fill: #fff8dc; }
+.h-bulb-base { fill: #a3a9af; }
+.h-glow { fill: var(--c-electric); stroke: none !important; opacity: 0; }
+.house-lit .h-bulb { fill: var(--c-electric); }
+.house-lit .h-glow { opacity: .5; }
 .h-door-panel { transform-box: fill-box; transform-origin: left center; }
 
 /* House parts you can tap. The inner circle fills up as the answer is filled in, then pops when done. */
@@ -274,11 +297,11 @@ main.view-start, main.view-household { max-width: 1120px; }
 .house-static .spot-bubble { transform: none; }
 
 /* Windows: one per person, filling up from the bottom as their answers are filled in. */
-.windows { position: absolute; left: 22%; top: 45%; width: 51%; height: 28%; display: flex; flex-wrap: wrap; align-content: flex-start; justify-content: center; gap: 2cqw; }
+.windows { position: absolute; left: 26%; top: 45%; width: 44%; height: 25%; display: flex; flex-wrap: wrap; align-content: flex-start; justify-content: center; gap: 2cqw; }
 .window { position: relative; display: grid; justify-items: center; border: 0; padding: 0; background: none; color: var(--ink); }
 .window-pane {
   position: relative; isolation: isolate; overflow: hidden; display: grid; place-items: center; width: clamp(30px, 10.5cqw, 56px); aspect-ratio: 1; border-radius: 30%;
-  background: var(--house-window); color: var(--ink); border: 3px solid var(--house-dark); font-weight: 800; font-size: clamp(14px, 4.6cqw, 22px);
+  background: var(--house-window); color: var(--house-ink); border: 3px solid var(--house-line); border-radius: 18%; font-weight: 800; font-size: clamp(14px, 4.6cqw, 22px);
 }
 .window-pane::before { content: ''; position: absolute; left: 0; right: 0; bottom: 0; z-index: -1; height: calc(var(--f) * 100%); background: var(--c); }
 .window-pane:empty {
@@ -287,6 +310,7 @@ main.view-start, main.view-household { max-width: 1120px; }
 }
 .window-pane:empty::before { display: none; }
 .window-full .window-pane { color: var(--part-ink); }
+.window-badge { box-shadow: 0 0 0 2px var(--house-wall); }
 .window:hover .window-pane { transform: scale(1.06); }
 .window-badge { position: absolute; top: -7px; right: -7px; display: grid; place-items: center; min-width: 22px; height: 22px; padding: 0 6px; border-radius: 99px; background: var(--likely); color: var(--likely-ink); font-size: .75rem; font-weight: 800; box-shadow: 0 0 0 2px var(--house-wall); }
 .house-static .window-pane { transform: none; }
@@ -349,6 +373,8 @@ main.view-start, main.view-household { max-width: 1120px; }
   @keyframes ring-out { from { transform: scale(1); opacity: .9; } to { transform: scale(1.9); opacity: 0; } }
   /* The door swings open and the house zooms in toward it. */
   .h-door-panel { transition: transform .3s ease-in; }
+  .h-flag { transition: transform .45s cubic-bezier(.34, 1.56, .64, 1); }
+  .h-bulb, .h-glow { transition: fill .3s ease, opacity .4s ease; }
   .house-entering .h-door-panel { transform: scaleX(.1); }
   .house-entering { transform: scale(1.6); opacity: 0; transition: transform .45s ease-in .12s, opacity .3s ease-in .27s; }
   .house-entering .spot, .house-entering .windows { opacity: 0; transition: opacity .15s; }

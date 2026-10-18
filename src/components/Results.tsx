@@ -71,7 +71,7 @@ export default function Results({ screening: s, asOf, setAsOf, updatePerson, onB
 
       {people.length > 0 && (
         <div className="results-house">
-          <House windows={people.map(({ person: p, results }, i) => {
+          <House done windows={people.map(({ person: p, results }, i) => {
             const name = personLabel(p, i, t)
             const summary = t('ui.summary', { likely: count(results, 'likely'), possibly: count(results, 'possibly') })
             return {

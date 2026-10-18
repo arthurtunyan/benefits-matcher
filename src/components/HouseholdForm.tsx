@@ -228,15 +228,15 @@ export default function HouseholdForm({ household: h, setHousehold, onDone, unlo
     ({ id, x, y, icon, label, value, color: PART_COLOR[id], fill: fill(id), done: done(id), active: current === id, onClick: () => go(id) })
   const peopleFill = h.people.reduce((sum, p) => sum + personFill(p), 0) / Math.max(1, h.people.length)
   const parts: HousePart[] = [
-    spot('zip', 7.5, 57, <MapPin size={20} />, t('ui.stepZip'), h.zip),
+    spot('zip', 7.5, 42, <MapPin size={20} />, t('ui.stepZip'), h.zip),
     spot('gas', 26.75, 80, <Flame size={20} />, t('ui.stepGas'), fill('gas') ? (h.gasOther === NO_GAS ? t('ui.noGas') : shortUtility(h.gas, h.gasOther, t)) : undefined),
     {
       id: 'home', x: 47.5, y: 80, icon: <DoorOpen size={20} />, label: t('ui.peopleTitle'), color: PART_COLOR.home,
       fill: peopleFill, done: h.people.every((p) => done(`p:${p.id}`)), active: false, onClick: () => go(`p:${h.people[0].id}`),
     },
     spot('benefits', 64, 82, <ShoppingBasket size={20} />, t('ui.stepBenefits'), gotBenefits.length ? gotBenefits.map((b) => t(`benefits.${b}`).replace(/\s*\(.*\)$/, '')).join(', ') : undefined),
-    spot('income', 85.5, 75, <Mail size={20} />, t('ui.stepIncome'), h.monthlyIncome !== undefined ? t.money(h.monthlyIncome) : undefined),
-    spot('electric', 91.5, 22, <Zap size={20} />, t('ui.stepElectric'), fill('electric') ? shortUtility(h.electric, h.electricOther, t) : undefined),
+    spot('income', 84.5, 61, <Mail size={20} />, t('ui.stepIncome'), h.monthlyIncome !== undefined ? t.money(h.monthlyIncome) : undefined),
+    spot('electric', 87.5, 22, <Zap size={20} />, t('ui.stepElectric'), fill('electric') ? shortUtility(h.electric, h.electricOther, t) : undefined),
   ]
   const personColor = (n: number) => PERSON_COLORS[n % PERSON_COLORS.length]
   const windows: HouseWindow[] = h.people.map((p, n) => {
