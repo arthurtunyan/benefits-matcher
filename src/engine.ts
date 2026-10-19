@@ -24,6 +24,9 @@ export interface Household {
   monthlyIncome?: number // gross, whole household; undefined = skipped
   hasEarnedIncome?: boolean
   benefits: { calfresh?: boolean; calworks?: boolean; ssi?: boolean; wic?: boolean }
+  disaster?: boolean // a fire, flood, or other disaster hurt the home, food, or work; undefined = not answered
+  disasterDate?: string // YYYY-MM-DD; deadlines count from here
+  disasterLoss?: { home?: boolean; food?: boolean; work?: boolean }
   people: Person[]
 }
 
@@ -60,7 +63,7 @@ export interface Rule {
 export interface Program {
   id: string
   name: string
-  category: 'health' | 'food' | 'cash' | 'family' | 'utility' | 'transit'
+  category: 'health' | 'food' | 'cash' | 'family' | 'utility' | 'transit' | 'tax' | 'disaster'
   appliesTo: 'person' | 'household'
   audience?: Cond // who the program is relevant to; hidden when this fails
   apply: { url: string; phone?: string; where: string }
@@ -144,7 +147,11 @@ function evalLeaf(leaf: Leaf, facts: Facts, tables: Tables, asOf: string): LeafR
   const base = { kind: 'leaf' as const, leaf, op, expected, actual }
   if (actual === undefined) return { ...base, result: 'unknown', reason: 'missing' }
   if (leaf.unsure?.includes(actual)) return { ...base, result: 'unknown', reason: 'unsure' }
-  if (expected === undefined) return { ...base, result: 'unknown', reason: 'noData' }
+  // No limit: either we lack the table for this date, or the size it's looked up by is unknown.
+  if (expected === undefined) {
+    const sizeMissing = isTable(raw) && facts[raw.by ?? 'householdSize'] === undefined
+    return { ...base, result: 'unknown', reason: sizeMissing ? 'missing' : 'noData' }
+  }
   let ok: boolean
   switch (op) {
     case 'eq': ok = actual === expected; break
@@ -246,12 +253,29 @@ export function inLACounty(zip?: string): boolean | undefined {
   return (p >= 900 && p <= 918 && !NOT_LA_917.has(zip)) || LA_COUNTY_AV.has(zip)
 }
 
+// Statuses that come with a work-eligible Social Security number and count for FEMA, SBA, and DUA.
+const QUALIFIED = new Set<Status | undefined>(['citizen', 'lpr5', 'lpr', 'humanitarian'])
+const MAYBE_QUALIFIED = new Set<Status | undefined>([undefined, 'otherLawful'])
+
+// How many of these people are qualified; undefined when none are known to be and someone's status is unsure.
+function countQualified(ps: Person[]): number | undefined {
+  const n = ps.filter((p) => QUALIFIED.has(p.status)).length
+  return n === 0 && ps.some((p) => MAYBE_QUALIFIED.has(p.status)) ? undefined : n
+}
+const anyQualified = (ps: Person[]) => {
+  const n = countQualified(ps)
+  return n === undefined ? undefined : n > 0
+}
+const kids = (ps: Person[], under: number) => ps.filter((p) => p.age !== undefined && p.age < under)
+const daysBetween = (from: string, to: string) => Math.round((Date.parse(to) - Date.parse(from)) / 86_400_000)
+
 export function householdFacts(h: Household, tables: Tables, asOf: string): Facts {
   const size = h.people.length || undefined
   const ages = h.people.map((p) => p.age)
   const monthly = h.monthlyIncome
   const annual = monthly === undefined ? undefined : monthly * 12
   const fpl = lookup(tables, 'fpl-annual', size, asOf)
+  const adults = h.people.filter((p) => p.age === undefined || p.age >= 18)
   return {
     asOf,
     householdSize: size,
@@ -271,6 +295,23 @@ export function householdFacts(h: Household, tables: Tables, asOf: string): Fact
     electric: h.electric,
     gas: h.gas,
     inLACounty: inLACounty(h.zip),
+    // Tax credits. ponytail: all income counts as earned when "some comes from a job" (an upper bound for the limits).
+    earnedIncome: annual === undefined ? undefined : annual === 0 || h.hasEarnedIncome === false ? 0
+      : h.hasEarnedIncome ? annual : undefined,
+    ssnAdult: anyQualified(adults),
+    eitcKids: countQualified(kids(h.people, 19)),
+    ctcKids: countQualified(kids(h.people, 17)),
+    taxKids: kids(h.people, 19).length, // California credits accept an ITIN, so status doesn't matter
+    youngKids: kids(h.people, 6).length,
+    anyAge25to64: anyOf(adults.map((p) => (p.age === undefined ? undefined : p.age >= 25 && p.age <= 64))),
+    // Disasters
+    disaster: h.disaster === true, // disaster help is opt-in: not answering means no disaster
+    daysSinceDisaster: h.disaster && h.disasterDate ? daysBetween(h.disasterDate, asOf) : undefined,
+    lostHome: h.disaster ? !!h.disasterLoss?.home : undefined,
+    lostFood: h.disaster ? !!h.disasterLoss?.food : undefined,
+    lostWork: h.disaster ? !!h.disasterLoss?.work : undefined,
+    qualifiedAnyone: anyQualified(h.people),
+    qualifiedAdult: anyQualified(adults),
   }
 }
 
@@ -341,7 +382,8 @@ function differs(a?: ProgramResult, b?: ProgramResult) {
 export function timeline(h: Household, programs: Program[], tables: Tables, from: string, to: string): Change[] {
   const last = new Map<string, ProgramResult | 'gap' | undefined>()
   const changes: Change[] = []
-  ;[from, ...changeDates(programs, tables, from, to)].forEach((date, i) => {
+  const dates = [...new Set([...changeDates(programs, tables, from, to), ...disasterDates(h, programs, from, to)])].sort()
+  ;[from, ...dates].forEach((date, i) => {
     const s = screen(h, programs, tables, date)
     const now = new Map<string, readonly [string | undefined, ProgramResult]>([
       ...s.people.flatMap(({ person, results }) => results.map((r) => [`${person.id}|${r.program.id}`, [person.id, r]] as const)),
@@ -357,4 +399,20 @@ export function timeline(h: Household, programs: Program[], tables: Tables, from
     }
   })
   return changes
+}
+
+// Days counted from this family's disaster (the disaster itself, then the day after each deadline in the rules).
+function disasterDates(h: Household, programs: Program[], from: string, to: string): string[] {
+  if (!h.disaster || !h.disasterDate) return []
+  const limits = programs.flatMap((p) => p.rules.flatMap((r) => deadlineDays(r.conditions)))
+  const day = (n: number) => new Date(Date.parse(`${h.disasterDate}T00:00:00Z`) + n * 86_400_000).toISOString().slice(0, 10)
+  return [day(0), ...limits.map((n) => day(n + 1))].filter((d) => d > from && d <= to)
+}
+
+// "Within N days of the disaster" limits in a rule.
+export function deadlineDays(c: Cond): number[] {
+  if ('all' in c) return c.all.flatMap(deadlineDays)
+  if ('any' in c) return c.any.flatMap(deadlineDays)
+  if ('not' in c) return []
+  return c.fact === 'daysSinceDisaster' && typeof c.lte === 'number' ? [c.lte] : []
 }

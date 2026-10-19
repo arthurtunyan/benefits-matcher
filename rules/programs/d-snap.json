@@ -1,0 +1,46 @@
+{
+  "$schema": "../program.schema.json",
+  "id": "d-snap",
+  "name": "Disaster CalFresh (D-SNAP)",
+  "category": "disaster",
+  "appliesTo": "household",
+  "audience": {
+    "all": [
+      { "fact": "disaster", "eq": true },
+      { "fact": "daysSinceDisaster", "gte": 0 },
+      { "fact": "getsCalFresh", "eq": false }
+    ]
+  },
+  "apply": {
+    "url": "https://www.fns.usda.gov/fd-disaster/usda-disaster-nutrition-assistance-programs",
+    "phone": "211",
+    "where": "dsnap"
+  },
+  "documents": ["id", "address", "income", "damage"],
+  "alternatives": ["foodbank", "211"],
+  "estimate": { "text": "dsnap" },
+  "rules": [
+    {
+      "id": "d-snap",
+      "effective": { "from": "2016-01-01", "to": null },
+      "conditions": {
+        "all": [
+          {
+            "any": [
+              { "fact": "lostFood", "eq": true },
+              { "fact": "lostHome", "eq": true },
+              { "fact": "lostWork", "eq": true }
+            ]
+          },
+          { "fact": "qualifiedAnyone", "eq": true }
+        ]
+      },
+      "outcome": "possibly",
+      "explain": "disaster.dsnap",
+      "notes": [{ "key": "disaster.dsnapWhen" }],
+      "source": "https://www.fns.usda.gov/fd-disaster/usda-disaster-nutrition-assistance-programs",
+      "lastVerified": "2026-10-19",
+      "verifiedBy": "claude-draft"
+    }
+  ]
+}

@@ -78,6 +78,7 @@ function PlanBody({ s, today, have, side }: { s: Screening; today: string; have:
               </li>
             ))}
           </ul>
+          <p className="small muted">{t('ui.goBag')}</p>
         </>
       )}
 

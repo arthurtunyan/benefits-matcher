@@ -1,15 +1,16 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react'
-import { Check, Flame, Mail, MapPin, ShoppingBasket, Zap } from 'lucide-react'
+import { Check, Flame, Mail, MapPin, ShoppingBasket, Siren, Zap } from 'lucide-react'
 import { useT, type T } from '../i18n'
 import { inLACounty, type Household, type Person, type Status, type Utility } from '../engine'
 import { zips } from '../data'
-import { newPerson, personLabel } from '../App'
+import { newPerson, personLabel, todayISO } from '../App'
 import House, { type HousePart, type HouseWindow } from './House'
 
 export const STATUSES: Status[] = ['citizen', 'lpr5', 'lpr', 'humanitarian', 'otherLawful', 'undocumented']
 const ELECTRIC: Utility[] = ['ladwp', 'sce', 'bwp', 'gwp', 'pwp', 'other', 'unknown']
 const GAS: Utility[] = ['socalgas', 'other', 'unknown']
 const BENEFITS = ['calfresh', 'calworks', 'ssi', 'wic'] as const
+const LOSSES = { home: 'ui.lossHome', food: 'ui.lossFood', work: 'ui.lossWork' } as const
 const FLAGS = ['pregnant', 'recentBirth', 'disabled', 'hasMediCal'] as const
 
 // Blank, not a number, or negative = not answered.
@@ -121,14 +122,14 @@ function GasHelper({ pick }: { pick: (u: Utility, other?: string) => void }) {
 }
 
 // Parts of the house, in the order "Next" walks through them. People are "p:<id>".
-type Part = 'zip' | 'electric' | 'gas' | 'income' | 'benefits' | `p:${string}`
+type Part = 'zip' | 'electric' | 'gas' | 'income' | 'benefits' | 'disaster' | `p:${string}`
 
 export default function HouseholdForm({ household: h, setHousehold, onDone }: {
   household: Household; setHousehold: (h: Household) => void; onDone: () => void
 }) {
   const t = useT()
   const set = (patch: Partial<Household>) => setHousehold({ ...h, ...patch })
-  const order: Part[] = ['zip', 'electric', 'gas', 'income', 'benefits', ...h.people.map((p) => `p:${p.id}` as Part)]
+  const order: Part[] = ['zip', 'electric', 'gas', 'income', 'benefits', 'disaster', ...h.people.map((p) => `p:${p.id}` as Part)]
   const [part, setPart] = useState<Part>('zip')
   const [left, setLeft] = useState<Set<Part>>(() => new Set()) // parts the user has moved past
   const [helper, setHelper] = useState(false)
@@ -187,7 +188,7 @@ export default function HouseholdForm({ household: h, setHousehold, onDone }: {
   const gotBenefits = BENEFITS.filter((b) => h.benefits[b])
   const answered: Record<string, boolean> = {
     zip: !!h.zip, electric: h.electric !== 'unknown', gas: h.gas !== 'unknown',
-    income: h.monthlyIncome !== undefined, benefits: gotBenefits.length > 0,
+    income: h.monthlyIncome !== undefined, benefits: gotBenefits.length > 0, disaster: h.disaster !== undefined,
   }
   // Done = answered. Only the benefits basket counts once passed, since "none of these" is an answer.
   const done = (p: Part) => (p.startsWith('p:') ? h.people.find((x) => `p:${x.id}` === p)?.age !== undefined : answered[p])
@@ -200,6 +201,9 @@ export default function HouseholdForm({ household: h, setHousehold, onDone }: {
     spot('gas', 26.75, 80, <Flame size={20} />, t('ui.stepGas'), answered.gas ? (h.gasOther === NO_GAS ? t('ui.noGas') : shortUtility(h.gas, h.gasOther, t)) : undefined),
     spot('income', 85.5, 75, <Mail size={20} />, t('ui.stepIncome'), answered.income ? t.money(h.monthlyIncome!) : undefined),
     spot('benefits', 62, 82, <ShoppingBasket size={20} />, t('ui.stepBenefits'), gotBenefits.length ? gotBenefits.map((b) => t(`benefits.${b}`).replace(/\s*\(.*\)$/, '')).join(', ') : undefined),
+    // Smoke from the chimney: the disaster question.
+    spot('disaster', 65, 9, <Siren size={20} />, t('ui.stepDisaster'), h.disaster === undefined ? undefined
+      : h.disaster ? (h.disasterDate ? t.date(h.disasterDate) : t('ui.yes')) : t('ui.no')),
   ]
   const windows: HouseWindow[] = h.people.map((p, n) => {
     const name = personLabel(p, n, t)
@@ -293,6 +297,34 @@ export default function HouseholdForm({ household: h, setHousehold, onDone }: {
             onClick={() => set({ benefits: { ...h.benefits, [b]: !h.benefits[b] } })}>{t(`benefits.${b}`)}</Tile>
         ))}
       </div>
+    )
+  } else if (current === 'disaster') {
+    const loss = h.disasterLoss ?? {}
+    partName = t('ui.stepDisaster')
+    title = t('ui.qDisaster')
+    body = (
+      <>
+        <div className="tiles" role="group" aria-label={title}>
+          <Tile selected={h.disaster === true} onClick={() => set({ disaster: true })}>{t('ui.yes')}</Tile>
+          <Tile selected={h.disaster === false} onClick={() => { set({ disaster: false }); nextSoon() }}>{t('ui.no')}</Tile>
+        </div>
+        <p className="help">{t('ui.disasterHelp')}</p>
+        {h.disaster && (
+          <>
+            <div className="field other-field">
+              <label htmlFor="disaster-date">{t('ui.disasterWhen')}</label>
+              <input id="disaster-date" type="date" max={todayISO()} value={h.disasterDate ?? ''}
+                onChange={(e) => set({ disasterDate: e.target.value || undefined })} />
+            </div>
+            <p className="question-sub" id="loss-q">{t('ui.disasterWhat')}</p>
+            <div className="tiles tiles-compact" role="group" aria-labelledby="loss-q">
+              {(Object.keys(LOSSES) as (keyof typeof LOSSES)[]).map((k) => (
+                <Tile key={k} role="checkbox" selected={!!loss[k]} onClick={() => set({ disasterLoss: { ...loss, [k]: !loss[k] } })}>{t(LOSSES[k])}</Tile>
+              ))}
+            </div>
+          </>
+        )}
+      </>
     )
   } else {
     const n = h.people.findIndex((x) => `p:${x.id}` === current)

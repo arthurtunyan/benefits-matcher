@@ -50,14 +50,14 @@ describe.each(programs.map((p) => [p.id, p] as const))('%s', (_, p) => {
 })
 
 describe('tables', () => {
-  it.each(Object.entries(tables))('%s: sources, dates, no overlaps, sizes start at 1', (_, t) => {
+  it.each(Object.entries(tables))('%s: sources, dates, no overlaps, sizes start at 0 or 1', (_, t) => {
     const vs = [...t.versions].sort((a, b) => a.effective.from.localeCompare(b.effective.from))
     vs.forEach((v, i) => {
       expect(v.source).toMatch(/^https:\/\//)
       expect(daysSince(v.lastVerified)).toBeLessThanOrEqual(MAX_AGE_DAYS)
       if (v.values.all === undefined) {
         const sizes = Object.keys(v.values).map(Number).sort((a, b) => a - b)
-        expect(sizes).toEqual(sizes.map((_, j) => j + 1))
+        expect(sizes[0] <= 1 && sizes.every((n, j) => n === sizes[0] + j)).toBe(true) // 0 = no children (tax credits)
       }
       const next = vs[i + 1]
       if (next) expect(v.effective.to !== null && v.effective.to < next.effective.from).toBe(true)

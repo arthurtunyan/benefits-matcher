@@ -1,0 +1,43 @@
+{
+  "$schema": "../program.schema.json",
+  "id": "child-tax-credit",
+  "name": "Child Tax Credit (CTC)",
+  "category": "tax",
+  "appliesTo": "household",
+  "audience": { "fact": "householdHasChild", "eq": true },
+  "apply": {
+    "url": "https://www.irs.gov/individuals/free-tax-return-preparation-for-qualifying-taxpayers",
+    "phone": "1-800-906-9887",
+    "where": "tax"
+  },
+  "documents": ["taxIds", "taxForms", "childRecords"],
+  "estimate": { "table": "actc-per-child", "by": "ctcKids" },
+  "rules": [
+    {
+      "id": "ctc-ssn-parent",
+      "effective": { "from": "2026-01-01", "to": null },
+      "conditions": {
+        "all": [
+          { "fact": "ctcKids", "gte": 1 },
+          { "fact": "ssnAdult", "eq": true },
+          { "fact": "earnedIncome", "gte": 2500 }
+        ]
+      },
+      "explain": "tax.ctc2025",
+      "notes": [{ "key": "tax.pastYears" }],
+      "source": "https://www.irs.gov/credits-deductions/individuals/child-tax-credit",
+      "lastVerified": "2026-10-19",
+      "verifiedBy": "claude-draft"
+    },
+    {
+      "id": "ctc-itin-parent",
+      "effective": { "from": "2025-01-01", "to": "2025-12-31" },
+      "conditions": { "all": [{ "fact": "ctcKids", "gte": 1 }, { "fact": "earnedIncome", "gte": 2500 }] },
+      "explain": "tax.ctc2024",
+      "notes": [{ "key": "tax.pastYears" }],
+      "source": "https://www.irs.gov/credits-deductions/individuals/child-tax-credit",
+      "lastVerified": "2026-10-19",
+      "verifiedBy": "claude-draft"
+    }
+  ]
+}

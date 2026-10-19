@@ -217,5 +217,140 @@
         "lastVerified": "2026-10-07"
       }
     ]
+  },
+  "eitc-max": {
+    "id": "eitc-max",
+    "unit": "year",
+    "description": "Federal EITC maximum credit by qualifying children (0-3+). Tax-credit tables run for the calendar year the return is filed in (tax year 2025 is filed in 2026).",
+    "versions": [
+      {
+        "effective": { "from": "2025-01-01", "to": "2025-12-31" },
+        "values": { "0": 632, "1": 4213, "2": 6960, "3": 7830 },
+        "source": "https://www.irs.gov/Credits-&-Deductions/Individuals/Earned-Income-Tax-Credit/EITC-Income-Limits-Maximum-Credit-Amounts",
+        "lastVerified": "2026-10-19"
+      },
+      {
+        "effective": { "from": "2026-01-01", "to": "2026-12-31" },
+        "values": { "0": 649, "1": 4328, "2": 7152, "3": 8046 },
+        "source": "https://www.irs.gov/Credits-&-Deductions/Individuals/Earned-Income-Tax-Credit/EITC-Income-Limits-Maximum-Credit-Amounts",
+        "lastVerified": "2026-10-19"
+      }
+    ]
+  },
+  "eitc-limit-single": {
+    "id": "eitc-limit-single",
+    "unit": "year",
+    "description": "Federal EITC income limit (AGI and earned income) for single, head of household, or widowed filers, by qualifying children (0-3+).",
+    "versions": [
+      {
+        "effective": { "from": "2025-01-01", "to": "2025-12-31" },
+        "values": { "0": 18591, "1": 49084, "2": 55768, "3": 59899 },
+        "source": "https://www.irs.gov/Credits-&-Deductions/Individuals/Earned-Income-Tax-Credit/EITC-Income-Limits-Maximum-Credit-Amounts",
+        "lastVerified": "2026-10-19"
+      },
+      {
+        "effective": { "from": "2026-01-01", "to": "2026-12-31" },
+        "values": { "0": 19104, "1": 50434, "2": 57310, "3": 61555 },
+        "source": "https://www.irs.gov/Credits-&-Deductions/Individuals/Earned-Income-Tax-Credit/EITC-Income-Limits-Maximum-Credit-Amounts",
+        "lastVerified": "2026-10-19"
+      }
+    ]
+  },
+  "eitc-limit-joint": {
+    "id": "eitc-limit-joint",
+    "unit": "year",
+    "description": "Federal EITC income limit for married couples filing jointly, by qualifying children (0-3+).",
+    "versions": [
+      {
+        "effective": { "from": "2025-01-01", "to": "2025-12-31" },
+        "values": { "0": 25511, "1": 56004, "2": 62688, "3": 66819 },
+        "source": "https://www.irs.gov/Credits-&-Deductions/Individuals/Earned-Income-Tax-Credit/EITC-Income-Limits-Maximum-Credit-Amounts",
+        "lastVerified": "2026-10-19"
+      },
+      {
+        "effective": { "from": "2026-01-01", "to": "2026-12-31" },
+        "values": { "0": 26214, "1": 57554, "2": 64430, "3": 68675 },
+        "source": "https://www.irs.gov/Credits-&-Deductions/Individuals/Earned-Income-Tax-Credit/EITC-Income-Limits-Maximum-Credit-Amounts",
+        "lastVerified": "2026-10-19"
+      }
+    ]
+  },
+  "actc-per-child": {
+    "id": "actc-per-child",
+    "unit": "year",
+    "description": "Refundable part of the Child Tax Credit (Additional Child Tax Credit), most per qualifying child.",
+    "versions": [
+      {
+        "effective": { "from": "2025-01-01", "to": "2025-12-31" },
+        "values": { "1": 1700 },
+        "each": 1700,
+        "source": "https://www.irs.gov/credits-deductions/individuals/child-tax-credit",
+        "lastVerified": "2026-10-19"
+      },
+      {
+        "effective": { "from": "2026-01-01", "to": "2026-12-31" },
+        "values": { "1": 1700 },
+        "each": 1700,
+        "source": "https://www.irs.gov/credits-deductions/individuals/child-tax-credit",
+        "lastVerified": "2026-10-19"
+      }
+    ]
+  },
+  "caleitc-max": {
+    "id": "caleitc-max",
+    "unit": "year",
+    "description": "CalEITC maximum credit by qualifying children (0-3+).",
+    "versions": [
+      {
+        "effective": { "from": "2025-01-01", "to": "2025-12-31" },
+        "values": { "0": 294, "1": 1958, "2": 3239, "3": 3644 },
+        "source": "https://www.ftb.ca.gov/file/personal/credits/caleitc/eligibility-and-credit-information.html",
+        "lastVerified": "2026-10-19"
+      },
+      {
+        "effective": { "from": "2026-01-01", "to": "2026-12-31" },
+        "values": { "0": 302, "1": 2016, "2": 3339, "3": 3756 },
+        "source": "https://www.ftb.ca.gov/file/personal/credits/caleitc/eligibility-and-credit-information.html",
+        "lastVerified": "2026-10-19"
+      }
+    ]
+  },
+  "caleitc-limit": {
+    "id": "caleitc-limit",
+    "unit": "year",
+    "description": "CalEITC and YCTC maximum earned income.",
+    "versions": [
+      {
+        "effective": { "from": "2025-01-01", "to": "2025-12-31" },
+        "values": { "all": 31950 },
+        "source": "https://www.ftb.ca.gov/file/personal/credits/caleitc/eligibility-and-credit-information.html",
+        "lastVerified": "2026-10-19"
+      },
+      {
+        "effective": { "from": "2026-01-01", "to": "2026-12-31" },
+        "values": { "all": 32900 },
+        "source": "https://www.ftb.ca.gov/file/personal/credits/caleitc/eligibility-and-credit-information.html",
+        "lastVerified": "2026-10-19"
+      }
+    ]
+  },
+  "yctc-max": {
+    "id": "yctc-max",
+    "unit": "year",
+    "description": "Young Child Tax Credit maximum per tax return.",
+    "versions": [
+      {
+        "effective": { "from": "2025-01-01", "to": "2025-12-31" },
+        "values": { "all": 1154 },
+        "source": "https://www.ftb.ca.gov/file/personal/credits/caleitc/eligibility-and-credit-information.html",
+        "lastVerified": "2026-10-19"
+      },
+      {
+        "effective": { "from": "2026-01-01", "to": "2026-12-31" },
+        "values": { "all": 1189 },
+        "source": "https://www.ftb.ca.gov/file/personal/credits/young-child-tax-credit.html",
+        "lastVerified": "2026-10-19"
+      }
+    ]
   }
 }

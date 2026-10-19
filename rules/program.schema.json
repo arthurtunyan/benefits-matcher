@@ -10,7 +10,9 @@
     "$schema": { "type": "string" },
     "id": { "type": "string", "pattern": "^[a-z0-9-]+$" },
     "name": { "type": "string", "description": "Official program name. Stays in English so families recognize it at the office." },
-    "category": { "enum": ["health", "food", "cash", "family", "utility", "transit"] },
+    "category": { "enum": ["health", "food", "cash", "family", "utility", "transit",
+        "tax",
+        "disaster"] },
     "appliesTo": { "enum": ["person", "household"] },
     "audience": { "$ref": "#/definitions/cond", "description": "Who this program is relevant to. When it fails, the program is hidden instead of listed as 'not eligible'." },
     "apply": {

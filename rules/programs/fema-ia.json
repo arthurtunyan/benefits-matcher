@@ -1,0 +1,48 @@
+{
+  "$schema": "../program.schema.json",
+  "id": "fema-ia",
+  "name": "FEMA Individual Assistance",
+  "category": "disaster",
+  "appliesTo": "household",
+  "audience": { "all": [{ "fact": "disaster", "eq": true }, { "fact": "daysSinceDisaster", "gte": 0 }] },
+  "apply": { "url": "https://www.disasterassistance.gov/", "phone": "1-800-621-3362", "where": "fema" },
+  "documents": ["id", "address", "damage", "insurance", "income"],
+  "alternatives": ["211"],
+  "estimate": { "text": "fema" },
+  "rules": [
+    {
+      "id": "fema-ia-on-time",
+      "effective": { "from": "2016-01-01", "to": null },
+      "conditions": {
+        "all": [
+          { "fact": "lostHome", "eq": true },
+          { "fact": "qualifiedAnyone", "eq": true },
+          { "fact": "daysSinceDisaster", "lte": 60 }
+        ]
+      },
+      "outcome": "possibly",
+      "explain": "disaster.fema",
+      "notes": [{ "key": "disaster.declared" }, { "key": "disaster.femaMixed" }],
+      "source": "https://www.law.cornell.edu/cfr/text/44/206.112",
+      "lastVerified": "2026-10-19",
+      "verifiedBy": "claude-draft"
+    },
+    {
+      "id": "fema-ia-late",
+      "effective": { "from": "2016-01-01", "to": null },
+      "conditions": {
+        "all": [
+          { "fact": "lostHome", "eq": true },
+          { "fact": "qualifiedAnyone", "eq": true },
+          { "fact": "daysSinceDisaster", "lte": 120 }
+        ]
+      },
+      "outcome": "possibly",
+      "explain": "disaster.femaLate",
+      "notes": [{ "key": "disaster.declared" }, { "key": "disaster.femaMixed" }],
+      "source": "https://www.law.cornell.edu/cfr/text/44/206.112",
+      "lastVerified": "2026-10-19",
+      "verifiedBy": "claude-draft"
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "$schema": "../program.schema.json",
+  "id": "yctc",
+  "name": "Young Child Tax Credit (YCTC)",
+  "category": "tax",
+  "appliesTo": "household",
+  "audience": { "fact": "youngKids", "gte": 1 },
+  "apply": {
+    "url": "https://www.ftb.ca.gov/file/personal/credits/young-child-tax-credit.html",
+    "phone": "1-800-852-5711",
+    "where": "tax"
+  },
+  "documents": ["taxIds", "taxForms", "childRecords"],
+  "estimate": { "table": "yctc-max" },
+  "rules": [
+    {
+      "id": "yctc",
+      "effective": { "from": "2025-01-01", "to": null },
+      "conditions": {
+        "all": [{ "fact": "youngKids", "gte": 1 }, { "fact": "earnedIncome", "lte": { "table": "caleitc-limit" } }]
+      },
+      "explain": "tax.yctc",
+      "notes": [{ "key": "tax.itin" }, { "key": "tax.caResident" }, { "key": "tax.pastYears" }],
+      "source": "https://www.ftb.ca.gov/file/personal/credits/young-child-tax-credit.html",
+      "lastVerified": "2026-10-19",
+      "verifiedBy": "claude-draft"
+    }
+  ]
+}

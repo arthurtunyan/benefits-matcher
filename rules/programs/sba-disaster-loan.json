@@ -1,0 +1,28 @@
+{
+  "$schema": "../program.schema.json",
+  "id": "sba-disaster-loan",
+  "name": "SBA Disaster Loans",
+  "category": "disaster",
+  "appliesTo": "household",
+  "audience": { "all": [{ "fact": "disaster", "eq": true }, { "fact": "daysSinceDisaster", "gte": 0 }] },
+  "apply": {
+    "url": "https://www.sba.gov/funding-programs/disaster-assistance",
+    "phone": "1-800-659-2955",
+    "where": "sba"
+  },
+  "documents": ["id", "address", "damage", "insurance", "income"],
+  "estimate": { "text": "sba" },
+  "rules": [
+    {
+      "id": "sba-home-and-belongings",
+      "effective": { "from": "2016-01-01", "to": null },
+      "conditions": { "all": [{ "fact": "lostHome", "eq": true }, { "fact": "qualifiedAdult", "eq": true }] },
+      "outcome": "possibly",
+      "explain": "disaster.sba",
+      "notes": [{ "key": "disaster.declared" }, { "key": "disaster.sbaLoan" }],
+      "source": "https://www.sba.gov/funding-programs/disaster-assistance",
+      "lastVerified": "2026-10-19",
+      "verifiedBy": "claude-draft"
+    }
+  ]
+}

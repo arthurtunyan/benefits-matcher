@@ -84,6 +84,36 @@ Every rule in `rules/` links to one source. This page records what each source s
 | California LifeLine June 2026 – May 2027 | $24,600 (1), $33,300 (2), $42,100 (3), $50,800 (4), +$8,700 | [CPUC fact sheet](https://www.cpuc.ca.gov/-/media/cpuc-website/about-cpuc/documents/transparency-and-reporting/fact_sheets/california-lifeline/lifeline_onesheet_051126.pdf) |
 | LA Metro LIFE | $58,300 (1), $66,650 (2), $74,950 (3), $83,300 (4), +$6,650 | [metro.net](https://www.metro.net/fares/life/) ⚠️ start date not published |
 
+## Tax credits (added Oct 19, 2026)
+
+Tax tables run for the calendar year the return is **filed** in: tax year 2024 for dates in 2025, tax year 2025 for dates in 2026. Dates in 2027 show "Possibly" until tax year 2026 numbers are added (FTB publishes CalEITC late in the year).
+
+| Item | Value | Source |
+|---|---|---|
+| Federal EITC max, TY2025 (0/1/2/3+ kids) | $649 / $4,328 / $7,152 / $8,046; TY2024 $632 / $4,213 / $6,960 / $7,830 | [IRS EITC tables](https://www.irs.gov/Credits-&-Deductions/Individuals/Earned-Income-Tax-Credit/EITC-Income-Limits-Maximum-Credit-Amounts) |
+| EITC income limits, TY2025 | Single/HOH $19,104 / $50,434 / $57,310 / $61,555; joint $26,214 / $57,554 / $64,430 / $68,675 (TY2024 on the same page) | IRS EITC tables |
+| EITC needs a work-eligible SSN for the filer; children without one don't count | No-child EITC needs an adult 25–64 | IRS ⚠️ the app counts any adult with a qualifying status as the filer |
+| Child Tax Credit TY2025 | Up to $2,200 per child under 17; up to $1,700 refundable; $2,500 earned income needed; filer (or spouse if joint) and child need SSNs | [IRS CTC](https://www.irs.gov/credits-deductions/individuals/child-tax-credit) |
+| Child Tax Credit TY2024 | Child needed an SSN; a parent could file with an ITIN; $1,700 refundable | ⚠️ the IRS page now shows only TY2025 — confirm TY2024 in the 2024 Schedule 8812 instructions |
+| CalEITC TY2025 | Earned income $1–$32,900; max $302 / $2,016 / $3,339 / $3,756; SSN or ITIN for everyone; 4 years back. TY2024: $31,950; $294 / $1,958 / $3,239 / $3,644 | [FTB eligibility table](https://www.ftb.ca.gov/file/personal/credits/caleitc/eligibility-and-credit-information.html) |
+| Young Child Tax Credit TY2025 | Up to $1,189 per return (TY2024 $1,154); child under 6; **no earned income required** since TY2022 | [FTB YCTC](https://www.ftb.ca.gov/file/personal/credits/young-child-tax-credit.html) |
+| Earned income | ⚠️ The app treats all household income as earned when "some comes from a job" (an upper bound) | — |
+| Phones | IRS VITA locator 1-800-906-9887; FTB 1-800-852-5711 | ⚠️ confirm |
+
+## Disaster help (added Oct 19, 2026)
+
+Disaster help appears only after the family answers "yes" to the disaster question. Deadlines are counted from the date they give; official deadlines count from the declaration, which can be later, and the app says so.
+
+| Item | Value | Source |
+|---|---|---|
+| FEMA registration | 60 days after the declaration; late registrations 60 more days with a reason | [44 CFR 206.112](https://www.law.cornell.edu/cfr/text/44/206.112) |
+| FEMA status | Citizens, non-citizen nationals, qualified aliens; a parent can apply for a qualifying minor child; shelter, food, water, crisis counseling for everyone | [FEMA citizenship page](https://www.fema.gov/assistance/individual/program/citizenship-immigration-status) ⚠️ guidance found was from 2024 |
+| DUA | Apply within 30 days after the announcement; for people who can't get regular UI | [20 CFR 625.8](https://www.law.cornell.edu/cfr/text/20/625.8); [EDD fact sheet](https://edd.ca.gov/siteassets/files/pdf_pub_ctr/de8714dua.pdf) ⚠️ the qualified-status requirement is inferred from federal benefit rules |
+| CalFresh replacement | Report within 10 days; up to one month's allotment | [7 CFR 274.6](https://www.law.cornell.edu/cfr/text/7/274.6) |
+| D-SNAP | Only in areas with a declaration + Individual Assistance and USDA approval; current CalFresh households don't qualify | [USDA FNS](https://www.fns.usda.gov/fd-disaster/usda-disaster-nutrition-assistance-programs) ⚠️ status rule inferred from SNAP |
+| SBA disaster loans | Homeowners and renters; deadline set per declaration | [SBA](https://www.sba.gov/funding-programs/disaster-assistance) ⚠️ applicant status rule and phone 1-800-659-2955 to confirm |
+| EBT card replacement | 1-877-328-9677 | ⚠️ confirm |
+
 ## Poverty guidelines
 
 2025: $15,650 (+$5,500). 2026: $15,960, $21,640, $27,320, $33,000, $38,680, $44,360, $50,040, $55,720 (+$5,680). [HHS ASPE](https://aspe.hhs.gov/topics/poverty-economic-mobility/poverty-guidelines). Programs adopt new FPL on different dates; the engine uses the HHS publication date (≈ Jan 15).

@@ -1,0 +1,35 @@
+{
+  "$schema": "../program.schema.json",
+  "id": "dua",
+  "name": "Disaster Unemployment Assistance (DUA)",
+  "category": "disaster",
+  "appliesTo": "household",
+  "audience": { "all": [{ "fact": "disaster", "eq": true }, { "fact": "daysSinceDisaster", "gte": 0 }] },
+  "apply": {
+    "url": "https://edd.ca.gov/siteassets/files/pdf_pub_ctr/de8714dua.pdf",
+    "phone": "1-800-300-5616",
+    "where": "edd"
+  },
+  "documents": ["id", "income", "address"],
+  "alternatives": ["211"],
+  "estimate": { "text": "dua" },
+  "rules": [
+    {
+      "id": "dua",
+      "effective": { "from": "2016-01-01", "to": null },
+      "conditions": {
+        "all": [
+          { "fact": "lostWork", "eq": true },
+          { "fact": "qualifiedAdult", "eq": true },
+          { "fact": "daysSinceDisaster", "lte": 30 }
+        ]
+      },
+      "outcome": "possibly",
+      "explain": "disaster.dua",
+      "notes": [{ "key": "disaster.declared" }, { "key": "disaster.duaUi" }],
+      "source": "https://www.law.cornell.edu/cfr/text/20/625.8",
+      "lastVerified": "2026-10-19",
+      "verifiedBy": "claude-draft"
+    }
+  ]
+}

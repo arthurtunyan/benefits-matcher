@@ -135,6 +135,18 @@ describe('timeline', () => {
     // LifeLine's limit table starts 2026-06-01: before that the result is a data gap, not a rule change.
     expect(run(maria()).filter((c) => c.program.id === 'california-lifeline')).toEqual([])
   })
+  it('shows the 2026 Child Tax Credit change for a parent with an ITIN', () => {
+    const h: Household = { ...maria({ age: 35 }), monthlyIncome: 2500, hasEarnedIncome: true,
+      people: [{ id: 'p', name: '', age: 35, status: 'undocumented' }, { id: 'k', name: '', age: 8, status: 'citizen' }] }
+    const ctc = run(h).filter((c) => c.program.id === 'child-tax-credit')
+    expect(ctc.map((c) => [c.date, c.before?.outcome, c.after?.outcome])).toEqual([['2026-01-01', 'likely', 'not']])
+  })
+  it("turns a family's disaster deadlines into dated changes", () => {
+    const h: Household = { ...maria({ status: 'citizen' }), disaster: true, disasterDate: '2026-10-01', disasterLoss: { home: true, work: true } }
+    const at = (id: string) => run(h).filter((c) => c.program.id === id).map((c) => [c.date, c.after?.outcome ?? 'hidden'])
+    expect(at('dua')).toEqual([['2026-10-01', 'possibly'], ['2026-11-01', 'not']]) // 30 days to apply
+    expect(at('fema-ia')).toEqual([['2026-10-01', 'possibly'], ['2027-01-30', 'not']]) // 60 days + 60 late
+  })
   it('a refugee adult loses full scope Medi-Cal in July 2027', () => {
     const mc = run(maria({ status: 'humanitarian' })).filter((c) => c.program.id === 'medi-cal')
     expect(mc.at(-1)).toMatchObject({ date: '2027-07-01' })

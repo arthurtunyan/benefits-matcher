@@ -1,0 +1,51 @@
+{
+  "$schema": "../program.schema.json",
+  "id": "federal-eitc",
+  "name": "Earned Income Tax Credit (EITC)",
+  "category": "tax",
+  "appliesTo": "household",
+  "apply": {
+    "url": "https://www.irs.gov/individuals/free-tax-return-preparation-for-qualifying-taxpayers",
+    "phone": "1-800-906-9887",
+    "where": "tax"
+  },
+  "documents": ["taxIds", "taxForms", "childRecords"],
+  "estimate": { "table": "eitc-max", "by": "eitcKids" },
+  "rules": [
+    {
+      "id": "eitc-single",
+      "effective": { "from": "2025-01-01", "to": null },
+      "conditions": {
+        "all": [
+          { "fact": "earnedIncome", "gt": 0 },
+          { "fact": "ssnAdult", "eq": true },
+          { "any": [{ "fact": "eitcKids", "gte": 1 }, { "fact": "anyAge25to64", "eq": true }] },
+          { "fact": "annualIncome", "lte": { "table": "eitc-limit-single", "by": "eitcKids" } }
+        ]
+      },
+      "explain": "tax.eitc",
+      "notes": [{ "key": "tax.ssnKids" }, { "key": "tax.pastYears" }],
+      "source": "https://www.irs.gov/Credits-&-Deductions/Individuals/Earned-Income-Tax-Credit/EITC-Income-Limits-Maximum-Credit-Amounts",
+      "lastVerified": "2026-10-19",
+      "verifiedBy": "claude-draft"
+    },
+    {
+      "id": "eitc-joint-only",
+      "effective": { "from": "2025-01-01", "to": null },
+      "conditions": {
+        "all": [
+          { "fact": "earnedIncome", "gt": 0 },
+          { "fact": "ssnAdult", "eq": true },
+          { "any": [{ "fact": "eitcKids", "gte": 1 }, { "fact": "anyAge25to64", "eq": true }] },
+          { "fact": "annualIncome", "lte": { "table": "eitc-limit-joint", "by": "eitcKids" } }
+        ]
+      },
+      "outcome": "possibly",
+      "explain": "tax.eitc",
+      "notes": [{ "key": "tax.jointOnly" }, { "key": "tax.ssnKids" }, { "key": "tax.pastYears" }],
+      "source": "https://www.irs.gov/Credits-&-Deductions/Individuals/Earned-Income-Tax-Credit/EITC-Income-Limits-Maximum-Credit-Amounts",
+      "lastVerified": "2026-10-19",
+      "verifiedBy": "claude-draft"
+    }
+  ]
+}

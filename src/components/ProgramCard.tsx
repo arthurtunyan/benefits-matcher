@@ -4,7 +4,7 @@ import { useT, type T } from '../i18n'
 import { isChangeable, leaves, lookup, nearMiss, type CondResult, type Facts, type LeafResult, type ProgramResult } from '../engine'
 import { help, tables } from '../data'
 
-const MONEY = new Set(['monthlyIncome', 'annualIncome', 'calworksIncome'])
+const MONEY = new Set(['monthlyIncome', 'annualIncome', 'calworksIncome', 'earnedIncome'])
 
 // Where an "other help" suggestion links to.
 const ALT_LINKS: Record<string, string | undefined> = {
@@ -22,7 +22,8 @@ function fmt(fact: string, v: unknown, t: T): string {
   if (MONEY.has(fact)) return t.money(Number(v))
   return String(v)
 }
-const fmtYours = (fact: string, v: unknown, t: T) => (fact === 'incomePctFPL' ? `${v}%` : fmt(fact, v, t))
+const fmtYours = (fact: string, v: unknown, t: T) =>
+  fact === 'incomePctFPL' ? `${v}%` : fact === 'daysSinceDisaster' ? t('ui.daysCount', { n: String(v) }) : fmt(fact, v, t)
 
 export function leafLabel(l: LeafResult, t: T, facts: Facts): string {
   const { fact } = l.leaf
@@ -89,8 +90,10 @@ export default function ProgramCard({ r, facts, names }: { r: ProgramResult; fac
   const { program: p, best, outcome } = r
   const miss = outcome === 'not' ? nearMiss(best.tree) : undefined
   const variant = best.rule.variant && t.has(`variants.${best.rule.variant}`) ? t(`variants.${best.rule.variant}`) : null
-  // Dollar maximums are per household, so Results shows them once, not on every person's card.
-  const est = p.estimate && 'text' in p.estimate && outcome !== 'not' ? t(`values.${p.estimate.text}`) : null
+  // Dollar maximums are per household: shown on household cards, and once in the overview for per-person programs.
+  const unit = p.estimate && 'table' in p.estimate ? tables[p.estimate.table]?.unit : undefined
+  const est = r.estimate !== undefined && p.appliesTo === 'household' ? t(unit === 'year' ? 'ui.upToYear' : 'ui.upTo', { amount: t.money(r.estimate) })
+    : p.estimate && 'text' in p.estimate && outcome !== 'not' ? t(`values.${p.estimate.text}`) : null
   const detailsId = useId()
   const single = outcome === 'not' && best.blockers.length === 1 ? best.blockers[0] : undefined
 

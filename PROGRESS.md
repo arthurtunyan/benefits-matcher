@@ -13,7 +13,7 @@ Legend: ✅ done · 🟡 done as a draft, needs a human check · ⬜ to do · �
 |---|---|
 | Repo, build, CI, tests | ✅ |
 | Rules engine (dated, per-person, three-valued) | ✅ |
-| 16 programs encoded with sources | 🟡 researched and sourced; each rule still needs Arthur's personal check |
+| 25 programs encoded with sources (16 benefits + 4 tax credits + 5 disaster) | 🟡 researched and sourced; each rule still needs Arthur's personal check |
 | Persona test suite (36 households) | ✅ |
 | Rule linter (schema, sources, dates, 90-day check, translations) | ✅ |
 | English interface | ✅ |
@@ -33,7 +33,7 @@ Legend: ✅ done · 🟡 done as a draft, needs a human check · ⬜ to do · �
 ### Setup
 - ✅ Git repo with `main` branch, MIT license, `.gitignore`
 - ✅ Vite + React + TypeScript, no backend
-- ✅ `npm test` (Vitest) — 491 tests passing (includes a check for repeated translation keys and the timeline)
+- ✅ `npm test` (Vitest) — 620 tests passing, 43 personas (includes repeated translation keys, the timeline, tax credits, and disaster deadlines)
 - ✅ GitHub Actions: tests + type-check + build on every push and pull request, plus a **weekly run** so stale rules (not checked in 90 days) turn the badge red
 - ✅ Deploys to GitHub Pages on every push to `main`: https://arthurtunyan.github.io/benefits-matcher/
 - ✅ Issue form for reporting a rule change, pull-request checklist
@@ -49,13 +49,15 @@ Legend: ✅ done · 🟡 done as a draft, needs a human check · ⬜ to do · �
 - ✅ Programs hidden when irrelevant (no WIC card for a 40-year-old man)
 
 ### Programs (`rules/programs/`)
-Medi-Cal (full and restricted, with 2024–2027 dated rules), Covered California (2025, 2026, 2027 rules), CalFresh (including H.R. 1), CFAP (including the planned Oct 2027 expansion), CalWORKs (child-only cases, $450 work deduction), WIC (Medi-Cal/CalFresh/CalWORKs count automatically), Head Start / Early Head Start / State Preschool, SUN Bucks, CAPI, California LifeLine, LA Metro LIFE, SCE CARE/FERA, SoCalGas CARE, LADWP EZ-SAVE, BWP Lifeline, Glendale Care.
+**Tax credits:** federal EITC, Child Tax Credit (with the 2025 parent-SSN change), CalEITC, Young Child Tax Credit (works with an ITIN and $0 income). **Disaster help:** FEMA Individual Assistance, SBA disaster loans, Disaster Unemployment Assistance, CalFresh replacement, D-SNAP. Medi-Cal (full and restricted, with 2024–2027 dated rules), Covered California (2025, 2026, 2027 rules), CalFresh (including H.R. 1), CFAP (including the planned Oct 2027 expansion), CalWORKs (child-only cases, $450 work deduction), WIC (Medi-Cal/CalFresh/CalWORKs count automatically), Head Start / Early Head Start / State Preschool, SUN Bucks, CAPI, California LifeLine, LA Metro LIFE, SCE CARE/FERA, SoCalGas CARE, LADWP EZ-SAVE, BWP Lifeline, Glendale Care.
 
 ### Interface
 - ✅ Welcome screen in 3 languages, "See an example family" button (also at `/#example`)
 - ✅ Household form: ZIP fills in the area and utilities; income can be skipped; immigration status optional
 - ✅ Results by person with a status dropdown right on each person (the demo "child toggle")
 - ✅ "As of" date picker with Today / Dec 2025 / Jul 2027 shortcuts
+- ✅ **Money back at tax time** section: four credits with amounts by number of children, ITIN and mixed-status rules, free filing help (VITA, CalFile); totals in the overview as "a year, at tax time"
+- ✅ **Disaster mode**: a disaster question on the house (siren on the chimney) with date and what was lost; a Disaster help card right under the overview with a countdown for each deadline (CalFresh replacement 10 days, DUA 30, FEMA 60 + 60 late) and first steps; deadlines also appear in the timeline; go-bag tip on the plan
 - ✅ **Rule-change timeline** ("How rule changes reach your family"): runs the household on every day a rule or income table starts or stops (Oct 2025–Dec 2027), lists each change per person (before → after, with the rule and source), marks planned changes, highlights changes between today and the chosen date. Skips days where we only lack an income table. Ages stay as entered.
 - ✅ "Why?" panel: plain-language rule, every condition with ✓ / ✗ / ?, your value, source link, dates, rule ID
 - ✅ "Good to know": universal school meals, public charge guide link, SSI, clinics
@@ -69,7 +71,7 @@ Medi-Cal (full and restricted, with 2024–2027 dated rules), Covered California
 ## 🙋 What Arthur and Aiden need to do (in order)
 
 1. ✅ ~~Make the repo public so the site goes live.~~ Done Oct 7 — live at https://arthurtunyan.github.io/benefits-matcher/ (every push to `main` redeploys).
-2. **Arthur: check every rule yourself** (about 2–3 hours). **As of Oct 19, 0 of 44 rules are checked** — all still say `claude-draft`. Also check CAPI: its condition and dollar estimate use the household size, so a family of 3+ is compared to the *couple* amount. For each rule in `rules/programs/*.json` and each table in `rules/tables.json`, open the `source`, confirm the numbers and dates, then change `"verifiedBy": "claude-draft"` to `"verifiedBy": "Arthur"` and set `lastVerified` to that day. Items flagged ⚠️ in [docs/SOURCES.md](docs/SOURCES.md) matter most.
+2. **Arthur: check every rule yourself** (about 3–4 hours). **As of Oct 19, 0 of 56 rules are checked** (12 tax and disaster rules were added Oct 19 — see the two new sections in [docs/SOURCES.md](docs/SOURCES.md)) — all still say `claude-draft`. Also check CAPI: its condition and dollar estimate use the household size, so a family of 3+ is compared to the *couple* amount. For each rule in `rules/programs/*.json` and each table in `rules/tables.json`, open the `source`, confirm the numbers and dates, then change `"verifiedBy": "claude-draft"` to `"verifiedBy": "Arthur"` and set `lastVerified` to that day. Items flagged ⚠️ in [docs/SOURCES.md](docs/SOURCES.md) matter most.
 3. **Aiden: get native-speaker review** of `src/i18n/es.json` and `src/i18n/hy.json` (Armenian is Eastern Armenian; ask whether Western Armenian is better for your audience). Fix anything they mark. No legal term should go out unreviewed. The UI redesign added new labels to check too: every `ui` key added after `ui.steps` in `es.json` and `hy.json` (Next button, step names, the answer sentence, the "Not sure" helper questions, dark mode).
 4. **Test on a real, inexpensive Android phone** over cellular data. Add the app to the home screen, turn on airplane mode, and confirm it still opens.
 5. **Outside review (big credibility boost):** ask a benefits navigator or legal aid worker (for example Neighborhood Legal Services' Health Consumer Center, 1-800-896-3202) to look at 10 personas from `tests/personas.json`. Record who reviewed and what changed in `docs/SOURCES.md`.
@@ -134,6 +136,7 @@ These are honest shortcuts for a screener. Each is a good "what we'd build next"
 
 | Date | What happened |
 |---|---|
+| 2026-10-19 | Researched past Congressional App Challenge winners near CA-30 (Friedman 2025: SyncRide; Chu 2025: Fire Up; Sherman 2025: FireSafe; Gomez 2025: Know Your Rights) and Rep. Friedman's priorities (wildfire recovery, affordability, transportation, constituent casework). Built two features on Arthur's request: **tax credits** (4 programs, 7 dated tables) and **disaster mode** (5 programs, deadlines, timeline integration). 7 new personas. Disaster help is opt-in. New es/hy text needs native review. |
 | 2026-10-19 | Built the rule-change timeline (the review's "Policy Time Machine"), on Arthur's request. New es/hy strings need native review. Demo script updated to show it. |
 | 2026-10-19 | Acted on an outside review (verified each point against the code first). Fixed: CalFresh/CFAP/CalWORKs/CAPI dollar maximums repeated on every person's card (now shown once in a new "Your family at a glance" box, labeled as a household total and a maximum); new overview box with counts, Make my plan, and Answer skipped questions; duplicate HTML ids when a program shows for several people; answer tiles claimed to be radio buttons without arrow keys (now pressed buttons); negative income/age accepted; house checklist marked skipped parts as done; plan hid one person's "possibly" when another was "likely"; "Free help near you" heading replaced by a repeated translation key. Clearer immigration-status help ("stays on this device"). New es/hy text needs native review. Review points not taken: ZIP already pre-fills utilities; unchecked boxes as "no" is normal for a screener. |
 | 2026-10-13 | UI redesign merged (PR #1): one question per screen, house drawing as the question map and progress, tap tiles, dark mode button. |

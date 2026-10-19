@@ -101,7 +101,7 @@
     "skippedNote": "Some results depend on questions you skipped. Answering them can make your results clearer.",
     "answerSkipped": "Answer skipped questions",
     "tmTitle": "How rule changes reach your family",
-    "tmIntro": "Each date below is a day a law or rule changed something for someone in your home, from {from} to {to}. Ages stay as you entered them.",
+    "tmIntro": "Each date below is a day a law, rule, or deadline changes something for someone in your home, from {from} to {to}. Ages stay as you entered them.",
     "tmBetween": "Changes for your family between today and {date}: {n}",
     "tmNone": "No rule changes in our data reach your family in these dates.",
     "tmPlanned": "Planned — may still change",
@@ -170,7 +170,34 @@
     "longBeachQ": "Do you live in Long Beach or Signal Hill?",
     "yes": "Yes",
     "no": "No",
-    "noGas": "We don't have gas at home"
+    "noGas": "We don't have gas at home",
+    "stepDisaster": "Disaster",
+    "qDisaster": "Has a fire, flood, or other disaster hurt your home, food, or work?",
+    "disasterHelp": "If so, we'll show disaster help like FEMA and replacement CalFresh, with your deadlines.",
+    "disasterWhen": "When did it happen?",
+    "disasterWhat": "What happened? Pick all that apply",
+    "lossHome": "Our home or belongings were damaged",
+    "lossFood": "We lost food",
+    "lossWork": "We lost work or income",
+    "taxTitle": "Money back at tax time",
+    "taxIntro": "You get these by filing a tax return, even with little or no income. California's credits work with an ITIN. Free help: VITA tax sites (call 211) and CalFile.",
+    "disasterTitle": "Disaster help",
+    "disasterIntro": "Start with the closest deadline. Dates are counted from the day you gave; official deadlines count from the disaster declaration, which may be a few days later.",
+    "deadlinesTitle": "Your deadlines",
+    "deadlineBy": "by about {date}",
+    "deadlineWithin": "within {n} days of the disaster",
+    "daysLeft": "{n} days left",
+    "lastDay": "last day",
+    "deadlinePassed": "passed — call, late requests are sometimes accepted",
+    "nowSteps": "Also do these now",
+    "stepPhotos": "Take photos of the damage before you clean up, and keep every receipt.",
+    "stepAddress": "If you moved, give DPSS, Medi-Cal, and the post office your new address so benefits keep coming.",
+    "stepEbt": "Lost your EBT card? Call 1-877-328-9677 for a free replacement.",
+    "stepInsurance": "Call your insurance company, even if you rent: renters insurance may pay for belongings and a hotel.",
+    "daysCount": "{n} days",
+    "upToYear": "up to {amount} a year, at tax time",
+    "taxMoneyHelp": "Tax credits come once a year when you file. These are the most for your family; the real amount depends on your earnings.",
+    "goBag": "Tip: take phone photos of these documents and keep copies in a go-bag, in case you have to leave quickly in a fire."
   },
   "status": {
     "preferNot": "Prefer not to say",
@@ -219,7 +246,16 @@
     "socalgas-care": "A discount on your SoCalGas gas bill.",
     "ladwp-ez-save": "A discount on your LADWP bill.",
     "bwp-lifeline": "A lower electric rate from Burbank Water and Power.",
-    "glendale-care": "A monthly discount on your Glendale Water & Power electric bill."
+    "glendale-care": "A monthly discount on your Glendale Water & Power electric bill.",
+    "federal-eitc": "Money back at tax time for people who work",
+    "child-tax-credit": "Money back at tax time for each child under 17",
+    "caleitc": "California money back at tax time for people who work",
+    "yctc": "California money at tax time for families with a child under 6, even with no income",
+    "fema-ia": "Help paying for a place to stay, repairs, and things you lost in a disaster",
+    "sba-disaster-loan": "Low-interest loans to repair your home and replace belongings after a disaster",
+    "dua": "Weekly payments for people who lost work because of a disaster",
+    "calfresh-replacement": "Replaces CalFresh food that was destroyed in a disaster",
+    "d-snap": "Food benefits after a disaster for families who aren't on CalFresh"
   },
   "variants": {
     "full": "Full-scope Medi-Cal (all services)",
@@ -275,7 +311,18 @@
     "care.socalgas": "SoCalGas customers can get CARE if household income is at or below 200% of the poverty level, or if anyone gets CalFresh, CalWORKs, Medi-Cal, SSI, or WIC.",
     "ezsave.eligible": "LADWP customers can get EZ-SAVE if household income is at or below the limit. You don't have to send proof of income to apply.",
     "bwp.eligible": "Burbank Water and Power customers can get Lifeline if household income is at or below 200% of the poverty level, or if anyone gets CalFresh.",
-    "gwp.eligible": "Glendale Water & Power customers can get Glendale Care if household income is at or below 200% of the poverty level, or if anyone gets SSI."
+    "gwp.eligible": "Glendale Water & Power customers can get Glendale Care if household income is at or below 200% of the poverty level, or if anyone gets SSI.",
+    "tax.eitc": "The federal Earned Income Tax Credit gives money back to people who work and earn under a limit. You get it by filing a federal tax return. The amount depends on your earnings and how many children you claim.",
+    "tax.ctc2024": "For tax year 2024 (returns filed in 2025), the Child Tax Credit needed a Social Security number for each child, but parents could file with an ITIN. Up to $1,700 per child could come back as a refund.",
+    "tax.ctc2025": "Starting with tax year 2025, the Child Tax Credit is up to $2,200 per child under 17, and up to $1,700 of it can come back as a refund. The parent filing (or a spouse on a joint return) and each child need a Social Security number valid for work. You need at least $2,500 in earnings for the refund part.",
+    "tax.caleitc": "California's Earned Income Tax Credit gives money back to people who work and earn up to the limit. You can file with an ITIN instead of a Social Security number. Claim it on your California tax return.",
+    "tax.yctc": "California's Young Child Tax Credit is for families with a child under 6 — even if you had no income. You can file with an ITIN. It's one credit per tax return, not per child.",
+    "disaster.fema": "After the President declares a major disaster, FEMA can help pay for a place to stay, home repairs, and things you lost. Register within 60 days of the declaration.",
+    "disaster.femaLate": "After the first 60 days, FEMA accepts late registrations for 60 more days if you explain why you're late.",
+    "disaster.sba": "After a declared disaster, the SBA lends money at low interest to homeowners and renters to repair a home and replace belongings.",
+    "disaster.dua": "DUA pays people who lost work because of a declared disaster and can't get regular unemployment, including self-employed and gig workers. Apply within 30 days after DUA is announced.",
+    "disaster.cfReplace": "If you get CalFresh and food you bought was destroyed in a disaster, DPSS can replace it. Ask within 10 days of the loss.",
+    "disaster.dsnap": "Disaster CalFresh (D-SNAP) gives one month of food benefits to families hurt by a disaster who aren't already on CalFresh."
   },
   "notes": {
     "mc.anyStatusKids": "Children keep full Medi-Cal no matter their immigration status. The 2026 changes do not apply to children.",
@@ -310,7 +357,18 @@
     "ll.onePerHome": "One discount per household — for a home phone or a cell phone.",
     "life.everyone": "Each rider in your household can sign up for their own LIFE TAP card.",
     "ezsave.seniors": "If someone is 62+ or disabled, ask LADWP about its Lifeline program, which gives a bigger discount.",
-    "bwp.buss": "If your income is higher, ask about the BUSS program (about 14% off electric)."
+    "bwp.buss": "If your income is higher, ask about the BUSS program (about 14% off electric).",
+    "tax.ssnKids": "Children count only if they have a Social Security number valid for work. Children with an ITIN still count for California's credits.",
+    "tax.pastYears": "Missed a year? You can still file late and get these credits: up to 3 past years for federal credits and 4 for California's.",
+    "tax.jointOnly": "Your income is above the limit for single filers. This is only possible if you're married and file a joint return.",
+    "tax.itin": "No Social Security number? You can use an ITIN. Free tax help sites (VITA) can help you apply for one.",
+    "tax.caResident": "You must live in California for more than half the year.",
+    "disaster.declared": "Opens only after a federal disaster declaration for your county. Deadlines count from that date, which can be a few days after the disaster.",
+    "disaster.femaMixed": "Only one person in your home needs to qualify: a parent can apply for a child who is a U.S. citizen. Shelter, food, water, and crisis counseling are open to everyone, whatever their status.",
+    "disaster.duaUi": "If you can get regular unemployment, EDD will pay that instead. Apply either way and say the disaster caused your job loss.",
+    "disaster.cfReplaceAmount": "Covers the food you lost, up to one month of benefits. After big disasters the county sometimes allows more time.",
+    "disaster.dsnapWhen": "D-SNAP opens only if USDA approves it for your area, usually a few weeks after the disaster and for about a week. Watch for news from DPSS or call 211.",
+    "disaster.sbaLoan": "This is a loan you pay back, at low interest. Renters can borrow to replace belongings."
   },
   "values": {
     "wic": "Healthy food each month, plus nutrition and breastfeeding help",
@@ -321,7 +379,12 @@
     "socalgasCare": "About 20% off your gas bill",
     "ezSave": "Discount on electric, water, and sewer charges",
     "bwpLifeline": "45% lower electric rate, no monthly service charge",
-    "glendaleCare": "Up to $35 off each month"
+    "glendaleCare": "Up to $35 off each month",
+    "fema": "Money for a place to stay, repairs, and things you lost",
+    "sba": "Low-interest loans for repairs and belongings",
+    "dua": "Weekly payments while you can't work",
+    "cfReplace": "Up to one month of CalFresh",
+    "dsnap": "One month of food benefits"
   },
   "where": {
     "benefitscal": "Online at BenefitsCal.com, by phone, or at a county DPSS office",
@@ -332,7 +395,12 @@
     "coveredCa": "Online at CoveredCA.com or by phone",
     "lifeline": "Through a phone company that offers California LifeLine",
     "metroLife": "Online at metro.net/life or by phone",
-    "utility": "Directly with your utility company, online or by phone"
+    "utility": "Directly with your utility company, online or by phone",
+    "tax": "File a tax return. Free help at a VITA tax site (call 211 to find one) or file California's return free with CalFile",
+    "fema": "Online at DisasterAssistance.gov, by phone, or at a Disaster Recovery Center",
+    "sba": "Online with the SBA, by phone, or at a Disaster Recovery Center",
+    "edd": "With EDD (California unemployment), online or by phone",
+    "dsnap": "Only when it's announced for your area: watch for DPSS news or call 211"
   },
   "docs": {
     "id": "Photo ID for each adult who is applying",
@@ -349,7 +417,11 @@
     "utilityBill": "A recent utility bill (for your account number)",
     "incomeOrBenefitLetter": "Proof of income, or a letter showing you get Medi-Cal, CalFresh, or another program",
     "secondProofOfAddress": "A second proof of address (phone, gas, or cable bill)",
-    "householdMembers": "Names of everyone in your home"
+    "householdMembers": "Names of everyone in your home",
+    "taxIds": "Social Security number or ITIN for everyone on the tax return",
+    "taxForms": "W-2 and 1099 forms, or records of self-employment income",
+    "damage": "Photos of the damage and a list of what was lost",
+    "insurance": "Insurance papers and any letters from your insurance company"
   },
   "alt": {
     "cfap": "CFAP — state food aid for some immigrants",
@@ -391,7 +463,21 @@
     "inLACounty.eq": "Lives in LA County",
     "anyOf": "Any one of these:",
     "not": "Not: {x}",
-    "or": "or"
+    "or": "or",
+    "earnedIncome.gt": "Has income from a job or self-employment",
+    "earnedIncome.gte": "At least {v} a year from work",
+    "earnedIncome.lte": "Income from work at or below {v} a year",
+    "ssnAdult.true": "An adult with a Social Security number valid for work",
+    "eitcKids.gte": "At least {v} child under 19 with a Social Security number",
+    "ctcKids.gte": "At least {v} child under 17 with a Social Security number",
+    "youngKids.gte": "At least {v} child under 6",
+    "anyAge25to64.true": "An adult aged 25 to 64",
+    "lostHome.true": "Your home or belongings were damaged",
+    "lostFood.true": "You lost food",
+    "lostWork.true": "You lost work or income",
+    "qualifiedAnyone.true": "Someone in your home is a U.S. citizen or qualified immigrant (green card, refugee, asylee)",
+    "qualifiedAdult.true": "An adult who is a U.S. citizen or qualified immigrant",
+    "daysSinceDisaster.lte": "Within {v} days of the disaster"
   },
   "help": {
     "areas": {

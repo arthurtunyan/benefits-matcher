@@ -93,7 +93,7 @@
     "skippedNote": "Algunos resultados dependen de preguntas que usted saltó. Si las contesta, sus resultados pueden ser más claros.",
     "answerSkipped": "Contestar las preguntas que saltó",
     "tmTitle": "Cómo los cambios de reglas afectan a su familia",
-    "tmIntro": "Cada fecha es un día en que una ley o regla cambió algo para alguien en su hogar, de {from} a {to}. Las edades se quedan como usted las escribió.",
+    "tmIntro": "Cada fecha es un día en que una ley, una regla o una fecha límite cambia algo para alguien en su hogar, de {from} a {to}. Las edades se quedan como usted las escribió.",
     "tmBetween": "Cambios para su familia entre hoy y {date}: {n}",
     "tmNone": "Ningún cambio de reglas en nuestros datos afecta a su familia en estas fechas.",
     "tmPlanned": "Planeado — todavía puede cambiar",
@@ -162,7 +162,34 @@
     "longBeachQ": "¿Vive en Long Beach o Signal Hill?",
     "yes": "Sí",
     "no": "No",
-    "noGas": "No tenemos gas en casa"
+    "noGas": "No tenemos gas en casa",
+    "stepDisaster": "Desastre",
+    "qDisaster": "¿Un incendio, una inundación u otro desastre dañó su casa, su comida o su trabajo?",
+    "disasterHelp": "Si es así, le mostraremos ayuda para desastres como FEMA y el reemplazo de CalFresh, con sus fechas límite.",
+    "disasterWhen": "¿Cuándo pasó?",
+    "disasterWhat": "¿Qué pasó? Escoja todo lo que aplique",
+    "lossHome": "Nuestra casa o nuestras cosas sufrieron daños",
+    "lossFood": "Perdimos comida",
+    "lossWork": "Perdimos trabajo o ingresos",
+    "taxTitle": "Dinero de vuelta al declarar impuestos",
+    "taxIntro": "Se reciben al presentar una declaración de impuestos, aun con pocos o ningún ingreso. Los créditos de California funcionan con un ITIN. Ayuda gratis: sitios VITA (llame al 211) y CalFile.",
+    "disasterTitle": "Ayuda para desastres",
+    "disasterIntro": "Empiece por la fecha límite más cercana. Las fechas se cuentan desde el día que usted dio; los plazos oficiales cuentan desde la declaración de desastre, que puede ser unos días después.",
+    "deadlinesTitle": "Sus fechas límite",
+    "deadlineBy": "más o menos para el {date}",
+    "deadlineWithin": "dentro de {n} días del desastre",
+    "daysLeft": "quedan {n} días",
+    "lastDay": "último día",
+    "deadlinePassed": "ya pasó — llame, a veces aceptan solicitudes tardías",
+    "nowSteps": "Haga esto también ahora",
+    "stepPhotos": "Tome fotos de los daños antes de limpiar y guarde todos los recibos.",
+    "stepAddress": "Si se mudó, dé su nueva dirección a DPSS, a Medi-Cal y al correo para que sus beneficios sigan llegando.",
+    "stepEbt": "¿Perdió su tarjeta EBT? Llame al 1-877-328-9677 para reemplazarla gratis.",
+    "stepInsurance": "Llame a su compañía de seguros, aunque alquile: el seguro de inquilino puede pagar sus cosas y un hotel.",
+    "daysCount": "{n} días",
+    "upToYear": "hasta {amount} al año, al declarar impuestos",
+    "taxMoneyHelp": "Los créditos tributarios llegan una vez al año cuando declara. Son lo máximo para su familia; la cantidad real depende de sus ganancias.",
+    "goBag": "Consejo: tome fotos de estos documentos con su teléfono y guarde copias en una mochila de emergencia, por si tiene que salir rápido en un incendio."
   },
   "status": {
     "preferNot": "Prefiero no decir",
@@ -211,7 +238,16 @@
     "socalgas-care": "Un descuento en su factura de gas de SoCalGas.",
     "ladwp-ez-save": "Un descuento en su factura de LADWP.",
     "bwp-lifeline": "Una tarifa de luz más baja de Burbank Water and Power.",
-    "glendale-care": "Un descuento mensual en su factura de luz de Glendale Water & Power."
+    "glendale-care": "Un descuento mensual en su factura de luz de Glendale Water & Power.",
+    "federal-eitc": "Dinero de vuelta al declarar impuestos para personas que trabajan",
+    "child-tax-credit": "Dinero de vuelta al declarar impuestos por cada niño menor de 17 años",
+    "caleitc": "Dinero de California al declarar impuestos para personas que trabajan",
+    "yctc": "Dinero de California al declarar impuestos para familias con un niño menor de 6 años, aun sin ingresos",
+    "fema-ia": "Ayuda para pagar dónde quedarse, reparaciones y cosas perdidas en un desastre",
+    "sba-disaster-loan": "Préstamos con interés bajo para reparar su casa y reemplazar sus cosas después de un desastre",
+    "dua": "Pagos semanales para personas que perdieron trabajo por un desastre",
+    "calfresh-replacement": "Reemplaza la comida de CalFresh que se destruyó en un desastre",
+    "d-snap": "Beneficios de comida después de un desastre para familias que no reciben CalFresh"
   },
   "variants": {
     "full": "Medi-Cal completo (todos los servicios)",
@@ -267,7 +303,18 @@
     "care.socalgas": "Los clientes de SoCalGas pueden recibir CARE si el ingreso del hogar es igual o menor al 200% del nivel de pobreza, o si alguien recibe CalFresh, CalWORKs, Medi-Cal, SSI o WIC.",
     "ezsave.eligible": "Los clientes de LADWP pueden recibir EZ-SAVE si el ingreso del hogar es igual o menor al límite. No tiene que mandar comprobante de ingresos para solicitar.",
     "bwp.eligible": "Los clientes de Burbank Water and Power pueden recibir Lifeline si el ingreso del hogar es igual o menor al 200% del nivel de pobreza, o si alguien recibe CalFresh.",
-    "gwp.eligible": "Los clientes de Glendale Water & Power pueden recibir Glendale Care si el ingreso del hogar es igual o menor al 200% del nivel de pobreza, o si alguien recibe SSI."
+    "gwp.eligible": "Los clientes de Glendale Water & Power pueden recibir Glendale Care si el ingreso del hogar es igual o menor al 200% del nivel de pobreza, o si alguien recibe SSI.",
+    "tax.eitc": "El Crédito Tributario por Ingreso del Trabajo federal devuelve dinero a personas que trabajan y ganan menos de un límite. Se obtiene al presentar la declaración federal de impuestos. La cantidad depende de sus ganancias y de cuántos hijos declara.",
+    "tax.ctc2024": "Para el año tributario 2024 (declaraciones de 2025), el Crédito Tributario por Hijos requería un número de Seguro Social para cada niño, pero los padres podían declarar con un ITIN. Hasta $1,700 por niño podían ser reembolso.",
+    "tax.ctc2025": "Desde el año tributario 2025, el Crédito Tributario por Hijos es de hasta $2,200 por niño menor de 17 años, y hasta $1,700 puede ser reembolso. El padre o la madre que declara (o el cónyuge en una declaración conjunta) y cada niño necesitan un número de Seguro Social válido para trabajar. Para el reembolso se necesitan al menos $2,500 de ganancias.",
+    "tax.caleitc": "El Crédito Tributario por Ingreso del Trabajo de California devuelve dinero a personas que trabajan y ganan hasta el límite. Puede declarar con un ITIN en lugar de un número de Seguro Social. Se pide en la declaración de impuestos de California.",
+    "tax.yctc": "El Crédito Tributario por Hijos Pequeños de California es para familias con un niño menor de 6 años, aunque no hayan tenido ingresos. Puede declarar con un ITIN. Es un crédito por declaración, no por niño.",
+    "disaster.fema": "Después de que el Presidente declara un desastre mayor, FEMA puede ayudar a pagar dónde quedarse, reparaciones de la casa y cosas perdidas. Regístrese dentro de los 60 días después de la declaración.",
+    "disaster.femaLate": "Después de los primeros 60 días, FEMA acepta registros tardíos por 60 días más si usted explica por qué se atrasó.",
+    "disaster.sba": "Después de un desastre declarado, la SBA presta dinero con interés bajo a dueños e inquilinos para reparar la casa y reemplazar sus cosas.",
+    "disaster.dua": "DUA paga a personas que perdieron trabajo por un desastre declarado y no pueden recibir desempleo regular, incluso trabajadores por cuenta propia y de aplicaciones. Solicítelo dentro de los 30 días después del anuncio de DUA.",
+    "disaster.cfReplace": "Si recibe CalFresh y la comida que compró se destruyó en un desastre, DPSS puede reemplazarla. Pídalo dentro de los 10 días de la pérdida.",
+    "disaster.dsnap": "CalFresh para Desastres (D-SNAP) da un mes de beneficios de comida a familias afectadas por un desastre que todavía no reciben CalFresh."
   },
   "notes": {
     "mc.anyStatusKids": "Los niños mantienen Medi-Cal completo sin importar su estatus migratorio. Los cambios de 2026 no aplican a los niños.",
@@ -302,7 +349,18 @@
     "ll.onePerHome": "Un descuento por hogar, para teléfono de casa o celular.",
     "life.everyone": "Cada pasajero de su hogar puede inscribirse para su propia tarjeta TAP de LIFE.",
     "ezsave.seniors": "Si alguien tiene 62 años o más o una discapacidad, pregunte a LADWP por su programa Lifeline, que da un descuento mayor.",
-    "bwp.buss": "Si su ingreso es más alto, pregunte por el programa BUSS (alrededor de 14% de descuento en la luz)."
+    "bwp.buss": "Si su ingreso es más alto, pregunte por el programa BUSS (alrededor de 14% de descuento en la luz).",
+    "tax.ssnKids": "Los niños cuentan solo si tienen un número de Seguro Social válido para trabajar. Los niños con ITIN sí cuentan para los créditos de California.",
+    "tax.pastYears": "¿No declaró un año? Todavía puede declarar tarde y recibir estos créditos: hasta 3 años atrás para los federales y 4 para los de California.",
+    "tax.jointOnly": "Sus ingresos están por encima del límite para personas solteras. Solo es posible si está casado(a) y presenta una declaración conjunta.",
+    "tax.itin": "¿No tiene número de Seguro Social? Puede usar un ITIN. Los sitios de ayuda gratuita con impuestos (VITA) le pueden ayudar a solicitarlo.",
+    "tax.caResident": "Debe vivir en California más de la mitad del año.",
+    "disaster.declared": "Se abre solo después de una declaración federal de desastre para su condado. Los plazos cuentan desde esa fecha, que puede ser unos días después del desastre.",
+    "disaster.femaMixed": "Solo una persona de su hogar tiene que calificar: un padre o una madre puede solicitar por un hijo que sea ciudadano de EE. UU. El refugio, la comida, el agua y la consejería de crisis son para todos, sin importar su estatus.",
+    "disaster.duaUi": "Si puede recibir desempleo regular, EDD le pagará eso. Solicite de todos modos y diga que el desastre causó la pérdida de su trabajo.",
+    "disaster.cfReplaceAmount": "Cubre la comida que perdió, hasta un mes de beneficios. Después de desastres grandes, el condado a veces da más tiempo.",
+    "disaster.dsnapWhen": "D-SNAP se abre solo si el USDA lo aprueba para su área, normalmente unas semanas después del desastre y por una semana más o menos. Esté atento a las noticias de DPSS o llame al 211.",
+    "disaster.sbaLoan": "Es un préstamo que se paga, con interés bajo. Los inquilinos pueden pedir prestado para reemplazar sus cosas."
   },
   "values": {
     "wic": "Comida saludable cada mes, más ayuda con nutrición y lactancia",
@@ -313,7 +371,12 @@
     "socalgasCare": "Alrededor de 20% de descuento en el gas",
     "ezSave": "Descuento en luz, agua y alcantarillado",
     "bwpLifeline": "Tarifa de luz 45% más baja, sin cargo mensual de servicio",
-    "glendaleCare": "Hasta $35 de descuento al mes"
+    "glendaleCare": "Hasta $35 de descuento al mes",
+    "fema": "Dinero para dónde quedarse, reparaciones y cosas perdidas",
+    "sba": "Préstamos con interés bajo para reparaciones y pertenencias",
+    "dua": "Pagos semanales mientras no puede trabajar",
+    "cfReplace": "Hasta un mes de CalFresh",
+    "dsnap": "Un mes de beneficios de comida"
   },
   "where": {
     "benefitscal": "En línea en BenefitsCal.com, por teléfono o en una oficina del DPSS del condado",
@@ -324,7 +387,12 @@
     "coveredCa": "En línea en CoveredCA.com o por teléfono",
     "lifeline": "Con una compañía de teléfono que ofrezca California LifeLine",
     "metroLife": "En línea en metro.net/life o por teléfono",
-    "utility": "Directamente con su compañía de luz o gas, en línea o por teléfono"
+    "utility": "Directamente con su compañía de luz o gas, en línea o por teléfono",
+    "tax": "Presente una declaración de impuestos. Ayuda gratis en un sitio VITA (llame al 211 para encontrar uno) o declare gratis en California con CalFile",
+    "fema": "En línea en DisasterAssistance.gov, por teléfono o en un Centro de Recuperación de Desastres",
+    "sba": "En línea con la SBA, por teléfono o en un Centro de Recuperación de Desastres",
+    "edd": "Con el EDD (desempleo de California), en línea o por teléfono",
+    "dsnap": "Solo cuando se anuncia para su área: esté atento a las noticias de DPSS o llame al 211"
   },
   "docs": {
     "id": "Identificación con foto de cada adulto que solicita",
@@ -341,7 +409,11 @@
     "utilityBill": "Una factura reciente de luz o gas (para el número de cuenta)",
     "incomeOrBenefitLetter": "Comprobante de ingresos, o una carta que muestre que recibe Medi-Cal, CalFresh u otro programa",
     "secondProofOfAddress": "Un segundo comprobante de domicilio (factura de teléfono, gas o cable)",
-    "householdMembers": "Los nombres de todas las personas de su hogar"
+    "householdMembers": "Los nombres de todas las personas de su hogar",
+    "taxIds": "Número de Seguro Social o ITIN de cada persona en la declaración de impuestos",
+    "taxForms": "Formularios W-2 y 1099, o registros de ingresos por cuenta propia",
+    "damage": "Fotos de los daños y una lista de lo que se perdió",
+    "insurance": "Papeles del seguro y cualquier carta de su compañía de seguros"
   },
   "alt": {
     "cfap": "CFAP: ayuda estatal para comida para algunos inmigrantes",
@@ -383,7 +455,21 @@
     "inLACounty.eq": "Vive en el condado de Los Ángeles",
     "anyOf": "Cualquiera de estos:",
     "not": "No: {x}",
-    "or": "o"
+    "or": "o",
+    "earnedIncome.gt": "Tiene ingresos de un trabajo o por cuenta propia",
+    "earnedIncome.gte": "Al menos {v} al año de trabajo",
+    "earnedIncome.lte": "Ingresos de trabajo de {v} al año o menos",
+    "ssnAdult.true": "Un adulto con número de Seguro Social válido para trabajar",
+    "eitcKids.gte": "Al menos {v} niño menor de 19 años con número de Seguro Social",
+    "ctcKids.gte": "Al menos {v} niño menor de 17 años con número de Seguro Social",
+    "youngKids.gte": "Al menos {v} niño menor de 6 años",
+    "anyAge25to64.true": "Un adulto de 25 a 64 años",
+    "lostHome.true": "Su casa o sus cosas sufrieron daños",
+    "lostFood.true": "Perdió comida",
+    "lostWork.true": "Perdió trabajo o ingresos",
+    "qualifiedAnyone.true": "Alguien en su hogar es ciudadano de EE. UU. o inmigrante calificado (residente permanente, refugiado, asilado)",
+    "qualifiedAdult.true": "Un adulto que es ciudadano de EE. UU. o inmigrante calificado",
+    "daysSinceDisaster.lte": "Dentro de {v} días del desastre"
   },
   "help": {
     "areas": {

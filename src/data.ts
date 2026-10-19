@@ -6,9 +6,11 @@ import helpJson from '../rules/help.json'
 
 const files = import.meta.glob<Program>('../rules/programs/*.json', { eager: true, import: 'default' })
 
-// Display order: health, food, cash, family, then household-wide programs.
+// Display order: health, food, cash, family, household-wide programs, tax credits, then disaster help (most urgent first).
 const ORDER = ['medi-cal', 'covered-california', 'calfresh', 'cfap', 'sun-bucks', 'calworks', 'capi', 'wic', 'early-learning',
-  'california-lifeline', 'metro-life', 'sce-care-fera', 'socalgas-care', 'ladwp-ez-save', 'bwp-lifeline', 'glendale-care']
+  'california-lifeline', 'metro-life', 'sce-care-fera', 'socalgas-care', 'ladwp-ez-save', 'bwp-lifeline', 'glendale-care',
+  'federal-eitc', 'child-tax-credit', 'caleitc', 'yctc',
+  'calfresh-replacement', 'fema-ia', 'dua', 'd-snap', 'sba-disaster-loan']
 export const programs: Program[] = Object.values(files).sort((a, b) => ORDER.indexOf(a.id) - ORDER.indexOf(b.id))
 export const tables = tablesJson as unknown as Tables
 

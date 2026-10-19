@@ -405,5 +405,123 @@
     "asOf": "2026-10-07",
     "household": { "monthlyIncome": 1200, "people": [{ "id": "p", "age": 29, "status": "citizen" }, { "id": "k", "age": 3, "status": "citizen" }] },
     "expect": { "k": { "sun-bucks": "hidden", "early-learning": "likely:headStart", "wic": "likely" } }
+  },
+  {
+    "id": "tax-itin-mother-no-income",
+    "title": "Undocumented mother (25), no income, two toddlers with no status given — YCTC with an ITIN",
+    "source": "https://www.ftb.ca.gov/file/personal/credits/young-child-tax-credit.html",
+    "asOf": "2026-10-19",
+    "household": {
+      "zip": "91605",
+      "electric": "ladwp",
+      "gas": "socalgas",
+      "monthlyIncome": 0,
+      "people": [{ "id": "m", "age": 25, "status": "undocumented" }, { "id": "c2", "age": 2 }, { "id": "c4", "age": 4 }]
+    },
+    "expect": { "household": { "yctc": "likely", "caleitc": "not", "federal-eitc": "not", "child-tax-credit": "not", "fema-ia": "hidden" } }
+  },
+  {
+    "id": "tax-working-citizen-family",
+    "title": "Citizen parent (30) earning $2,000/month, citizen kids 5 and 9 — all four tax credits",
+    "source": "https://www.irs.gov/Credits-&-Deductions/Individuals/Earned-Income-Tax-Credit/EITC-Income-Limits-Maximum-Credit-Amounts ; https://www.irs.gov/credits-deductions/individuals/child-tax-credit ; https://www.ftb.ca.gov/file/personal/credits/caleitc/eligibility-and-credit-information.html",
+    "asOf": "2026-10-19",
+    "household": {
+      "zip": "91204",
+      "electric": "gwp",
+      "gas": "socalgas",
+      "monthlyIncome": 2000,
+      "hasEarnedIncome": true,
+      "people": [
+        { "id": "p", "age": 30, "status": "citizen" },
+        { "id": "c5", "age": 5, "status": "citizen" },
+        { "id": "c9", "age": 9, "status": "citizen" }
+      ]
+    },
+    "expect": { "household": { "federal-eitc": "likely", "child-tax-credit": "likely", "caleitc": "likely", "yctc": "likely" } }
+  },
+  {
+    "id": "tax-ctc-itin-parent-ty2024",
+    "title": "Undocumented parent (35) earning $2,500/month with a citizen child (8), Dec 2025 — CTC still allowed an ITIN parent for tax year 2024",
+    "source": "https://www.irs.gov/credits-deductions/individuals/child-tax-credit",
+    "asOf": "2025-12-15",
+    "household": {
+      "zip": "91605",
+      "electric": "ladwp",
+      "gas": "socalgas",
+      "monthlyIncome": 2500,
+      "hasEarnedIncome": true,
+      "people": [{ "id": "p", "age": 35, "status": "undocumented" }, { "id": "c8", "age": 8, "status": "citizen" }]
+    },
+    "expect": { "household": { "child-tax-credit": "likely", "federal-eitc": "not", "caleitc": "likely", "yctc": "hidden" } }
+  },
+  {
+    "id": "tax-ctc-itin-parent-ty2025",
+    "title": "Same family in Oct 2026 — from tax year 2025 the parent filing needs an SSN for the CTC",
+    "source": "https://www.irs.gov/credits-deductions/individuals/child-tax-credit",
+    "asOf": "2026-10-19",
+    "household": {
+      "zip": "91605",
+      "electric": "ladwp",
+      "gas": "socalgas",
+      "monthlyIncome": 2500,
+      "hasEarnedIncome": true,
+      "people": [{ "id": "p", "age": 35, "status": "undocumented" }, { "id": "c8", "age": 8, "status": "citizen" }]
+    },
+    "expect": { "household": { "child-tax-credit": "not", "federal-eitc": "not", "caleitc": "likely" } }
+  },
+  {
+    "id": "tax-eitc-joint-only",
+    "title": "Citizen adult (40), no children, $1,800/month from work — above the single EITC limit, under the joint one",
+    "source": "https://www.irs.gov/Credits-&-Deductions/Individuals/Earned-Income-Tax-Credit/EITC-Income-Limits-Maximum-Credit-Amounts",
+    "asOf": "2026-10-19",
+    "household": {
+      "zip": "91502",
+      "electric": "bwp",
+      "gas": "socalgas",
+      "monthlyIncome": 1800,
+      "hasEarnedIncome": true,
+      "people": [{ "id": "a", "age": 40, "status": "citizen" }]
+    },
+    "expect": { "household": { "federal-eitc": "possibly", "caleitc": "likely", "child-tax-credit": "hidden" } }
+  },
+  {
+    "id": "disaster-fire-mixed-status",
+    "title": "Fire 5 days ago: undocumented parent (30) on CalFresh with a citizen child (6); home damaged and food lost",
+    "source": "https://www.law.cornell.edu/cfr/text/7/274.6 ; https://www.fema.gov/assistance/individual/program/citizenship-immigration-status",
+    "asOf": "2026-10-19",
+    "household": {
+      "zip": "91214",
+      "electric": "gwp",
+      "gas": "socalgas",
+      "monthlyIncome": 1200,
+      "hasEarnedIncome": true,
+      "benefits": { "calfresh": true },
+      "disaster": true,
+      "disasterDate": "2026-10-14",
+      "disasterLoss": { "home": true, "food": true },
+      "people": [{ "id": "p", "age": 30, "status": "undocumented" }, { "id": "c6", "age": 6, "status": "citizen" }]
+    },
+    "expect": {
+      "household": { "calfresh-replacement": "likely", "fema-ia": "possibly", "sba-disaster-loan": "not", "dua": "not", "d-snap": "hidden" }
+    }
+  },
+  {
+    "id": "disaster-late-registration",
+    "title": "Citizen couple, disaster 110 days ago, home and work lost, not on CalFresh — FEMA late window, DUA deadline passed",
+    "source": "https://www.law.cornell.edu/cfr/text/44/206.112 ; https://www.law.cornell.edu/cfr/text/20/625.8",
+    "asOf": "2026-10-19",
+    "household": {
+      "zip": "91011",
+      "electric": "sce",
+      "gas": "socalgas",
+      "monthlyIncome": 0,
+      "disaster": true,
+      "disasterDate": "2026-07-01",
+      "disasterLoss": { "home": true, "work": true },
+      "people": [{ "id": "a", "age": 45, "status": "citizen" }, { "id": "b", "age": 44, "status": "lpr5" }]
+    },
+    "expect": {
+      "household": { "fema-ia": "possibly", "sba-disaster-loan": "possibly", "dua": "not", "d-snap": "possibly", "calfresh-replacement": "hidden" }
+    }
   }
 ]

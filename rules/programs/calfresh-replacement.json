@@ -1,0 +1,30 @@
+{
+  "$schema": "../program.schema.json",
+  "id": "calfresh-replacement",
+  "name": "CalFresh replacement benefits",
+  "category": "disaster",
+  "appliesTo": "household",
+  "audience": {
+    "all": [
+      { "fact": "disaster", "eq": true },
+      { "fact": "daysSinceDisaster", "gte": 0 },
+      { "fact": "getsCalFresh", "eq": true }
+    ]
+  },
+  "apply": { "url": "https://dpss.lacounty.gov", "phone": "1-866-613-3777", "where": "dpss" },
+  "documents": ["id", "address"],
+  "alternatives": ["foodbank", "211"],
+  "estimate": { "text": "cfReplace" },
+  "rules": [
+    {
+      "id": "calfresh-replacement",
+      "effective": { "from": "2016-01-01", "to": null },
+      "conditions": { "all": [{ "fact": "lostFood", "eq": true }, { "fact": "daysSinceDisaster", "lte": 10 }] },
+      "explain": "disaster.cfReplace",
+      "notes": [{ "key": "disaster.cfReplaceAmount" }],
+      "source": "https://www.law.cornell.edu/cfr/text/7/274.6",
+      "lastVerified": "2026-10-19",
+      "verifiedBy": "claude-draft"
+    }
+  ]
+}
