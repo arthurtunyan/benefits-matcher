@@ -1,11 +1,12 @@
 import { ArrowLeft, CalendarClock, Info, Printer, ShieldCheck } from 'lucide-react'
 import { useT } from '../i18n'
-import { leaves, type Outcome, type Person, type ProgramResult, type Screening, type Status } from '../engine'
+import { leaves, type Change, type Outcome, type Person, type ProgramResult, type Screening, type Status } from '../engine'
 import { MAX_DATE, MIN_DATE, personLabel, todayISO } from '../App'
 import { Face, StatusSelect, initial } from './HouseholdForm'
 import House from './House'
 import ProgramCard from './ProgramCard'
 import Help from './Help'
+import Timeline from './Timeline'
 import { help } from '../data'
 
 const GROUPS: Outcome[] = ['likely', 'possibly', 'not']
@@ -65,8 +66,8 @@ function overview(s: Screening) {
   }
 }
 
-export default function Results({ screening: s, asOf, setAsOf, updatePerson, onBack, onPlan }: {
-  screening: Screening; asOf: string; setAsOf: (d: string) => void
+export default function Results({ screening: s, changes, asOf, setAsOf, updatePerson, onBack, onPlan }: {
+  screening: Screening; changes: Change[]; asOf: string; setAsOf: (d: string) => void
   updatePerson: (p: Person) => void; onBack: () => void; onPlan: () => void
 }) {
   const t = useT()
@@ -140,6 +141,8 @@ export default function Results({ screening: s, asOf, setAsOf, updatePerson, onB
         <p className="help">{t('ui.asOfHelp')} {t('ui.dateRange', { from: t.date(MIN_DATE), to: t.date(MAX_DATE) })}</p>
         {asOf !== today && <p className="note-warn" role="status">{t('ui.notToday', { date: t.date(asOf) })}</p>}
       </section>
+
+      {people.length > 0 && <Timeline changes={changes} people={people} asOf={asOf} setAsOf={setAsOf} />}
 
       <p className="disclaimer">{t('ui.disclaimer')}</p>
 

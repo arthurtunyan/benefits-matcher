@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { I18n, LANGS, makeT, type Lang, type T } from './i18n'
-import { screen, type Household, type Person } from './engine'
+import { screen, timeline, type Household, type Person } from './engine'
 import { lastFullCheck, programs, tables } from './data'
 import Header from './components/Header'
 import Start from './components/Start'
@@ -50,6 +50,7 @@ export default function App() {
   useEffect(() => { document.documentElement.dataset.theme = dark ? 'dark' : 'light' }, [dark])
   const t = useMemo(() => makeT(lang), [lang])
   const screening = useMemo(() => screen(household, programs, tables, asOf), [household, asOf])
+  const changes = useMemo(() => timeline(household, programs, tables, MIN_DATE, MAX_DATE), [household])
 
   useEffect(() => {
     document.documentElement.lang = lang
@@ -77,7 +78,7 @@ export default function App() {
         )}
         {view === 'household' && <HouseholdForm household={household} setHousehold={setHousehold} onDone={() => setView('results')} />}
         {view === 'results' && (
-          <Results screening={screening} asOf={asOf} setAsOf={setAsOf} updatePerson={updatePerson}
+          <Results screening={screening} changes={changes} asOf={asOf} setAsOf={setAsOf} updatePerson={updatePerson}
             onBack={() => setView('household')} onPlan={() => setView('plan')} />
         )}
         {view === 'plan' && <Plan screening={screening} today={todayISO()} onBack={() => setView('results')} />}

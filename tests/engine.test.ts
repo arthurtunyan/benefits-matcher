@@ -1,5 +1,5 @@
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
-import { evaluate, inLACounty, lookup, nearMiss, runProgram, screen, type Cond, type Program, type Tables } from '../src/engine'
+import { changeDates, evaluate, inLACounty, lookup, nearMiss, runProgram, screen, timeline, type Cond, type Household, type Program, type Tables } from '../src/engine'
 import { programs, tables } from '../src/data'
 import personas from './personas.json'
 
@@ -101,5 +101,43 @@ describe('privacy', () => {
     for (const p of personas) {
       expect(() => screen({ electric: 'unknown', gas: 'unknown', benefits: {}, ...(p.household as object) } as never, programs, tables, p.asOf)).not.toThrow()
     }
+  })
+})
+
+describe('timeline', () => {
+  const maria = (p: Partial<Household['people'][number]> = {}): Household => ({
+    zip: '91605', electric: 'ladwp', gas: 'socalgas', monthlyIncome: 0, benefits: {},
+    people: [{ id: 'm', name: 'Maria', age: 25, status: 'undocumented', ...p }],
+  })
+  const run = (h: Household) => timeline(h, programs, tables, '2025-10-01', '2027-12-31')
+
+  it('only checks days when a rule or table starts or stops', () => {
+    const days = changeDates(programs, tables, '2025-10-01', '2027-12-31')
+    expect(days).toContain('2026-01-01') // Medi-Cal enrollment freeze
+    expect(days).toContain('2027-07-01') // restricted scope for humanitarian adults
+    expect(days.every((d) => d > '2025-10-01' && d <= '2027-12-31')).toBe(true)
+  })
+  it('shows the 2026 Medi-Cal freeze for an undocumented adult who is not enrolled', () => {
+    const mc = run(maria()).filter((c) => c.program.id === 'medi-cal')
+    expect(mc).toHaveLength(1)
+    expect(mc[0]).toMatchObject({ date: '2026-01-01', personId: 'm' })
+    expect(mc[0].before?.best.rule.variant).toBe('full')
+    expect(mc[0].after?.best.rule.variant).toBe('restricted')
+  })
+  it('keeps full scope for someone already enrolled, noting each new rule', () => {
+    const mc = run(maria({ hasMediCal: true })).filter((c) => c.program.id === 'medi-cal')
+    expect(mc.map((c) => [c.date, c.after?.best.rule.id])).toEqual([
+      ['2026-01-01', 'medi-cal-adult-uis-enrolled'], ['2027-07-01', 'medi-cal-adult-uis-enrolled-2027'],
+    ])
+    expect(mc.every((c) => c.after?.best.rule.variant === 'full')).toBe(true)
+  })
+  it('ignores days where we only lack an income table', () => {
+    // LifeLine's limit table starts 2026-06-01: before that the result is a data gap, not a rule change.
+    expect(run(maria()).filter((c) => c.program.id === 'california-lifeline')).toEqual([])
+  })
+  it('a refugee adult loses full scope Medi-Cal in July 2027', () => {
+    const mc = run(maria({ status: 'humanitarian' })).filter((c) => c.program.id === 'medi-cal')
+    expect(mc.at(-1)).toMatchObject({ date: '2027-07-01' })
+    expect(mc.at(-1)?.after?.best.rule.variant).toBe('restricted')
   })
 })

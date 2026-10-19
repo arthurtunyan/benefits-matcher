@@ -309,3 +309,52 @@ export function screen(h: Household, programs: Program[], tables: Tables, asOf: 
     household: run(programs.filter((p) => p.appliesTo === 'household'), facts),
   }
 }
+
+// ---- Timeline: how rule changes reach this family ----
+
+const dayAfter = (d: string) => new Date(Date.parse(`${d}T00:00:00Z`) + 86_400_000).toISOString().slice(0, 10)
+
+// Results can only change on a day when some rule or table starts or stops.
+export function changeDates(programs: Program[], tables: Tables, from: string, to: string): string[] {
+  const ranges = [...programs.flatMap((p) => p.rules.map((r) => r.effective)), ...Object.values(tables).flatMap((t) => t.versions.map((v) => v.effective))]
+  const days = ranges.flatMap((r) => [r.from, ...(r.to ? [dayAfter(r.to)] : [])])
+  return [...new Set(days)].filter((d) => d > from && d <= to).sort()
+}
+
+export interface Change { date: string; personId?: string; program: Program; before?: ProgramResult; after?: ProgramResult }
+
+// "Possibly" only because we have no income limit for that date: a gap in our data, not a rule change.
+const isGap = (r: ProgramResult) =>
+  r.outcome === 'possibly' && r.best.blockers.some((b) => leaves(b).some((l) => l.result === 'unknown' && l.reason === 'noData'))
+
+// A change the family would notice: in or out, a different variant, or (when likely) a new governing rule.
+// "Not eligible" and "not offered" count as the same.
+function differs(a?: ProgramResult, b?: ProgramResult) {
+  const [x, y] = [a, b].map((r) => (r && r.outcome !== 'not' ? r : undefined))
+  if (!x || !y) return x !== y
+  return x.outcome !== y.outcome || x.best.rule.variant !== y.best.rule.variant
+    || (x.outcome === 'likely' && x.best.rule.id !== y.best.rule.id)
+}
+
+// Screens the household on every change date and lists what changed for each person, oldest first.
+// Ages stay as entered. Data gaps are skipped: a result is compared with the last date we could judge it.
+export function timeline(h: Household, programs: Program[], tables: Tables, from: string, to: string): Change[] {
+  const last = new Map<string, ProgramResult | 'gap' | undefined>()
+  const changes: Change[] = []
+  ;[from, ...changeDates(programs, tables, from, to)].forEach((date, i) => {
+    const s = screen(h, programs, tables, date)
+    const now = new Map<string, readonly [string | undefined, ProgramResult]>([
+      ...s.people.flatMap(({ person, results }) => results.map((r) => [`${person.id}|${r.program.id}`, [person.id, r]] as const)),
+      ...s.household.map((r) => [`|${r.program.id}`, [undefined, r]] as const),
+    ])
+    for (const k of new Set([...last.keys(), ...now.keys()])) {
+      const [personId, r] = now.get(k) ?? [k.split('|')[0] || undefined, undefined]
+      const prev = last.get(k)
+      if (r && isGap(r)) { if (!last.has(k)) last.set(k, 'gap'); continue }
+      last.set(k, r)
+      if (i === 0 || prev === 'gap' || !differs(prev, r)) continue
+      changes.push({ date, personId, program: (r ?? prev)!.program, before: prev, after: r })
+    }
+  })
+  return changes
+}

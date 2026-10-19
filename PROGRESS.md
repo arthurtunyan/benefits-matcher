@@ -33,7 +33,7 @@ Legend: ✅ done · 🟡 done as a draft, needs a human check · ⬜ to do · �
 ### Setup
 - ✅ Git repo with `main` branch, MIT license, `.gitignore`
 - ✅ Vite + React + TypeScript, no backend
-- ✅ `npm test` (Vitest) — 486 tests passing (includes a check for repeated translation keys)
+- ✅ `npm test` (Vitest) — 491 tests passing (includes a check for repeated translation keys and the timeline)
 - ✅ GitHub Actions: tests + type-check + build on every push and pull request, plus a **weekly run** so stale rules (not checked in 90 days) turn the badge red
 - ✅ Deploys to GitHub Pages on every push to `main`: https://arthurtunyan.github.io/benefits-matcher/
 - ✅ Issue form for reporting a rule change, pull-request checklist
@@ -56,6 +56,7 @@ Medi-Cal (full and restricted, with 2024–2027 dated rules), Covered California
 - ✅ Household form: ZIP fills in the area and utilities; income can be skipped; immigration status optional
 - ✅ Results by person with a status dropdown right on each person (the demo "child toggle")
 - ✅ "As of" date picker with Today / Dec 2025 / Jul 2027 shortcuts
+- ✅ **Rule-change timeline** ("How rule changes reach your family"): runs the household on every day a rule or income table starts or stops (Oct 2025–Dec 2027), lists each change per person (before → after, with the rule and source), marks planned changes, highlights changes between today and the chosen date. Skips days where we only lack an income table. Ages stay as entered.
 - ✅ "Why?" panel: plain-language rule, every condition with ✓ / ✗ / ?, your value, source link, dates, rule ID
 - ✅ "Good to know": universal school meals, public charge guide link, SSI, clinics
 - ✅ Help directory by area, with language list, phone, website, and Google Maps transit directions
@@ -133,6 +134,7 @@ These are honest shortcuts for a screener. Each is a good "what we'd build next"
 
 | Date | What happened |
 |---|---|
+| 2026-10-19 | Built the rule-change timeline (the review's "Policy Time Machine"), on Arthur's request. New es/hy strings need native review. Demo script updated to show it. |
 | 2026-10-19 | Acted on an outside review (verified each point against the code first). Fixed: CalFresh/CFAP/CalWORKs/CAPI dollar maximums repeated on every person's card (now shown once in a new "Your family at a glance" box, labeled as a household total and a maximum); new overview box with counts, Make my plan, and Answer skipped questions; duplicate HTML ids when a program shows for several people; answer tiles claimed to be radio buttons without arrow keys (now pressed buttons); negative income/age accepted; house checklist marked skipped parts as done; plan hid one person's "possibly" when another was "likely"; "Free help near you" heading replaced by a repeated translation key. Clearer immigration-status help ("stays on this device"). New es/hy text needs native review. Review points not taken: ZIP already pre-fills utilities; unchecked boxes as "no" is normal for a screener. |
 | 2026-10-13 | UI redesign merged (PR #1): one question per screen, house drawing as the question map and progress, tap tiles, dark mode button. |
 | 2026-10-07 | Repo made public; site live on GitHub Pages. CI actions updated to current versions. |
