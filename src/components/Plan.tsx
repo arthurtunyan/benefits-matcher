@@ -6,17 +6,16 @@ import { help } from '../data'
 import { Logo } from './Header'
 import { personLabel } from '../App'
 
-interface Item { program: Program; variants: Set<string | undefined>; names: string[]; possibly: boolean }
+interface Item { program: Program; variants: Set<string | undefined>; names: { name: string; possibly: boolean }[] }
 
 // Programs to apply for: everything "likely" or "possibly", merged across people.
 function planItems(s: Screening, t: T): Item[] {
   const items = new Map<string, Item>()
   const add = (r: Screening['household'][number], name: string) => {
     if (r.outcome === 'not') return
-    const it = items.get(r.program.id) ?? { program: r.program, variants: new Set(), names: [], possibly: true }
-    it.names.push(name)
+    const it = items.get(r.program.id) ?? { program: r.program, variants: new Set(), names: [] }
+    it.names.push({ name, possibly: r.outcome === 'possibly' })
     it.variants.add(r.best.rule.variant)
-    it.possibly &&= r.outcome === 'possibly'
     items.set(r.program.id, it)
   }
   s.people.forEach(({ person, results }, i) => results.forEach((r) => add(r, personLabel(person, i, t))))
@@ -41,9 +40,12 @@ function PlanBody({ s, today, have, side }: { s: Screening; today: string; have:
       <h3>{t('ui.planPrograms')}</h3>
       {items.length === 0 ? <p>{t('ui.planNothing')}</p> : (
         <ol className="plan-list">
-          {items.map(({ program: p, variants, names, possibly }) => {
+          {items.map(({ program: p, variants, names }) => {
             // Show the variant only when it is the same for everyone listed.
             const variant = variants.size === 1 ? [...variants][0] : undefined
+            // One badge when it's "possibly" for everyone; otherwise mark each person it's uncertain for.
+            const possibly = names.every((n) => n.possibly)
+            const who = names.map((n) => (n.possibly && !possibly ? `${n.name} (${t('ui.possiblyShort')})` : n.name)).join(', ')
             return (
             <li key={p.id}>
               <p className="plan-program">
@@ -52,7 +54,7 @@ function PlanBody({ s, today, have, side }: { s: Screening; today: string; have:
                 {possibly && <span className="badge badge-possibly">{t('ui.possiblyShort')}</span>}
               </p>
               <p className="small">{t(`programs.${p.id}`)}</p>
-              <p className="small">{t('ui.planFor', { names: names.join(', ') })}</p>
+              <p className="small">{t('ui.planFor', { names: who })}</p>
               <p className="small">
                 <strong>{t('ui.planWhere')}:</strong> {t(`where.${p.apply.where}`)} · <span className="url">{p.apply.url.replace(/^https?:\/\/(www\.)?/, '')}</span>
                 {p.apply.phone && <> · {p.apply.phone}</>}

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useId, useState } from 'react'
 import { Check, ChevronDown, CircleHelp, ExternalLink, Phone, X } from 'lucide-react'
 import { useT, type T } from '../i18n'
 import { isChangeable, leaves, lookup, nearMiss, type CondResult, type Facts, type LeafResult, type ProgramResult } from '../engine'
@@ -89,9 +89,9 @@ export default function ProgramCard({ r, facts, names }: { r: ProgramResult; fac
   const { program: p, best, outcome } = r
   const miss = outcome === 'not' ? nearMiss(best.tree) : undefined
   const variant = best.rule.variant && t.has(`variants.${best.rule.variant}`) ? t(`variants.${best.rule.variant}`) : null
-  const est = r.estimate !== undefined ? t('ui.upTo', { amount: t.money(r.estimate) })
-    : p.estimate && 'text' in p.estimate && outcome !== 'not' ? t(`values.${p.estimate.text}`) : null
-  const detailsId = `d-${p.id}-${names ?? ''}`.replace(/\W/g, '')
+  // Dollar maximums are per household, so Results shows them once, not on every person's card.
+  const est = p.estimate && 'text' in p.estimate && outcome !== 'not' ? t(`values.${p.estimate.text}`) : null
+  const detailsId = useId()
   const single = outcome === 'not' && best.blockers.length === 1 ? best.blockers[0] : undefined
 
   return (

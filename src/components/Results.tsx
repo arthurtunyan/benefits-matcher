@@ -1,6 +1,6 @@
 import { ArrowLeft, CalendarClock, Info, Printer, ShieldCheck } from 'lucide-react'
 import { useT } from '../i18n'
-import type { Outcome, Person, ProgramResult, Screening, Status } from '../engine'
+import { leaves, type Outcome, type Person, type ProgramResult, type Screening, type Status } from '../engine'
 import { MAX_DATE, MIN_DATE, personLabel, todayISO } from '../App'
 import { Face, StatusSelect, initial } from './HouseholdForm'
 import House from './House'
@@ -44,6 +44,27 @@ function Groups({ results, facts }: { results: ProgramResult[]; facts: Screening
 
 const count = (rs: ProgramResult[], o: Outcome) => rs.filter((r) => r.outcome === o).length
 
+// The whole family in one place: each program counted once at the best outcome anyone has,
+// dollar maximums once per household (CalFresh and CFAP share one allotment), and whether skipped answers matter.
+function overview(s: Screening) {
+  const all = [...s.people.flatMap((x) => x.results), ...s.household].filter((r) => r.outcome !== 'not')
+  const best = new Map<string, Outcome>()
+  all.forEach((r) => best.get(r.program.id) !== 'likely' && best.set(r.program.id, r.outcome))
+  const money = new Map<string, { names: string[]; amount: number }>()
+  all.forEach((r) => {
+    if (r.estimate === undefined || !r.program.estimate || !('table' in r.program.estimate)) return
+    const m = money.get(r.program.estimate.table) ?? { names: [], amount: r.estimate }
+    if (!m.names.includes(r.program.name)) m.names.push(r.program.name)
+    money.set(r.program.estimate.table, m)
+  })
+  return {
+    likely: [...best.values()].filter((o) => o === 'likely').length,
+    possibly: [...best.values()].filter((o) => o === 'possibly').length,
+    money: [...money.values()],
+    skipped: all.some((r) => r.outcome === 'possibly' && leaves(r.best.tree).some((l) => l.reason === 'missing')),
+  }
+}
+
 export default function Results({ screening: s, asOf, setAsOf, updatePerson, onBack, onPlan }: {
   screening: Screening; asOf: string; setAsOf: (d: string) => void
   updatePerson: (p: Person) => void; onBack: () => void; onPlan: () => void
@@ -61,6 +82,7 @@ export default function Results({ screening: s, asOf, setAsOf, updatePerson, onB
   const anySeniorOrDisabled = people.some(({ person: p }) => p.disabled || (p.age ?? 0) >= 65)
   const unknownUtility = s.facts.electric === 'unknown' || s.facts.gas === 'unknown'
   const publicCharge = help.find((h) => h.id === 'public-charge')!
+  const o = overview(s)
 
   return (
     <div className="results">
@@ -81,6 +103,26 @@ export default function Results({ screening: s, asOf, setAsOf, updatePerson, onB
             }
           })} />
         </div>
+      )}
+
+      {people.length > 0 && (
+        <section className="card overview" aria-labelledby="overview-title">
+          <h2 id="overview-title" className="card-title">{t('ui.overview')}</h2>
+          <p className="overview-count">{t('ui.overviewCount', { likely: o.likely, possibly: o.possibly })}</p>
+          {o.money.length > 0 && (
+            <>
+              <ul className="overview-money">
+                {o.money.map((m) => <li key={m.names.join()}><strong lang="en">{m.names.join(' / ')}</strong>: {t('ui.upTo', { amount: t.money(m.amount) })}</li>)}
+              </ul>
+              <p className="help">{t('ui.sharedMoneyHelp', { n: people.length })}</p>
+            </>
+          )}
+          {o.skipped && <p className="hint hint-possibly">{t('ui.skippedNote')}</p>}
+          <div className="row">
+            <button className="btn btn-primary" onClick={onPlan}><Printer size={18} aria-hidden="true" /> {t('ui.makePlan')}</button>
+            {o.skipped && <button className="btn btn-soft" onClick={onBack}>{t('ui.answerSkipped')}</button>}
+          </div>
+        </section>
       )}
 
       <section className="asof card" aria-labelledby="asof-label">

@@ -12,7 +12,8 @@ const GAS: Utility[] = ['socalgas', 'other', 'unknown']
 const BENEFITS = ['calfresh', 'calworks', 'ssi', 'wic'] as const
 const FLAGS = ['pregnant', 'recentBirth', 'disabled', 'hasMediCal'] as const
 
-const num = (s: string) => (s.trim() === '' || isNaN(Number(s)) ? undefined : Number(s))
+// Blank, not a number, or negative = not answered.
+const num = (s: string) => (s.trim() === '' || !(Number(s) >= 0) ? undefined : Number(s))
 
 export function StatusSelect({ value, onChange, id }: { value?: Status; onChange: (s?: Status) => void; id: string }) {
   const t = useT()
@@ -34,12 +35,14 @@ export function Face({ p, index }: { p: Person; index: number }) {
   return <span className="face" aria-hidden="true">{initial(p, index, t)}</span>
 }
 
-// A big answer button. Single-choice tiles are radios; multi-choice tiles are checkboxes.
-function Tile({ selected, onClick, children, role = 'radio' }: {
-  selected: boolean; onClick: () => void; children: ReactNode; role?: 'radio' | 'checkbox'
+// A big answer button. Single-choice tiles are pressed buttons (tapping one can move on, so no arrow-key
+// radio group); multi-choice tiles are checkboxes.
+function Tile({ selected, onClick, children, role }: {
+  selected: boolean; onClick: () => void; children: ReactNode; role?: 'checkbox'
 }) {
+  const state = role ? { role, 'aria-checked': selected } : { 'aria-pressed': selected }
   return (
-    <button type="button" role={role} aria-checked={selected} className="tile" onClick={onClick}>
+    <button type="button" {...state} className="tile" onClick={onClick}>
       <span>{children}</span>
       <span className="tile-check" aria-hidden="true">{selected && <Check size={16} strokeWidth={3.5} />}</span>
     </button>
@@ -72,7 +75,7 @@ function ElectricHelper({ zip, pick }: { zip?: string; pick: (u: Utility) => voi
   ]
   return (
     <div className="helper" role="group" aria-labelledby="helper-title" ref={ref}>
-      <p id="helper-title" className="helper-title">{t('ui.helpTitle')}</p>
+      <p id="helper-title" className="helper-title">{t('ui.helperTitle')}</p>
       <p className="help">{t('ui.helpBill')}</p>
       {fromZip && info ? (
         <div className="guess">
@@ -82,7 +85,7 @@ function ElectricHelper({ zip, pick }: { zip?: string; pick: (u: Utility) => voi
       ) : (
         <>
           <p className="helper-q">{t('ui.cityQ')}</p>
-          <div className="tiles tiles-compact" role="radiogroup" aria-label={t('ui.cityQ')}>
+          <div className="tiles tiles-compact" role="group" aria-label={t('ui.cityQ')}>
             {cities.map(([key, u]) => (
               <Tile key={key} selected={guess === u && u !== null} onClick={() => (u ? setGuess(u) : pick('unknown'))}>{t(`ui.${key}`)}</Tile>
             ))}
@@ -105,10 +108,10 @@ function GasHelper({ pick }: { pick: (u: Utility, other?: string) => void }) {
   const ref = useScrollIntoView()
   return (
     <div className="helper" role="group" aria-labelledby="helper-title" ref={ref}>
-      <p id="helper-title" className="helper-title">{t('ui.helpTitle')}</p>
+      <p id="helper-title" className="helper-title">{t('ui.helperTitle')}</p>
       <p className="help">{t('ui.helpBill')}</p>
       <p className="helper-q">{t('ui.longBeachQ')}</p>
-      <div className="tiles tiles-compact" role="radiogroup" aria-label={t('ui.longBeachQ')}>
+      <div className="tiles tiles-compact" role="group" aria-label={t('ui.longBeachQ')}>
         <Tile selected={false} onClick={() => pick('other', 'Long Beach Utilities')}>{t('ui.yes')}</Tile>
         <Tile selected={false} onClick={() => pick('socalgas')}>{t('ui.no')}</Tile>
         <Tile selected={false} onClick={() => pick('other', NO_GAS)}>{t('ui.noGas')}</Tile>
@@ -186,7 +189,9 @@ export default function HouseholdForm({ household: h, setHousehold, onDone }: {
     zip: !!h.zip, electric: h.electric !== 'unknown', gas: h.gas !== 'unknown',
     income: h.monthlyIncome !== undefined, benefits: gotBenefits.length > 0,
   }
-  const done = (p: Part) => (p.startsWith('p:') ? h.people.find((x) => `p:${x.id}` === p)?.age !== undefined : answered[p]) || (left.has(p) && p !== current)
+  // Done = answered. Only the benefits basket counts once passed, since "none of these" is an answer.
+  const done = (p: Part) => (p.startsWith('p:') ? h.people.find((x) => `p:${x.id}` === p)?.age !== undefined : answered[p])
+    || (p === 'benefits' && left.has(p) && p !== current)
   const spot = (id: Part, x: number, y: number, icon: ReactNode, label: string, value?: string): HousePart =>
     ({ id, x, y, icon, label, value, done: done(id), active: current === id, onClick: () => go(id) })
   const parts: HousePart[] = [
@@ -241,7 +246,7 @@ export default function HouseholdForm({ household: h, setHousehold, onDone }: {
     title = t(kind === 'electric' ? 'ui.electric' : 'ui.gas')
     body = (
       <>
-        <div className="tiles" role="radiogroup" aria-label={title}>
+        <div className="tiles" role="group" aria-label={title}>
           {options.map((u) => (
             <Tile key={u} selected={value === u} onClick={() => choose(u)}>{t(`utility.${u}`)}</Tile>
           ))}
@@ -313,7 +318,7 @@ export default function HouseholdForm({ household: h, setHousehold, onDone }: {
         </div>
         <p className="help" id="age-help">{t('ui.ageHelp')}</p>
         <p className="question-sub" id="status-q">{t('ui.status')}</p>
-        <div className="tiles tiles-compact" role="radiogroup" aria-labelledby="status-q">
+        <div className="tiles tiles-compact" role="group" aria-labelledby="status-q">
           <Tile selected={p.status === undefined} onClick={() => updatePerson({ ...p, status: undefined })}>{t('status.preferNot')}</Tile>
           {STATUSES.map((s) => (
             <Tile key={s} selected={p.status === s} onClick={() => updatePerson({ ...p, status: s })}>{t(`status.${s}`)}</Tile>

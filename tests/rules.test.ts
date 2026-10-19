@@ -74,6 +74,21 @@ describe('translations', () => {
     const keys = new Set(flatKeys(LOCALES[lang]))
     expect(en.filter((k) => !keys.has(k))).toEqual([])
   })
+  // JSON.parse keeps only the last copy of a repeated key, so the parity checks above can't see one.
+  const raw = import.meta.glob<string>('../src/i18n/*.json', { query: '?raw', import: 'default', eager: true })
+  it.each(Object.entries(raw))('%s has no repeated keys', (_, text) => {
+    const path: string[] = []
+    const seen = new Set<string>()
+    const dupes: string[] = []
+    for (const m of text.matchAll(/^( *)"([^"]+)":/gm)) {
+      path.length = m[1].length / 2 - 1
+      path.push(m[2])
+      const k = path.join('.')
+      if (seen.has(k)) dupes.push(k)
+      seen.add(k)
+    }
+    expect(dupes).toEqual([])
+  })
   it.each(['es', 'hy'] as const)('%s keeps every {placeholder}', (lang) => {
     const t = makeT(lang)
     const tEn = makeT('en')

@@ -46,4 +46,6 @@ The rules require you to list every AI tool and what it did. Draft (edit to matc
 
 - **Claude (Anthropic)** helped edit the project brief and overview.
 - **Claude Code (Anthropic), October 7, 2026:** set up the repository; researched program rules and income limits from official sources; drafted the rules data, rules engine, user interface, Spanish and Armenian translations, test personas, documentation, and this submission kit. All rules are marked `claude-draft` until a team member checks them against the sources.
+- **Claude Code (Anthropic), October 13, 2026:** redesigned the interface (one question per screen, house drawing, dark mode).
+- **Claude Code (Anthropic), October 19, 2026:** checked an outside review against the code and fixed what held up: household dollar maximums shown once, a results overview, accessibility and input-validation fixes, plan accuracy, a translation-key bug.
 - **What we did ourselves:** *(list it honestly — e.g., verifying every rule against its source, native-speaker translation review, testing on real phones, outside review, recording the video, writing these answers.)*

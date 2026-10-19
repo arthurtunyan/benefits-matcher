@@ -1,7 +1,7 @@
 # Progress tracker
 
 > **Deadline: Monday, October 26, 2026, 9:00 AM Pacific (12:00 PM ET).** Submit a day early.
-> Last updated: October 7, 2026.
+> Last updated: October 19, 2026.
 
 Legend: ✅ done · 🟡 done as a draft, needs a human check · ⬜ to do · 🙋 must be done by Arthur or Aiden (not by AI)
 
@@ -33,7 +33,7 @@ Legend: ✅ done · 🟡 done as a draft, needs a human check · ⬜ to do · �
 ### Setup
 - ✅ Git repo with `main` branch, MIT license, `.gitignore`
 - ✅ Vite + React + TypeScript, no backend
-- ✅ `npm test` (Vitest) — 483 tests passing
+- ✅ `npm test` (Vitest) — 486 tests passing (includes a check for repeated translation keys)
 - ✅ GitHub Actions: tests + type-check + build on every push and pull request, plus a **weekly run** so stale rules (not checked in 90 days) turn the badge red
 - ✅ Deploys to GitHub Pages on every push to `main`: https://arthurtunyan.github.io/benefits-matcher/
 - ✅ Issue form for reporting a rule change, pull-request checklist
@@ -68,7 +68,7 @@ Medi-Cal (full and restricted, with 2024–2027 dated rules), Covered California
 ## 🙋 What Arthur and Aiden need to do (in order)
 
 1. ✅ ~~Make the repo public so the site goes live.~~ Done Oct 7 — live at https://arthurtunyan.github.io/benefits-matcher/ (every push to `main` redeploys).
-2. **Arthur: check every rule yourself** (about 2–3 hours). For each rule in `rules/programs/*.json` and each table in `rules/tables.json`, open the `source`, confirm the numbers and dates, then change `"verifiedBy": "claude-draft"` to `"verifiedBy": "Arthur"` and set `lastVerified` to that day. Items flagged ⚠️ in [docs/SOURCES.md](docs/SOURCES.md) matter most.
+2. **Arthur: check every rule yourself** (about 2–3 hours). **As of Oct 19, 0 of 44 rules are checked** — all still say `claude-draft`. Also check CAPI: its condition and dollar estimate use the household size, so a family of 3+ is compared to the *couple* amount. For each rule in `rules/programs/*.json` and each table in `rules/tables.json`, open the `source`, confirm the numbers and dates, then change `"verifiedBy": "claude-draft"` to `"verifiedBy": "Arthur"` and set `lastVerified` to that day. Items flagged ⚠️ in [docs/SOURCES.md](docs/SOURCES.md) matter most.
 3. **Aiden: get native-speaker review** of `src/i18n/es.json` and `src/i18n/hy.json` (Armenian is Eastern Armenian; ask whether Western Armenian is better for your audience). Fix anything they mark. No legal term should go out unreviewed. The UI redesign added new labels to check too: every `ui` key added after `ui.steps` in `es.json` and `hy.json` (Next button, step names, the answer sentence, the "Not sure" helper questions, dark mode).
 4. **Test on a real, inexpensive Android phone** over cellular data. Add the app to the home screen, turn on airplane mode, and confirm it still opens.
 5. **Outside review (big credibility boost):** ask a benefits navigator or legal aid worker (for example Neighborhood Legal Services' Health Consumer Center, 1-800-896-3202) to look at 10 personas from `tests/personas.json`. Record who reviewed and what changed in `docs/SOURCES.md`.
@@ -133,5 +133,7 @@ These are honest shortcuts for a screener. Each is a good "what we'd build next"
 
 | Date | What happened |
 |---|---|
+| 2026-10-19 | Acted on an outside review (verified each point against the code first). Fixed: CalFresh/CFAP/CalWORKs/CAPI dollar maximums repeated on every person's card (now shown once in a new "Your family at a glance" box, labeled as a household total and a maximum); new overview box with counts, Make my plan, and Answer skipped questions; duplicate HTML ids when a program shows for several people; answer tiles claimed to be radio buttons without arrow keys (now pressed buttons); negative income/age accepted; house checklist marked skipped parts as done; plan hid one person's "possibly" when another was "likely"; "Free help near you" heading replaced by a repeated translation key. Clearer immigration-status help ("stays on this device"). New es/hy text needs native review. Review points not taken: ZIP already pre-fills utilities; unchecked boxes as "no" is normal for a screener. |
+| 2026-10-13 | UI redesign merged (PR #1): one question per screen, house drawing as the question map and progress, tap tiles, dark mode button. |
 | 2026-10-07 | Repo made public; site live on GitHub Pages. CI actions updated to current versions. |
 | 2026-10-07 | Repo created. Researched and encoded 16 programs with sources; built engine, interface, 3 languages, bilingual plan, 36 personas, rule linter, CI, and docs. |
