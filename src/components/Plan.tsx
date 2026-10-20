@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { ArrowLeft, Printer, ShieldCheck } from 'lucide-react'
 import { I18n, makeT, useT, type T } from '../i18n'
 import type { Program, Screening } from '../engine'
+import { Deadlines } from './Results'
 import { help } from '../data'
 import { Logo } from './Header'
 import { personLabel } from '../App'
@@ -19,7 +20,7 @@ function planItems(s: Screening, t: T): Item[] {
     items.set(r.program.id, it)
   }
   s.people.forEach(({ person, results }, i) => results.forEach((r) => add(r, personLabel(person, i, t))))
-  s.household.forEach((r) => add(r, t('ui.householdGroup')))
+  s.household.forEach((r) => add(r, t('ui.wholeHousehold')))
   return [...items.values()]
 }
 
@@ -29,6 +30,7 @@ type Have = { has: Set<string>; toggle: (d: string) => void }
 function PlanBody({ s, today, have, side }: { s: Screening; today: string; have: Have; side: string }) {
   const t = useT()
   const items = planItems(s, t)
+  const disaster = s.household.filter((r) => r.program.category === 'disaster')
   const docs = [...new Set(items.flatMap((i) => i.program.documents))]
   const helpers = help.filter((h) => h.languages.includes(t.lang) && (h.phone || h.address)).slice(0, 6)
   return (
@@ -36,6 +38,8 @@ function PlanBody({ s, today, have, side }: { s: Screening; today: string; have:
       <h2 className="plan-title">{t('ui.planTitle')}</h2>
       <p className="muted">{t('ui.planIntro', { date: t.date(today) })}</p>
       <p className="small muted">{t('ui.asOf')}: {t.date(s.asOf)}</p>
+
+      {disaster.length > 0 && <Deadlines results={disaster} facts={s.facts} />}
 
       <h3>{t('ui.planPrograms')}</h3>
       {items.length === 0 ? <p>{t('ui.planNothing')}</p> : (
@@ -56,8 +60,8 @@ function PlanBody({ s, today, have, side }: { s: Screening; today: string; have:
               <p className="small">{t(`programs.${p.id}`)}</p>
               <p className="small">{t('ui.planFor', { names: who })}</p>
               <p className="small">
-                <strong>{t('ui.planWhere')}:</strong> {t(`where.${p.apply.where}`)} · <span className="url">{p.apply.url.replace(/^https?:\/\/(www\.)?/, '')}</span>
-                {p.apply.phone && <> · {p.apply.phone}</>}
+                <strong>{t('ui.planWhere')}:</strong> {t(`where.${p.apply.where}`)} · <span className="url">{new URL(p.apply.url).hostname.replace(/^www\./, '')}</span>
+                {p.apply.phone && <> · <span className="nowrap">{p.apply.phone}</span></>}
               </p>
             </li>
             )
@@ -87,7 +91,8 @@ function PlanBody({ s, today, have, side }: { s: Screening; today: string; have:
         {helpers.map((h) => (
           <li key={h.id}>
             <strong lang="en">{h.name}</strong>
-            <span className="small"> {[h.phone, h.address].filter(Boolean).join(' · ')}</span>
+            {h.phone && <span className="small nowrap"> {h.phone}</span>}
+            {h.address && <span className="small"> · {h.address}</span>}
           </li>
         ))}
       </ul>

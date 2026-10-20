@@ -14,10 +14,12 @@ export function Logo({ size = 36 }: { size?: number }) {
   )
 }
 
-// Quick exit: wipe the page and replace history so "Back" doesn't return here.
+// Quick exit: wipe the page, step back over this app's screens, and replace that entry so "Back" doesn't return here.
 export function quickExit() {
   document.body.innerHTML = ''
-  window.location.replace('https://www.google.com/search?q=weather')
+  const leave = () => window.location.replace('https://www.google.com/search?q=weather')
+  const depth = history.state?.depth ?? 0
+  if (depth > 0) { addEventListener('popstate', leave, { once: true }); history.go(-depth) } else leave()
 }
 
 const STEPS: { view: View; key: string }[] = [
@@ -42,14 +44,14 @@ export default function Header({ view, setView, setLang, canSee, dark, toggleDar
           </span>
         </button>
         <div className="topbar-actions">
-          <div className="lang-switch" role="group" aria-label={t('ui.language')}>
+          {view !== 'start' && <div className="lang-switch" role="group" aria-label={t('ui.language')}>
             {LANGS.map((l) => (
               <button key={l} lang={l} aria-pressed={t.lang === l} onClick={() => setLang(l)}>
                 {l === 'hy' ? 'ՀԱՅ' : l.toUpperCase()}
                 <span className="sr-only"> {t(`lang.${l}`)}</span>
               </button>
             ))}
-          </div>
+          </div>}
           <button className="theme-btn" onClick={toggleDark} aria-pressed={dark} aria-label={t('ui.darkMode')}
             title={dark ? t('ui.lightMode') : t('ui.darkMode')}>
             {dark ? <Sun size={20} aria-hidden="true" /> : <Moon size={20} aria-hidden="true" />}

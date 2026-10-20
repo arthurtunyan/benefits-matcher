@@ -21,7 +21,6 @@ export interface HouseWindow {
   letter: string
   label: string // full accessible name
   caption?: string // short name under the window on wide screens
-  badge?: string
   done?: boolean
   active?: boolean
   onClick?: () => void
@@ -80,7 +79,6 @@ export default function House({ parts = [], windows = [], onAdd, addLabel, decor
             <Tag {...(decorative ? {} : { type: 'button' as const, onClick: w.onClick, 'aria-label': w.label, 'aria-current': w.active ? 'step' as const : undefined })}
               className={`window ${w.active ? 'window-active' : ''} ${w.done ? 'window-done' : ''}`}>
               <span className="window-pane" aria-hidden="true">{w.letter}</span>
-              {w.badge && <span className="window-badge" aria-hidden="true">{w.badge}</span>}
               {w.caption && <span className="window-caption" aria-hidden="true">{w.caption}</span>}
             </Tag>
             {w.onRemove && !decorative && (

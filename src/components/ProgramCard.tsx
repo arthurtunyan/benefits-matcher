@@ -75,6 +75,14 @@ function CondList({ c, facts }: { c: CondResult; facts: Facts }) {
   )
 }
 
+// How far over a limit, in dollars a month. Poverty-level limits are percentages, so convert those.
+function overMonthly(l: LeafResult, facts: Facts): number {
+  if (l.leaf.fact !== 'incomePctFPL') return l.over!
+  const size = facts.householdSize
+  const fpl = lookup(tables, 'fpl-annual', typeof size === 'number' ? size : undefined, String(facts.asOf)) ?? 0
+  return Math.round((l.over! / 100) * fpl / 12)
+}
+
 // One-line description of the thing that would need to change.
 function blockerText(c: CondResult, t: T, facts: Facts) {
   const ls = leaves(c).filter((l) => l.result !== 'pass')
@@ -111,7 +119,6 @@ export default function ProgramCard({ r, facts, names }: { r: ProgramResult; fac
           {est && <p className="estimate">{est}</p>}
           {names && <p className="for muted small">{t('ui.planFor', { names })}</p>}
         </div>
-        <span className={`badge badge-${outcome}`}>{t(`ui.${outcome}Short`)}</span>
       </div>
 
       {r.upgrades.map((u) => (
@@ -125,7 +132,7 @@ export default function ProgramCard({ r, facts, names }: { r: ProgramResult; fac
           <strong>{t('ui.dependsOn')}:</strong> {best.blockers.map((b) => blockerText(b, t, facts)).join('; ')}
         </p>
       )}
-      {miss && <p className="hint hint-near">{t('ui.nearMiss', { amount: t.money(miss.over!) })}</p>}
+      {miss && <p className="hint hint-near">{t('ui.nearMiss', { amount: t.money(overMonthly(miss, facts)) })}</p>}
       {single && !miss && isChangeable(single) && (
         <p className="hint"><strong>{t('ui.wouldChange')}</strong> {blockerText(single, t, facts)}</p>
       )}
@@ -169,7 +176,7 @@ export default function ProgramCard({ r, facts, names }: { r: ProgramResult; fac
           <p className="details-label">{t('ui.rulesChecked')}</p>
           <ul className="conds"><CondList c={best.tree} facts={facts} /></ul>
           <p className="source">
-            <a href={best.rule.source} target="_blank" rel="noopener noreferrer">
+            <a href={best.rule.source} target="_blank" rel="noopener noreferrer" title={best.rule.id}>
               {t('ui.source')} <ExternalLink size={13} aria-hidden="true" />
             </a>
             <span>
@@ -177,7 +184,6 @@ export default function ProgramCard({ r, facts, names }: { r: ProgramResult; fac
               {best.rule.effective.to && <> {t('ui.until', { date: t.date(best.rule.effective.to) })}</>}
             </span>
             <span>{t('ui.lastVerified', { date: t.date(best.rule.lastVerified) })}</span>
-            <code>{best.rule.id}</code>
           </p>
         </div>
       )}

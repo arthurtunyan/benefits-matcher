@@ -69,7 +69,7 @@ export interface Program {
   apply: { url: string; phone?: string; where: string }
   documents: string[]
   alternatives?: string[]
-  estimate?: { table: string; by?: string } | { text: string }
+  estimate?: { table: string; by?: string; phaseIn?: { rate: number; over: number } } | { text: string }
   rules: Rule[]
 }
 
@@ -200,8 +200,11 @@ export function leaves(c: CondResult): LeafResult[] {
 
 export const isChangeable = (c: CondResult) => leaves(c).some((l) => CHANGEABLE.has(l.leaf.fact))
 
+// Income limits only: being a year too old or two days past a deadline is not "income above the limit".
+const INCOME = new Set(['monthlyIncome', 'annualIncome', 'incomePctFPL', 'calworksIncome', 'earnedIncome'])
+
 export function nearMiss(c: CondResult): LeafResult | undefined {
-  return leaves(c).find((l) => l.over !== undefined && l.over > 0 && l.over <= Number(l.expected) * NEAR_MISS_MARGIN)
+  return leaves(c).find((l) => INCOME.has(l.leaf.fact) && l.over !== undefined && l.over > 0 && l.over <= Number(l.expected) * NEAR_MISS_MARGIN)
 }
 
 function runRule(rule: Rule, facts: Facts, tables: Tables, asOf: string): RuleResult {
@@ -220,10 +223,17 @@ export function runProgram(program: Program, facts: Facts, tables: Tables, asOf:
     .filter((r) => inRange(r.effective, asOf))
     .map((r) => runRule(r, facts, tables, asOf))
   if (results.length === 0) return null // program not in effect on this date
-  // Rules are listed best-variant first. Pick the first pass, else first unknown,
-  // else the failed rule that is closest to passing (fewest blockers).
+  // Rules are listed best-variant first. Pick the first pass, else first unknown, else the failed rule that is
+  // closest to passing: fewest blockers the family can't change (an adult isn't told "you're not under 19"),
+  // then fewest blockers, then one where income is just over the limit.
+  const score = (r: RuleResult) => [r.blockers.filter((x) => !isChangeable(x)).length, r.blockers.length, nearMiss(r.tree) ? 0 : 1]
+  const closer = (a: RuleResult, b: RuleResult) => {
+    const [x, y] = [score(a), score(b)]
+    const i = x.findIndex((v, k) => v !== y[k])
+    return i >= 0 && y[i] < x[i]
+  }
   const best = results.reduce((a, b) =>
-    RANK[b.result] < RANK[a.result] || (b.result === 'fail' && a.result === 'fail' && b.blockers.length < a.blockers.length) ? b : a,
+    RANK[b.result] < RANK[a.result] || (b.result === 'fail' && a.result === 'fail' && closer(a, b)) ? b : a,
   )
   const outcome: Outcome = best.result === 'pass' ? best.rule.outcome ?? 'likely' : best.result === 'unknown' ? 'possibly' : 'not'
   const better = results.slice(0, results.indexOf(best))
@@ -234,6 +244,9 @@ export function runProgram(program: Program, facts: Facts, tables: Tables, asOf:
   if (program.estimate && 'table' in program.estimate && outcome !== 'not') {
     const size = facts[program.estimate.by ?? 'householdSize']
     estimate = lookup(tables, program.estimate.table, typeof size === 'number' ? size : undefined, asOf)
+    // Refundable credits that phase in with earnings (the Child Tax Credit pays 15% of earnings over $2,500).
+    const cap = program.estimate.phaseIn, earned = facts.earnedIncome
+    if (estimate !== undefined && cap && typeof earned === 'number') estimate = Math.min(estimate, Math.max(0, Math.round(cap.rate * (earned - cap.over))))
   }
   return { program, outcome, best, upgrades, estimate }
 }
@@ -243,14 +256,16 @@ export function runProgram(program: Program, facts: Facts, tables: Tables, asOf:
 const anyOf = (xs: (boolean | undefined)[]): boolean | undefined =>
   xs.includes(true) ? true : xs.includes(undefined) ? undefined : false
 
-const LA_COUNTY_AV = new Set(['93510', '93532', '93534', '93535', '93536', '93543', '93544', '93550', '93551', '93552', '93553', '93563', '93591'])
+const LA_COUNTY_AV = new Set(['93243', '93510', '93532', '93534', '93535', '93536', '93543', '93544', '93550', '93551', '93552', '93553', '93563', '93591'])
+// Orange County ZIPs that share LA's 906/907 prefixes (Buena Park, La Palma, Cypress, La Habra, Stanton, Los Alamitos, Seal Beach).
+const NOT_LA_OC = new Set(['90620', '90621', '90622', '90623', '90624', '90630', '90631', '90632', '90633', '90680', '90720', '90721', '90740', '90742', '90743'])
 const NOT_LA_917 = new Set(['91701', '91708', '91709', '91710', '91729', '91730', '91737', '91739', '91743', '91752', '91758', '91759', '91761', '91762', '91763', '91764', '91784', '91785', '91786'])
 
 // ponytail: ZIP-prefix check for LA County; swap for a full ZIP list if edge ZIPs matter.
 export function inLACounty(zip?: string): boolean | undefined {
   if (!zip || !/^\d{5}$/.test(zip)) return undefined
   const p = Number(zip.slice(0, 3))
-  return (p >= 900 && p <= 918 && !NOT_LA_917.has(zip)) || LA_COUNTY_AV.has(zip)
+  return (p >= 900 && p <= 918 && !NOT_LA_917.has(zip) && !NOT_LA_OC.has(zip)) || LA_COUNTY_AV.has(zip)
 }
 
 // Statuses that come with a work-eligible Social Security number and count for FEMA, SBA, and DUA.
@@ -392,7 +407,8 @@ export function timeline(h: Household, programs: Program[], tables: Tables, from
     for (const k of new Set([...last.keys(), ...now.keys()])) {
       const [personId, r] = now.get(k) ?? [k.split('|')[0] || undefined, undefined]
       const prev = last.get(k)
-      if (r && isGap(r)) { if (!last.has(k)) last.set(k, 'gap'); continue }
+      // A rule that starts today is news even if its income limit isn't published yet (e.g. CFAP for 55+ in Oct 2027).
+      if (r && isGap(r) && r.best.rule.effective.from !== date) { if (!last.has(k)) last.set(k, 'gap'); continue }
       last.set(k, r)
       if (i === 0 || prev === 'gap' || !differs(prev, r)) continue
       changes.push({ date, personId, program: (r ?? prev)!.program, before: prev, after: r })

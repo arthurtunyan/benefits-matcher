@@ -30,7 +30,10 @@
       "id": "sce-fera",
       "variant": "fera",
       "effective": { "from": "2016-01-01", "to": null },
-      "conditions": { "fact": "annualIncome", "lte": { "table": "fera-annual" } },
+      "conditions": { "all": [
+        { "fact": "householdSize", "gte": 3 },
+        { "fact": "annualIncome", "lte": { "table": "fera-annual" } }
+      ]},
       "explain": "care.fera",
       "source": "https://www.sce.com/save-money/income-qualified-programs/care-fera",
       "lastVerified": "2026-10-07",

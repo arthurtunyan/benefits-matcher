@@ -4,12 +4,20 @@ import { useT } from '../i18n'
 import type { Change, ProgramResult, Screening } from '../engine'
 import { MAX_DATE, MIN_DATE, personLabel, todayISO } from '../App'
 
+const RANK = { likely: 2, possibly: 1, not: 0 }
+const LESSER = new Set(['restricted', 'fullPrice']) // variants that cover less than the one before them
+// Losing ground: a worse outcome, or the same outcome with less coverage (full → restricted Medi-Cal).
+const worse = (a?: ProgramResult, b?: ProgramResult) => {
+  const [x, y] = [RANK[a?.outcome ?? 'not'], RANK[b?.outcome ?? 'not']]
+  return y < x || (y === x && y > 0 && LESSER.has(b!.best.rule.variant ?? '') && !LESSER.has(a!.best.rule.variant ?? ''))
+}
+
 // One result as a badge: "Likely · Restricted Medi-Cal (…)". No result counts as not eligible.
-function Snap({ r }: { r?: ProgramResult }) {
+function Snap({ r, down }: { r?: ProgramResult; down?: boolean }) {
   const t = useT()
   const o = r?.outcome ?? 'not'
   const v = r?.best.rule.variant
-  return <span className={`badge badge-${o}`}>{t(`ui.${o}Short`)}{o !== 'not' && v && t.has(`variants.${v}`) ? ` · ${t(`variants.${v}`)}` : ''}</span>
+  return <span className={`badge badge-${down ? 'down' : o}`}>{t(`ui.${o}Short`)}{o !== 'not' && v && t.has(`variants.${v}`) ? ` · ${t(`variants.${v}`)}` : ''}</span>
 }
 
 // The "policy time machine": every day a rule change reaches someone in this family, with the rule behind it.
@@ -27,7 +35,8 @@ export default function Timeline({ changes, people, asOf, setAsOf }: {
     return i < 0 ? t('ui.householdGroup') : personLabel(people[i].person, i, t)
   }
   const now = <li className="tm-now">{t('ui.today')} · {t.date(today)}</li>
-  const see = (d: string) => { setAsOf(d); document.getElementById('asof')?.scrollIntoView({ behavior: 'smooth', block: 'center' }) }
+  // Jump back to the top so the family sees their results on that date.
+  const see = (d: string) => { setAsOf(d); window.scrollTo({ top: 0, behavior: 'smooth' }) }
 
   return (
     <section className="card timeline" aria-labelledby="tm-title">
@@ -56,7 +65,7 @@ export default function Timeline({ changes, people, asOf, setAsOf }: {
                         <p><strong>{name(c.personId)}</strong> · <span lang="en">{c.program.name}</span></p>
                         <p className="tm-move">
                           {same ? <><Snap r={c.after} /> <span className="muted small">{t('ui.tmNewRule')}</span></>
-                            : <><Snap r={c.before} /> <span aria-label={t('ui.tmTo')}>→</span> <Snap r={c.after} /></>}
+                            : <><Snap r={c.before} /> <span aria-hidden="true">→</span><span className="sr-only">{t('ui.tmTo')}</span> <Snap r={c.after} down={worse(c.before, c.after)} /></>}
                         </p>
                         <details className="tm-why">
                           <summary>{t('ui.why')}</summary>

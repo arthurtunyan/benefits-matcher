@@ -1,10 +1,9 @@
 import type { ReactNode } from 'react'
-import { ArrowLeft, CalendarClock, Info, Printer, ShieldCheck } from 'lucide-react'
+import { ArrowLeft, CalendarClock, ChevronDown, Info, Printer, ShieldCheck } from 'lucide-react'
 import { useT } from '../i18n'
 import { deadlineDays, leaves, type Change, type Outcome, type Person, type ProgramResult, type Screening, type Status } from '../engine'
 import { MAX_DATE, MIN_DATE, personLabel, todayISO } from '../App'
-import { Face, StatusSelect, initial } from './HouseholdForm'
-import House from './House'
+import { Face, StatusSelect } from './HouseholdForm'
 import ProgramCard from './ProgramCard'
 import Help from './Help'
 import Timeline from './Timeline'
@@ -30,10 +29,10 @@ function Group({ outcome, items, facts }: { outcome: Outcome; items: ProgramResu
   }
   return (
     <section className={`group group-${outcome}`}>
-      <h4 className="group-title">
+      <h3 className="group-title">
         <span className={`dot dot-${outcome}`} aria-hidden="true" />
         {t(`ui.${outcome}`)} <span className="count">{items.length}</span>
-      </h4>
+      </h3>
       <p className="help">{t(`ui.${outcome}Help`)}</p>
       <div className="program-list">{list}</div>
     </section>
@@ -49,7 +48,7 @@ const count = (rs: ProgramResult[], o: Outcome) => rs.filter((r) => r.outcome ==
 const addDays = (d: string, n: number) => new Date(Date.parse(`${d}T00:00:00Z`) + n * 86_400_000).toISOString().slice(0, 10)
 
 // Disaster deadlines, nearest first. A program is listed while it's open, or when the deadline is the only thing that closed it.
-function Deadlines({ results, facts }: { results: ProgramResult[]; facts: Screening['facts'] }) {
+export function Deadlines({ results, facts }: { results: ProgramResult[]; facts: Screening['facts'] }) {
   const t = useT()
   const since = typeof facts.daysSinceDisaster === 'number' ? facts.daysSinceDisaster : undefined
   const items = results.flatMap((r) => {
@@ -145,31 +144,42 @@ export default function Results({ screening: s, changes, asOf, setAsOf, updatePe
   const tax = s.household.filter((r) => r.program.category === 'tax')
   const disasterHelp = s.household.filter((r) => r.program.category === 'disaster')
 
+  const jump = (id: string) => {
+    const el = document.getElementById(`person-${id}`) as HTMLDetailsElement | null
+    if (!el) return
+    el.open = true
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
+
   return (
     <div className="results">
       <div className="results-top">
         <h1 tabIndex={-1} className="view-heading">{t('ui.stepResults')}</h1>
         <p className="privacy-chip"><ShieldCheck size={16} aria-hidden="true" /> {t('ui.privacyChip')}</p>
+        {asOf !== today && <p className="note-warn" role="status">{t('ui.notToday', { date: t.date(asOf) })}</p>}
       </div>
 
-      {people.length > 0 && (
-        <div className="results-house">
-          <House windows={people.map(({ person: p, results }, i) => {
-            const name = personLabel(p, i, t)
-            const summary = t('ui.summary', { likely: count(results, 'likely'), possibly: count(results, 'possibly') })
-            return {
-              id: p.id, letter: initial(p, i, t), caption: name, badge: String(count(results, 'likely')), done: true,
-              label: `${name}: ${summary}`,
-              onClick: () => document.getElementById(`pr-${p.id}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' }),
-            }
-          })} />
-        </div>
-      )}
+      {people.length === 0 && <p>{t('ui.noPeople')}</p>}
 
       {people.length > 0 && (
         <section className="card overview" aria-labelledby="overview-title">
           <h2 id="overview-title" className="card-title">{t('ui.overview')}</h2>
-          <p className="overview-count">{t('ui.overviewCount', { likely: o.likely, possibly: o.possibly })}</p>
+          <p className="sr-only">{t('ui.overviewCount', { likely: o.likely, possibly: o.possibly })}</p>
+          <div className="stats" aria-hidden="true">
+            <p className="stat"><b>{o.likely}</b>{t('ui.likely')}</p>
+            {o.possibly > 0 && <p className="stat stat-possibly"><b>{o.possibly}</b>{t('ui.possibly')}</p>}
+          </div>
+          <ul className="who">
+            {people.map(({ person: p, results }, i) => (
+              <li key={p.id}>
+                <a href={`#person-${p.id}`} onClick={(e) => { e.preventDefault(); jump(p.id) }}>
+                  <Face p={p} index={i} />
+                  <span className="who-name">{personLabel(p, i, t)}</span>
+                  <span className="who-sum">{t('ui.summary', { likely: count(results, 'likely'), possibly: count(results, 'possibly') })}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
           {o.money.length > 0 && (
             <>
               <ul className="overview-money">
@@ -186,13 +196,16 @@ export default function Results({ screening: s, changes, asOf, setAsOf, updatePe
               <p className="help">{t('ui.taxMoneyHelp')}</p>
             </>
           )}
-          {o.skipped && <p className="hint hint-possibly">{t('ui.skippedNote')}</p>}
-          <div className="row">
-            <button className="btn btn-primary" onClick={onPlan}><Printer size={18} aria-hidden="true" /> {t('ui.makePlan')}</button>
-            {o.skipped && <button className="btn btn-soft" onClick={onBack}>{t('ui.answerSkipped')}</button>}
-          </div>
+          {o.skipped && (
+            <>
+              <p className="hint hint-possibly">{t('ui.skippedNote')}</p>
+              <div className="row"><button className="btn btn-soft" onClick={onBack}>{t('ui.answerSkipped')}</button></div>
+            </>
+          )}
         </section>
       )}
+
+      <p className="disclaimer">{t('ui.disclaimer')}</p>
 
       {/* Disaster help goes first: its deadlines are days away. */}
       <Extra id="disaster" title={t('ui.disasterTitle')} intro={t('ui.disasterIntro')} results={disasterHelp} facts={s.facts}>
@@ -203,47 +216,25 @@ export default function Results({ screening: s, changes, asOf, setAsOf, updatePe
         </ul>
       </Extra>
 
-      <section className="asof card" aria-labelledby="asof-label">
-        <div className="asof-row">
-          <CalendarClock size={22} aria-hidden="true" className="asof-icon" />
-          <label id="asof-label" htmlFor="asof">{t('ui.asOf')}</label>
-          <input id="asof" type="date" min={MIN_DATE} max={MAX_DATE} value={asOf}
-            onChange={(e) => e.target.value && setAsOf(e.target.value)} />
-        </div>
-        <div className="asof-presets" role="group" aria-label={t('ui.asOf')}>
-          {presets.map((p) => (
-            <button key={p.label} className="chip-btn" aria-pressed={asOf === p.date} onClick={() => setAsOf(p.date)}>{p.label}</button>
-          ))}
-        </div>
-        <p className="help">{t('ui.asOfHelp')} {t('ui.dateRange', { from: t.date(MIN_DATE), to: t.date(MAX_DATE) })}</p>
-        {asOf !== today && <p className="note-warn" role="status">{t('ui.notToday', { date: t.date(asOf) })}</p>}
-      </section>
-
-      {people.length > 0 && <Timeline changes={changes} people={people} asOf={asOf} setAsOf={setAsOf} />}
-
-      <p className="disclaimer">{t('ui.disclaimer')}</p>
-
-      {people.length === 0 && <p>{t('ui.noPeople')}</p>}
-
       {people.map(({ person: p, results }, i) => {
         const name = personLabel(p, i, t)
+        // Big families: everyone after the first starts folded; the list in the overview opens them.
         return (
-          <section key={p.id} className="person-results card" aria-labelledby={`pr-${p.id}`}>
-            <header className="person-results-head">
+          <details key={p.id} id={`person-${p.id}`} className="person-results person-fold card" open={people.length <= 3 || i === 0}>
+            <summary className="person-results-head">
               <Face p={p} index={i} />
               <div className="person-results-name">
                 <h2 id={`pr-${p.id}`}>{name}{p.age !== undefined && <span className="age"> · {p.age}</span>}</h2>
-                <p className="summary" aria-live="polite">
-                  {t('ui.summary', { likely: count(results, 'likely'), possibly: count(results, 'possibly') })}
-                </p>
+                <p className="summary">{t('ui.summary', { likely: count(results, 'likely'), possibly: count(results, 'possibly') })}</p>
               </div>
-              <div className="quick-status">
-                <label htmlFor={`qs-${p.id}`} className="sr-only">{t('ui.status')}</label>
-                <StatusSelect id={`qs-${p.id}`} value={p.status} onChange={(status?: Status) => updatePerson({ ...p, status })} />
-              </div>
-            </header>
+              <ChevronDown className="fold-icon" size={22} aria-hidden="true" />
+            </summary>
+            <div className="quick-status">
+              <label htmlFor={`qs-${p.id}`}>{t('ui.status')}</label>
+              <StatusSelect id={`qs-${p.id}`} value={p.status} onChange={(status?: Status) => updatePerson({ ...p, status })} />
+            </div>
             {results.length === 0 ? <p className="muted">{t('ui.noResults')}</p> : <Groups results={results} facts={{ ...s.facts, age: p.age }} />}
-          </section>
+          </details>
         )
       })}
 
@@ -261,6 +252,23 @@ export default function Results({ screening: s, changes, asOf, setAsOf, updatePe
       )}
 
       <Extra id="tax" title={t('ui.taxTitle')} intro={t('ui.taxIntro')} results={tax} facts={s.facts} />
+
+      <section className="asof card" aria-labelledby="asof-label">
+        <div className="asof-row">
+          <CalendarClock size={22} aria-hidden="true" className="asof-icon" />
+          <label id="asof-label" htmlFor="asof">{t('ui.asOf')}</label>
+          <input id="asof" type="date" min={MIN_DATE} max={MAX_DATE} value={asOf}
+            onChange={(e) => { const d = e.target.value; if (d >= MIN_DATE && d <= MAX_DATE) setAsOf(d) }} />
+        </div>
+        <div className="asof-presets" role="group" aria-label={t('ui.asOf')}>
+          {presets.map((p) => (
+            <button key={p.label} className="chip-btn" aria-pressed={asOf === p.date} onClick={() => setAsOf(p.date)}>{p.label}</button>
+          ))}
+        </div>
+        <p className="help">{t('ui.asOfHelp')} {t('ui.dateRange', { from: t.date(MIN_DATE), to: t.date(MAX_DATE) })}</p>
+      </section>
+
+      {people.length > 0 && <Timeline changes={changes} people={people} asOf={asOf} setAsOf={setAsOf} />}
 
       <section className="card good-to-know">
         <h2 className="card-title">{t('ui.goodToKnow')}</h2>

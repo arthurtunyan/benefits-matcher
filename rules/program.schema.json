@@ -29,7 +29,10 @@
     "alternatives": { "type": "array", "items": { "type": "string" }, "description": "i18n keys under alt.*, shown when not eligible" },
     "estimate": {
       "oneOf": [
-        { "type": "object", "required": ["table"], "additionalProperties": false, "properties": { "table": { "type": "string" }, "by": { "type": "string" } } },
+        { "type": "object", "required": ["table"], "additionalProperties": false, "properties": {
+          "table": { "type": "string" }, "by": { "type": "string" },
+          "phaseIn": { "description": "Cap the estimate at rate × (earnedIncome − over), for credits that grow with earnings.", "type": "object", "required": ["rate", "over"], "additionalProperties": false, "properties": { "rate": { "type": "number" }, "over": { "type": "number" } } }
+        } },
         { "type": "object", "required": ["text"], "additionalProperties": false, "properties": { "text": { "type": "string" } } }
       ]
     },

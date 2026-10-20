@@ -9,7 +9,7 @@
 English · Español · Հայերեն
 
 [![CI](https://github.com/arthurtunyan/benefits-matcher/actions/workflows/ci.yml/badge.svg)](https://github.com/arthurtunyan/benefits-matcher/actions/workflows/ci.yml)
-![Tests](https://img.shields.io/badge/tests-480%2B%20passing-1d7348)
+![Tests](https://img.shields.io/badge/tests-620%2B%20passing-1d7348)
 ![Privacy](https://img.shields.io/badge/data%20sent-0%20bytes-0b5d6b)
 ![License](https://img.shields.io/badge/license-MIT-e07a2e)
 
@@ -40,9 +40,9 @@ Many low-income, immigrant, and mixed-status families in LA County miss help the
 | 🚌 **Help nearby, by transit** | Local help organizations with "directions by bus or rail" links. The user picks an area — location is never requested. |
 | 🚪 **Quick exit** | One tap clears the screen and opens a neutral page, for people on a shared phone. |
 
-### Programs checked (16)
+### Programs checked (25)
 
-**Health:** Medi-Cal (full and restricted scope), Covered California · **Food:** CalFresh, CFAP, SUN Bucks · **Cash:** CalWORKs, CAPI · **Family:** WIC, Head Start / Early Head Start / State Preschool · **Household:** California LifeLine, LA Metro LIFE, SCE CARE/FERA, SoCalGas CARE, LADWP EZ-SAVE, Burbank Water and Power Lifeline, Glendale Care
+**Health:** Medi-Cal (full and restricted scope), Covered California · **Food:** CalFresh, CFAP, SUN Bucks · **Cash:** CalWORKs, CAPI · **Family:** WIC, Head Start / Early Head Start / State Preschool · **Household:** California LifeLine, LA Metro LIFE, SCE CARE/FERA, SoCalGas CARE, LADWP EZ-SAVE, Burbank Water and Power Lifeline, Glendale Care · **Tax credits:** federal EITC, Child Tax Credit, CalEITC, Young Child Tax Credit · **After a disaster:** FEMA Individual Assistance, SBA disaster loans, Disaster Unemployment Assistance, CalFresh replacement, D-SNAP
 
 ## How it works
 
@@ -114,7 +114,7 @@ src/
   i18n.tsx, i18n/      English, Spanish, Armenian
   components/          Start, HouseholdForm, Results, ProgramCard, Plan, Help
 tests/
-  personas.json        36 households with expected results and sources
+  personas.json        43 households with expected results and sources
   personas.test.ts     the answer key
   rules.test.ts        rule linter: schema, sources, dates, 90-day verification, translations
   engine.test.ts       three-valued logic, dated tables, and a no-network check

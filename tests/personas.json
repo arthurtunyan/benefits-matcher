@@ -523,5 +523,43 @@
     "expect": {
       "household": { "fema-ia": "possibly", "sba-disaster-loan": "possibly", "dua": "not", "d-snap": "possibly", "calfresh-replacement": "hidden" }
     }
+  },
+  {
+    "id": "single-sce-no-fera",
+    "title": "One adult in SCE territory just above CARE: FERA is only for homes of 3 or more",
+    "source": "https://www.sce.com/save-money/income-qualified-programs/care-fera",
+    "asOf": "2026-10-19",
+    "household": {
+      "zip": "90069", "electric": "sce", "gas": "socalgas", "monthlyIncome": 4200, "hasEarnedIncome": true,
+      "people": [{ "id": "a", "age": 32, "status": "citizen" }]
+    },
+    "expect": { "household": { "sce-care-fera": "not" } }
+  },
+  {
+    "id": "ctc-low-earner-cap",
+    "title": "Parent of four earning $18,000 a year: refundable Child Tax Credit is 15% of earnings over $2,500 ($2,325), not $1,700 × 4",
+    "source": "https://www.irs.gov/credits-deductions/individuals/child-tax-credit",
+    "asOf": "2026-10-19",
+    "household": {
+      "zip": "91605", "electric": "ladwp", "gas": "socalgas", "monthlyIncome": 1500, "hasEarnedIncome": true,
+      "people": [
+        { "id": "p", "age": 30, "status": "citizen" }, { "id": "k2", "age": 2, "status": "citizen" }, { "id": "k5", "age": 5, "status": "citizen" },
+        { "id": "k8", "age": 8, "status": "citizen" }, { "id": "k11", "age": 11, "status": "citizen" }
+      ]
+    },
+    "expect": { "household": { "child-tax-credit": "likely" } },
+    "estimates": { "household": { "child-tax-credit": 2325 } }
+  },
+  {
+    "id": "adult-medi-cal-near-miss",
+    "title": "Single citizen adult at 145% of the poverty level: told the adult income limit is just missed, not the children's age rule",
+    "source": "https://www.dhcs.ca.gov/wp-content/uploads/2026/05/DHCS-TBL-May-Revise-HR-1_Fact-Sheet.pdf",
+    "asOf": "2026-10-19",
+    "household": {
+      "zip": "91605", "electric": "ladwp", "gas": "socalgas", "monthlyIncome": 1929, "hasEarnedIncome": true,
+      "people": [{ "id": "a", "age": 35, "status": "citizen" }]
+    },
+    "expect": { "a": { "medi-cal": "not", "covered-california": "likely:withHelp" } },
+    "nearMiss": { "a": ["medi-cal"] }
   }
 ]

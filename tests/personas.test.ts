@@ -10,6 +10,7 @@ interface Persona {
   household: Partial<Household> & { people: Person[] }
   expect: Record<string, Record<string, string>>
   nearMiss?: Record<string, string[]>
+  estimates?: Record<string, Record<string, number>> // dollar "up to" amounts
 }
 
 const describeResult = (r?: ProgramResult) =>
@@ -40,6 +41,12 @@ describe.each(personas as unknown as Persona[])('$id — $title', (p) => {
         const r = resultsFor(who).find((x) => x.program.id === id)!
         expect(nearMiss(r.best.tree)).toBeDefined()
       })
+    }
+  }
+
+  for (const [who, amounts] of Object.entries(p.estimates ?? {})) {
+    for (const [id, want] of Object.entries(amounts)) {
+      it(`${who}: ${id} estimate is ${want}`, () => expect(resultsFor(who).find((x) => x.program.id === id)?.estimate).toBe(want))
     }
   }
 })

@@ -14,7 +14,7 @@ Legend: ✅ done · 🟡 done as a draft, needs a human check · ⬜ to do · �
 | Repo, build, CI, tests | ✅ |
 | Rules engine (dated, per-person, three-valued) | ✅ |
 | 25 programs encoded with sources (16 benefits + 4 tax credits + 5 disaster) | 🟡 researched and sourced; each rule still needs Arthur's personal check |
-| Persona test suite (36 households) | ✅ |
+| Persona test suite (46 households) | ✅ |
 | Rule linter (schema, sources, dates, 90-day check, translations) | ✅ |
 | English interface | ✅ |
 | Spanish and Armenian | 🟡 complete drafts; **native-speaker review required** |
@@ -33,7 +33,7 @@ Legend: ✅ done · 🟡 done as a draft, needs a human check · ⬜ to do · �
 ### Setup
 - ✅ Git repo with `main` branch, MIT license, `.gitignore`
 - ✅ Vite + React + TypeScript, no backend
-- ✅ `npm test` (Vitest) — 620 tests passing, 43 personas (includes repeated translation keys, the timeline, tax credits, and disaster deadlines)
+- ✅ `npm test` (Vitest) — 630 tests passing, 46 personas (includes repeated translation keys, the timeline, tax credits, and disaster deadlines)
 - ✅ GitHub Actions: tests + type-check + build on every push and pull request, plus a **weekly run** so stale rules (not checked in 90 days) turn the badge red
 - ✅ Deploys to GitHub Pages on every push to `main`: https://arthurtunyan.github.io/benefits-matcher/
 - ✅ Issue form for reporting a rule change, pull-request checklist
@@ -70,6 +70,7 @@ Legend: ✅ done · 🟡 done as a draft, needs a human check · ⬜ to do · �
 
 ## 🙋 What Arthur and Aiden need to do (in order)
 
+0. **Most important: the AI rule.** The 2026 rules say "all coding and technical development must be done by the student" and AI "must not constitute the entirety of the technical development" ([rules PDF](https://www.congressionalappchallenge.us/wp-content/uploads/2026/05/2026-CAC-Rules.pdf)). The public repo shows Claude co-authored nearly every commit. Do not hide it (no history rewrites, no deleting `CLAUDE.md`, no going private). Instead: (a) write the AI disclosure honestly in your own words, including what *you* did; (b) consider emailing the CAC with the disclosure and asking whether it's acceptable before Oct 26; (c) make your own contribution real: verify the rules, fix the CAPI bug yourselves, and be able to explain `src/engine.ts` without notes.
 1. ✅ ~~Make the repo public so the site goes live.~~ Done Oct 7 — live at https://arthurtunyan.github.io/benefits-matcher/ (every push to `main` redeploys).
 2. **Arthur: check every rule yourself** (about 3–4 hours). **As of Oct 19, 0 of 56 rules are checked** (12 tax and disaster rules were added Oct 19 — see the two new sections in [docs/SOURCES.md](docs/SOURCES.md)) — all still say `claude-draft`. Also check CAPI: its condition and dollar estimate use the household size, so a family of 3+ is compared to the *couple* amount. For each rule in `rules/programs/*.json` and each table in `rules/tables.json`, open the `source`, confirm the numbers and dates, then change `"verifiedBy": "claude-draft"` to `"verifiedBy": "Arthur"` and set `lastVerified` to that day. Items flagged ⚠️ in [docs/SOURCES.md](docs/SOURCES.md) matter most.
 3. **Aiden: get native-speaker review** of `src/i18n/es.json` and `src/i18n/hy.json` (Armenian is Eastern Armenian; ask whether Western Armenian is better for your audience). Fix anything they mark. No legal term should go out unreviewed. The UI redesign added new labels to check too: every `ui` key added after `ui.steps` in `es.json` and `hy.json` (Next button, step names, the answer sentence, the "Not sure" helper questions, dark mode).
@@ -119,6 +120,15 @@ These are honest shortcuts for a screener. Each is a good "what we'd build next"
 
 ---
 
+## Known issues not fixed yet (from the Oct 19 bug audit)
+
+- ⬜ **Arthur's fix:** CAPI compares a family of 3+ to the *couple* amount (see item 2 above). Left on purpose as a real bug for a student to fix and explain in the video.
+- ⬜ The timeline can show a change on the day a *table* starts rather than a rule (e.g. a 3-year-old flips Head Start ↔ State Preschool on Jul 1, 2026 / Jul 1, 2027 because the `cspp` table only covers that year).
+- ⬜ FEMA more than 120 days after a disaster lists the 60-day date as "passed" instead of the 120-day late date.
+- ⬜ "Edit answers" / "Answer skipped questions" always reopen at the ZIP question.
+- ⬜ Typed values skip the input limits (age over 120, a future disaster date silently hides Disaster help).
+- ⬜ Service worker: `index.html` is stale for one visit after each deploy; the cache name never changes.
+
 ## Backlog (only after everything above)
 
 - ⬜ Interactive aid map (Leaflet, loads only when opened, user picks an area)
@@ -136,6 +146,7 @@ These are honest shortcuts for a screener. Each is a good "what we'd build next"
 
 | Date | What happened |
 |---|---|
+| 2026-10-19 | Ran three review agents on Arthur's request (bug audit, visual design review, research on the 2026 rules, judging rubric and past winners). **Redesign:** light "paper" page with white cards and thin borders instead of the saturated blue page; one blue for actions and selections, orange only on the house; calmer type weights; visible form-control borders (WCAG 1.4.11); navy dark mode; new app icon colors. **Results:** overview first (likely/possibly counts plus each person with a jump link), people fold when there are 4+, the house drawing and repeated status pills removed, rule IDs hidden in a tooltip, timeline marks losses in amber, page is about half as long. **Bugs fixed:** income dropped decimals (1500.50 → $150,050); near-miss shown in percentage points as dollars, and fired on age and disaster deadlines; FERA offered to 1–2 person homes (now 3+); adults shown the children's Medi-Cal rule as their reason; timeline skipped the Oct 2027 CFAP change; Orange County ZIPs counted as LA County (Gorman added); Child Tax Credit estimate now capped at 15% of earnings over $2,500; "job income" checkbox gave two answers for the same unchecked box; pregnancy answers stayed after the age changed to 70; browser Back left the app (Quick exit still clears the history); "Check my family" after the example reopened the example family; out-of-range "as of" dates accepted; plan said "For: For the whole household"; disaster deadlines now on the printed plan; footer no longer claims a "full check" while rules are drafts. Also: "None of these" answer for benefits, "Add a person" button under each person, ZIP placeholder no longer looks pre-filled. 3 new personas, 2 new engine tests. README counts and screenshots updated; demo script rewritten around the official video requirements and the rubric's code row. New es/hy strings need native review (`footerDraft`, `noneOfThese`, `zipPlaceholder`, `wholeHousehold`, `cond.householdSize.gte`, `rules.care.fera`). |
 | 2026-10-19 | Researched past Congressional App Challenge winners near CA-30 (Friedman 2025: SyncRide; Chu 2025: Fire Up; Sherman 2025: FireSafe; Gomez 2025: Know Your Rights) and Rep. Friedman's priorities (wildfire recovery, affordability, transportation, constituent casework). Built two features on Arthur's request: **tax credits** (4 programs, 7 dated tables) and **disaster mode** (5 programs, deadlines, timeline integration). 7 new personas. Disaster help is opt-in. New es/hy text needs native review. |
 | 2026-10-19 | Built the rule-change timeline (the review's "Policy Time Machine"), on Arthur's request. New es/hy strings need native review. Demo script updated to show it. |
 | 2026-10-19 | Acted on an outside review (verified each point against the code first). Fixed: CalFresh/CFAP/CalWORKs/CAPI dollar maximums repeated on every person's card (now shown once in a new "Your family at a glance" box, labeled as a household total and a maximum); new overview box with counts, Make my plan, and Answer skipped questions; duplicate HTML ids when a program shows for several people; answer tiles claimed to be radio buttons without arrow keys (now pressed buttons); negative income/age accepted; house checklist marked skipped parts as done; plan hid one person's "possibly" when another was "likely"; "Free help near you" heading replaced by a repeated translation key. Clearer immigration-status help ("stays on this device"). New es/hy text needs native review. Review points not taken: ZIP already pre-fills utilities; unchecked boxes as "no" is normal for a screener. |

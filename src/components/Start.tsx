@@ -32,8 +32,8 @@ export default function Start({ onStart, onExample, setLang }: {
         </div>
         <div className="hero-house">
           <House decorative parts={[
-            { id: 'zip', x: 7.5, y: 57, icon: <MapPin size={20} />, label: '', done: true },
-            { id: 'electric', x: 91.5, y: 22, icon: <Zap size={20} />, label: '', done: true },
+            { id: 'zip', x: 7.5, y: 57, icon: <MapPin size={20} />, label: '', done: false },
+            { id: 'electric', x: 91.5, y: 22, icon: <Zap size={20} />, label: '', done: false },
             { id: 'gas', x: 26.75, y: 80, icon: <Flame size={20} />, label: '', done: false },
             { id: 'income', x: 85.5, y: 75, icon: <Mail size={20} />, label: '', done: false },
             { id: 'benefits', x: 62, y: 82, icon: <ShoppingBasket size={20} />, label: '', done: false },

@@ -51,9 +51,13 @@ describe('dated tables', () => {
 
 describe('near misses', () => {
   it('flags income within 10% above a limit', () => {
-    const tree = evaluate({ fact: 'i', lte: 100 }, { i: 105 }, T, '2026-03-01')
+    const tree = evaluate({ fact: 'monthlyIncome', lte: 100 }, { monthlyIncome: 105 }, T, '2026-03-01')
     expect(nearMiss(tree)?.over).toBe(5)
-    expect(nearMiss(evaluate({ fact: 'i', lte: 100 }, { i: 150 }, T, '2026-03-01'))).toBeUndefined()
+    expect(nearMiss(evaluate({ fact: 'monthlyIncome', lte: 100 }, { monthlyIncome: 150 }, T, '2026-03-01'))).toBeUndefined()
+  })
+  it('ignores limits that are not income (age, disaster deadlines)', () => {
+    expect(nearMiss(evaluate({ fact: 'age', lt: 19 }, { age: 20 }, T, '2026-03-01'))).toBeUndefined()
+    expect(nearMiss(evaluate({ fact: 'daysSinceDisaster', lte: 60 }, { daysSinceDisaster: 62 }, T, '2026-03-01'))).toBeUndefined()
   })
 })
 
@@ -83,6 +87,10 @@ describe('LA County ZIP check', () => {
     expect(inLACounty('92101')).toBe(false)
     expect(inLACounty('91761')).toBe(false) // Ontario, San Bernardino County
     expect(inLACounty('93550')).toBe(true) // Palmdale
+    expect(inLACounty('90630')).toBe(false) // Cypress, Orange County
+    expect(inLACounty('90740')).toBe(false) // Seal Beach, Orange County
+    expect(inLACounty('90638')).toBe(true) // La Mirada
+    expect(inLACounty('93243')).toBe(true) // Gorman
     expect(inLACounty(undefined)).toBeUndefined()
   })
 })

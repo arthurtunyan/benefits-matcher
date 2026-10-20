@@ -28,3 +28,6 @@ export const lastFullCheck = [
   ...programs.flatMap((p) => p.rules.map((r) => r.lastVerified)),
   ...Object.values(tables).flatMap((t) => t.versions.map((v) => v.lastVerified)),
 ].sort()[0]
+
+// True while any rule is still an unchecked AI draft: the footer then says so instead of claiming a full check.
+export const rulesDraft = programs.some((p) => p.rules.some((r) => r.verifiedBy === 'claude-draft'))

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react'
-import { Check, Flame, Mail, MapPin, ShoppingBasket, Siren, Zap } from 'lucide-react'
+import { Check, Flame, Mail, MapPin, Plus, ShoppingBasket, Siren, Zap } from 'lucide-react'
 import { useT, type T } from '../i18n'
 import { inLACounty, type Household, type Person, type Status, type Utility } from '../engine'
 import { zips } from '../data'
@@ -28,7 +28,7 @@ export function StatusSelect({ value, onChange, id }: { value?: Status; onChange
 
 // First letter of a person's name (or "You" / "Person 2") for their window.
 export const initial = (p: Person, index: number, t: T) =>
-  personLabel(p, index, t).trim().charAt(0).toUpperCase() || String(index + 1)
+  p.name.trim().charAt(0).toUpperCase() || (index === 0 ? t('ui.you').charAt(0).toUpperCase() : String(index + 1))
 
 // A person shown as a round face with their first initial.
 export function Face({ p, index }: { p: Person; index: number }) {
@@ -55,6 +55,17 @@ const NO_GAS = '__none__'
 // Short name: "LADWP (Los Angeles Dept. of Water and Power)" shows as "LADWP".
 const shortUtility = (u: Utility, other: string | undefined, t: T) =>
   u === 'other' && other?.trim() && other !== NO_GAS ? other.trim() : t(`utility.${u}`).replace(/\s*\(.*\)$/, '')
+
+// Money typed as text: "1500." stays as typed while the number underneath updates.
+function MoneyInput({ value, onChange }: { value?: number; onChange: (n?: number) => void }) {
+  const t = useT()
+  const [raw, setRaw] = useState(value?.toString() ?? '')
+  return (
+    <input id="income" className="input-big" inputMode="decimal" autoComplete="off" placeholder={t('ui.incomePlaceholder')}
+      value={raw} aria-describedby="income-help"
+      onChange={(e) => { setRaw(e.target.value); onChange(num(e.target.value.replace(/[$,\s]/g, ''))) }} />
+  )
+}
 
 // Opens below the answer tiles, so bring it into view on small screens.
 function useScrollIntoView() {
@@ -171,7 +182,7 @@ export default function HouseholdForm({ household: h, setHousehold, onDone }: {
     set({
       zip: z || undefined,
       ...(info?.electric ? { electric: info.electric as Utility } : {}),
-      ...(z.length === 5 && inLACounty(z) ? { gas: z.startsWith('908') ? 'other' : 'socalgas' } : {}),
+      ...(z.length === 5 && inLACounty(z) ? { gas: z.startsWith('908') ? 'other' : 'socalgas', gasOther: undefined } : {}),
     })
   }
   const updatePerson = (p: Person) => set({ people: h.people.map((x) => (x.id === p.id ? p : x)) })
@@ -180,7 +191,7 @@ export default function HouseholdForm({ household: h, setHousehold, onDone }: {
     const n = h.people.findIndex((x) => x.id === id)
     const rest = h.people.filter((x) => x.id !== id)
     set({ people: rest })
-    if (current === `p:${id}`) setPart(`p:${rest[Math.max(0, n - 1)].id}`)
+    if (current === `p:${id}`) go(`p:${rest[Math.max(0, n - 1)].id}`)
   }
   const addPerson = () => { const np = newPerson(); set({ people: [...h.people, np] }); go(`p:${np.id}`) }
 
@@ -228,7 +239,7 @@ export default function HouseholdForm({ household: h, setHousehold, onDone }: {
       <div className="field">
         <label htmlFor="zip" className="sr-only">{t('ui.zip')}</label>
         <input id="zip" className="input-zip input-big" inputMode="numeric" autoComplete="off" value={h.zip ?? ''}
-          placeholder="91605" aria-describedby="zip-help zip-note" onChange={(e) => setZip(e.target.value)} />
+          placeholder={t('ui.zipPlaceholder')} aria-describedby="zip-help zip-note" onChange={(e) => setZip(e.target.value)} />
         <p id="zip-note" aria-live="polite" className={outside ? 'note-warn' : 'note-ok'}>
           {outside ? t('ui.zipOutside') : zipInfo ? t('ui.zipArea', { city: zipInfo.city }) : ''}
         </p>
@@ -276,14 +287,12 @@ export default function HouseholdForm({ household: h, setHousehold, onDone }: {
           <label htmlFor="income" className="sr-only">{t('ui.income')}</label>
           <div className="money-input">
             <span aria-hidden="true">$</span>
-            <input id="income" className="input-big" inputMode="decimal" autoComplete="off" placeholder={t('ui.incomePlaceholder')}
-              value={h.monthlyIncome ?? ''} aria-describedby="income-help"
-              onChange={(e) => set({ monthlyIncome: num(e.target.value.replace(/[$,\s]/g, '')) })} />
+            <MoneyInput value={h.monthlyIncome} onChange={(monthlyIncome) => set({ monthlyIncome })} />
           </div>
           <p className="help" id="income-help">{t('ui.incomeHelp')}</p>
         </div>
         <div className="tiles">
-          <Tile role="checkbox" selected={!!h.hasEarnedIncome} onClick={() => set({ hasEarnedIncome: !h.hasEarnedIncome })}>{t('ui.earned')}</Tile>
+          <Tile role="checkbox" selected={!!h.hasEarnedIncome} onClick={() => set({ hasEarnedIncome: h.hasEarnedIncome ? undefined : true })}>{t('ui.earned')}</Tile>
         </div>
       </>
     )
@@ -296,6 +305,7 @@ export default function HouseholdForm({ household: h, setHousehold, onDone }: {
           <Tile key={b} role="checkbox" selected={!!h.benefits[b]}
             onClick={() => set({ benefits: { ...h.benefits, [b]: !h.benefits[b] } })}>{t(`benefits.${b}`)}</Tile>
         ))}
+        <Tile selected={false} onClick={() => { set({ benefits: {} }); nextSoon() }}>{t('ui.noneOfThese')}</Tile>
       </div>
     )
   } else if (current === 'disaster') {
@@ -345,7 +355,11 @@ export default function HouseholdForm({ household: h, setHousehold, onDone }: {
           <div className="field field-age">
             <label htmlFor={`p${p.id}-age`}>{t('ui.age')}</label>
             <input id={`p${p.id}-age`} type="number" inputMode="numeric" min={0} max={120} value={p.age ?? ''}
-              aria-describedby="age-help" onChange={(e) => updatePerson({ ...p, age: num(e.target.value) })} />
+              aria-describedby="age-help" onChange={(e) => {
+                const age = num(e.target.value)
+                const canBe = age === undefined || (age >= 10 && age <= 55)
+                updatePerson({ ...p, age, ...(canBe ? {} : { pregnant: undefined, recentBirth: undefined }) })
+              }} />
           </div>
         </div>
         <p className="help" id="age-help">{t('ui.ageHelp')}</p>
@@ -363,6 +377,7 @@ export default function HouseholdForm({ household: h, setHousehold, onDone }: {
             <Tile key={f} role="checkbox" selected={!!p[f]} onClick={() => updatePerson({ ...p, [f]: !p[f] })}>{t(`flags.${f}`)}</Tile>
           ))}
         </div>
+        <button type="button" className="btn btn-soft add-more" onClick={addPerson}><Plus size={18} aria-hidden="true" /> {t('ui.addPerson')}</button>
       </>
     )
   }

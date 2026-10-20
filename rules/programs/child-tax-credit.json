@@ -11,7 +11,7 @@
     "where": "tax"
   },
   "documents": ["taxIds", "taxForms", "childRecords"],
-  "estimate": { "table": "actc-per-child", "by": "ctcKids" },
+  "estimate": { "table": "actc-per-child", "by": "ctcKids", "phaseIn": { "rate": 0.15, "over": 2500 } },
   "rules": [
     {
       "id": "ctc-ssn-parent",

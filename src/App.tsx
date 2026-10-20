@@ -1,7 +1,7 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { I18n, LANGS, makeT, type Lang, type T } from './i18n'
 import { screen, timeline, type Household, type Person } from './engine'
-import { lastFullCheck, programs, tables } from './data'
+import { lastFullCheck, programs, rulesDraft, tables } from './data'
 import Header from './components/Header'
 import Start from './components/Start'
 import HouseholdForm from './components/HouseholdForm'
@@ -43,6 +43,20 @@ export default function App() {
   const demo = location.hash === '#example'
   const [view, setView] = useState<View>(demo ? 'results' : 'start')
   const [household, setHousehold] = useState<Household>(demo ? exampleHousehold : emptyHousehold)
+  const isExample = useRef(demo) // "Check my family" after the example starts from a blank home, not Maria's
+  // Each screen is a browser history entry, so the phone's Back gesture moves between screens instead of leaving.
+  // `depth` lets Quick exit step back over these entries (see quickExit).
+  const go = (v: View) => {
+    if (v === view) return
+    history.pushState({ view: v, depth: (history.state?.depth ?? 0) + 1 }, '')
+    setView(v)
+  }
+  useEffect(() => {
+    history.replaceState({ view, depth: 0 }, '')
+    const onPop = (e: PopStateEvent) => e.state?.view && setView(e.state.view)
+    addEventListener('popstate', onPop)
+    return () => removeEventListener('popstate', onPop)
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
   const [asOf, setAsOf] = useState(todayISO)
   // Light or dark. Starts from the phone's setting; the button in the top bar flips it.
   // Kept in memory only, like everything else, so nothing is saved on the device.
@@ -50,7 +64,8 @@ export default function App() {
   useEffect(() => { document.documentElement.dataset.theme = dark ? 'dark' : 'light' }, [dark])
   const t = useMemo(() => makeT(lang), [lang])
   const screening = useMemo(() => screen(household, programs, tables, asOf), [household, asOf])
-  const changes = useMemo(() => timeline(household, programs, tables, MIN_DATE, MAX_DATE), [household])
+  // Only Results shows the timeline; skipping it elsewhere keeps typing on the questions fast.
+  const changes = useMemo(() => (view === 'results' ? timeline(household, programs, tables, MIN_DATE, MAX_DATE) : []), [household, view])
 
   useEffect(() => {
     document.documentElement.lang = lang
@@ -69,23 +84,24 @@ export default function App() {
   return (
     <I18n.Provider value={t}>
       <a className="skip" href="#main">{t('ui.skip')}</a>
-      <Header view={view} setView={setView} setLang={setLang} canSee={household.people.length > 0}
+      <Header view={view} setView={go} setLang={setLang} canSee={household.people.length > 0}
         dark={dark} toggleDark={() => setDark((d) => !d)} />
       <main id="main" className={`view view-${view}`}>
         {view === 'start' && (
-          <Start setLang={setLang} onStart={() => setView('household')}
-            onExample={() => { setHousehold(exampleHousehold()); setAsOf(todayISO()); setView('results') }} />
+          <Start setLang={setLang}
+            onStart={() => { if (isExample.current) { setHousehold(emptyHousehold()); isExample.current = false } go('household') }}
+            onExample={() => { setHousehold(exampleHousehold()); isExample.current = true; setAsOf(todayISO()); go('results') }} />
         )}
-        {view === 'household' && <HouseholdForm household={household} setHousehold={setHousehold} onDone={() => setView('results')} />}
+        {view === 'household' && <HouseholdForm household={household} setHousehold={setHousehold} onDone={() => go('results')} />}
         {view === 'results' && (
           <Results screening={screening} changes={changes} asOf={asOf} setAsOf={setAsOf} updatePerson={updatePerson}
-            onBack={() => setView('household')} onPlan={() => setView('plan')} />
+            onBack={() => go('household')} onPlan={() => go('plan')} />
         )}
-        {view === 'plan' && <Plan screening={screening} today={todayISO()} onBack={() => setView('results')} />}
+        {view === 'plan' && <Plan screening={screening} today={todayISO()} onBack={() => go('results')} />}
       </main>
       <footer className="footer no-print">
         <p>{t('ui.footerMade')}</p>
-        <p>{t('ui.footerData', { date: t.date(lastFullCheck) })}</p>
+        <p>{rulesDraft ? t('ui.footerDraft') : t('ui.footerData', { date: t.date(lastFullCheck) })}</p>
       </footer>
     </I18n.Provider>
   )
