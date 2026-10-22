@@ -28,26 +28,37 @@ export interface HouseWindow {
   removeLabel?: string
 }
 
+// Drawn like a neighborhood sign-painter would: ink lines a little off-true, flat fills, a sun, a green blob behind.
 function Art() {
   return (
     <svg className="house-art" viewBox="0 0 400 320" aria-hidden="true" focusable="false">
-      <rect x="0" y="286" width="400" height="34" rx="17" className="h-ground" />
+      <path className="h-blob" d="M44 168C34 96 112 34 214 38c98 4 170 52 162 138-6 76-62 122-170 120C102 294 52 238 44 168z" />
+      <circle className="h-sun ln" cx="112" cy="62" r="17" />
+      <path className="ln" d="M112 31v-8M112 101v-8M81 62h-8M151 62h-8M90 40l-6-6M140 90l-6-6M134 40l6-6M84 90l6-6" />
+      {/* ground */}
+      <path className="h-ground" d="M0 292c44-5 86 4 132 0s94-5 138 1 90 3 130-2v31H0z" />
       {/* power pole and wire */}
-      <path d="M296 112 Q330 128 366 80" className="h-wire" />
-      <rect x="362" y="70" width="8" height="220" rx="4" className="h-dark" />
-      {/* street sign */}
-      <rect x="26" y="196" width="6" height="94" rx="3" className="h-dark" />
-      {/* chimney, roof, walls */}
-      <rect x="248" y="54" width="26" height="60" rx="7" className="h-dark" />
-      <rect x="72" y="120" width="236" height="170" rx="22" className="h-wall" />
-      <path d="M58 140 Q46 140 54 131 L181 38 Q190 31 199 38 L326 131 Q334 140 322 140 Z" className="h-dark" />
-      {/* door and step */}
-      <rect x="170" y="236" width="40" height="54" rx="12" className="h-door" />
-      <circle cx="202" cy="265" r="3" className="h-wall" />
-      <rect x="158" y="284" width="64" height="8" rx="4" className="h-dark" />
-      {/* gas meter, mailbox post */}
-      <rect x="94" y="242" width="26" height="30" rx="8" className="h-door" />
-      <rect x="338" y="250" width="6" height="40" rx="3" className="h-dark" />
+      <path className="ln" d="M302 118c22 18 44 14 62-30" />
+      <path className="ln" d="M366 72l1 220M350 88h32" strokeWidth="4" />
+      {/* street sign post */}
+      <path className="ln" d="M30 196l-1 96" strokeWidth="4" />
+      {/* chimney, then roof over it, then walls */}
+      <path className="h-brick ln" d="M249 112V58h25l-1 54" />
+      <path className="h-wall ln" d="M76 132l-2 158h232l-2-158" />
+      <path className="h-roof ln" d="M56 141L190 35l135 106c2 3 0 5-3 5H59c-4 0-5-3-3-5z" />
+      {/* bushes */}
+      <path className="h-blob ln" d="M128 291c-8-12 2-24 13-19 3-11 19-12 22 0 10-3 17 9 10 19" />
+      <path className="h-blob ln" d="M262 291c-6-11 3-21 12-16 4-9 17-8 19 2 8-1 12 8 7 14" />
+      {/* door with an arched top, and the step */}
+      <path className="h-door ln" d="M172 290v-40a18 18 0 0 1 36 0v40" />
+      <circle className="h-ink" cx="200" cy="268" r="3" />
+      <path className="ln" d="M158 291h64" strokeWidth="4" />
+      {/* gas meter */}
+      <path className="h-glass ln" d="M95 244h26v28H95z" />
+      {/* mailbox */}
+      <path className="ln" d="M341 252v40" strokeWidth="4" />
+      <path className="h-wall ln" d="M324 252v-14a9 9 0 0 1 9-9h18a9 9 0 0 1 9 9v14z" />
+      <path className="ln" d="M0 292c44-5 86 4 132 0s94-5 138 1 90 3 130-2" />
     </svg>
   )
 }

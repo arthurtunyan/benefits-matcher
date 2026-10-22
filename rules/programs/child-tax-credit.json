@@ -19,8 +19,9 @@
       "conditions": {
         "all": [
           { "fact": "ctcKids", "gte": 1 },
-          { "fact": "ssnAdult", "eq": true },
-          { "fact": "earnedIncome", "gte": 2500 }
+          { "fact": "ssnAllAdults", "eq": true },
+          { "fact": "earnedIncome", "gte": 2500 },
+          { "fact": "annualIncome", "lte": 200000 }
         ]
       },
       "explain": "tax.ctc2025",
@@ -30,13 +31,50 @@
       "verifiedBy": "claude-draft"
     },
     {
+      "id": "ctc-ssn-parent-partial",
+      "effective": { "from": "2026-01-01", "to": null },
+      "conditions": {
+        "all": [
+          { "fact": "ctcKids", "gte": 1 },
+          { "fact": "ssnAdult", "eq": true },
+          { "fact": "earnedIncome", "gte": 2500 },
+          { "fact": "annualIncome", "lte": { "table": "ctc-phaseout-end", "by": "kidsUnder17" } }
+        ]
+      },
+      "outcome": "possibly",
+      "explain": "tax.ctc2025",
+      "notes": [
+        { "key": "tax.filerSsn", "when": { "fact": "ssnAllAdults", "eq": false } },
+        { "key": "tax.ctcPhaseOut", "when": { "fact": "annualIncome", "gt": 200000 } },
+        { "key": "tax.pastYears" }
+      ],
+      "source": "https://www.law.cornell.edu/uscode/text/26/24",
+      "lastVerified": "2026-10-22",
+      "verifiedBy": "claude-draft"
+    },
+    {
       "id": "ctc-itin-parent",
       "effective": { "from": "2025-01-01", "to": "2025-12-31" },
-      "conditions": { "all": [{ "fact": "ctcKids", "gte": 1 }, { "fact": "earnedIncome", "gte": 2500 }] },
+      "conditions": { "all": [{ "fact": "ctcKids", "gte": 1 }, { "fact": "earnedIncome", "gte": 2500 }, { "fact": "annualIncome", "lte": 200000 }] },
       "explain": "tax.ctc2024",
       "notes": [{ "key": "tax.pastYears" }],
       "source": "https://www.irs.gov/credits-deductions/individuals/child-tax-credit",
       "lastVerified": "2026-10-19",
+      "verifiedBy": "claude-draft"
+    },
+    {
+      "id": "ctc-itin-parent-partial",
+      "effective": { "from": "2025-01-01", "to": "2025-12-31" },
+      "conditions": { "all": [
+        { "fact": "ctcKids", "gte": 1 },
+        { "fact": "earnedIncome", "gte": 2500 },
+        { "fact": "annualIncome", "lte": { "table": "ctc-phaseout-end", "by": "kidsUnder17" } }
+      ]},
+      "outcome": "possibly",
+      "explain": "tax.ctc2024",
+      "notes": [{ "key": "tax.ctcPhaseOut", "when": { "fact": "annualIncome", "gt": 200000 } }, { "key": "tax.pastYears" }],
+      "source": "https://www.law.cornell.edu/uscode/text/26/24",
+      "lastVerified": "2026-10-22",
       "verifiedBy": "claude-draft"
     }
   ]

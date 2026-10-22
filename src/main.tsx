@@ -4,6 +4,10 @@ import { createRoot } from 'react-dom/client'
 // download only when Armenian text is on screen, thanks to unicode-range.
 import '@fontsource-variable/figtree'
 import '@fontsource-variable/noto-sans-armenian'
+// Headlines: Fraunces with its "soft" axis (rounded, friendly serifs). It has no Armenian letters,
+// so Armenian headlines fall back to Noto Serif Armenian.
+import '@fontsource-variable/fraunces/soft.css'
+import '@fontsource-variable/noto-serif-armenian'
 import './styles.css'
 import App from './App'
 

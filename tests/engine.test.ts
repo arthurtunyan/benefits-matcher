@@ -1,5 +1,6 @@
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
-import { changeDates, evaluate, inLACounty, lookup, nearMiss, runProgram, screen, timeline, type Cond, type Household, type Program, type Tables } from '../src/engine'
+import { changeDates, evaluate, inLACounty, lookup, nearMiss, runProgram, screen, timeline, type Cond, type Household, type LeafResult, type Program, type Tables } from '../src/engine'
+import { exampleHousehold } from '../src/App'
 import { programs, tables } from '../src/data'
 import personas from './personas.json'
 
@@ -35,6 +36,45 @@ describe('three-valued logic', () => {
   })
   it('a table with no version for the date gives unknown', () => {
     expect(evaluate({ fact: 'i', lte: { table: 't' } }, { i: 1, householdSize: 1 }, T, '2025-01-01').result).toBe('unknown')
+  })
+})
+
+describe('dates our tables do not cover', () => {
+  const G: Tables = { g: { id: 'g', unit: 'month', description: '', versions: [
+    { effective: { from: '2026-01-01', to: '2026-12-31' }, values: { all: 100 }, source: 'https://x', lastVerified: '2026-01-01' },
+  ] } }
+  const ev = (op: string, i: number, asOf: string) => evaluate({ fact: 'i', [op]: { table: 'g' } } as Cond, { i }, G, asOf) as LeafResult
+  it('after the last version: passing an upper limit is sure (limits only rise), failing it is not', () => {
+    expect(ev('lte', 50, '2027-03-01')).toMatchObject({ result: 'pass', reason: 'nearData', expected: 100 })
+    expect(ev('lt', 50, '2027-03-01').result).toBe('pass')
+    expect(ev('lte', 150, '2027-03-01')).toMatchObject({ result: 'unknown', reason: 'noData' })
+    expect(ev('gte', 50, '2027-03-01').result).toBe('fail') // under a lower bound that can only rise
+    expect(ev('gte', 150, '2027-03-01').result).toBe('unknown')
+  })
+  it('before the first version: failing an upper limit is sure, passing it is not, and $0 passes any limit', () => {
+    expect(ev('lte', 150, '2025-06-01').result).toBe('fail')
+    expect(ev('lte', 50, '2025-06-01')).toMatchObject({ result: 'unknown', reason: 'noData' })
+    expect(ev('lte', 0, '2025-06-01').result).toBe('pass')
+    expect(ev('lt', 0, '2025-06-01').result).toBe('pass')
+    expect(ev('gt', 150, '2025-06-01').result).toBe('pass')
+    expect(ev('gte', 50, '2025-06-01').result).toBe('unknown')
+  })
+  it('never guesses an equality test or a missing household size', () => {
+    expect(ev('eq', 100, '2027-03-01').result).toBe('unknown')
+    expect(evaluate({ fact: 'i', lte: { table: 't' } }, { i: 1 }, T, '2025-01-01')).toMatchObject({ result: 'unknown', reason: 'missing' })
+  })
+  it('the example family keeps the same likely programs on the as-of presets, as the timeline says', () => {
+    const h = exampleHousehold()
+    const likely = (d: string) => {
+      const s = screen(h, programs, tables, d)
+      return [...new Set([...s.people.flatMap((x) => x.results), ...s.household].filter((r) => r.outcome === 'likely').map((r) => r.program.id))].sort()
+    }
+    const now = likely('2026-10-22')
+    expect(now).toHaveLength(9)
+    expect(likely('2027-07-15')).toEqual(now)
+    expect(likely('2025-12-15')).toEqual(now)
+    const moves = timeline(h, programs, tables, '2025-10-01', '2027-12-31').filter((c) => c.date > '2026-10-22' && c.date <= '2027-07-15')
+    expect(moves).toEqual([])
   })
 })
 

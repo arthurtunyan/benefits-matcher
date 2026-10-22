@@ -9,7 +9,7 @@
 English · Español · Հայերեն
 
 [![CI](https://github.com/arthurtunyan/benefits-matcher/actions/workflows/ci.yml/badge.svg)](https://github.com/arthurtunyan/benefits-matcher/actions/workflows/ci.yml)
-![Tests](https://img.shields.io/badge/tests-620%2B%20passing-1d7348)
+![Tests](https://img.shields.io/badge/tests-770%2B%20passing-1d7348)
 ![Privacy](https://img.shields.io/badge/data%20sent-0%20bytes-0b5d6b)
 ![License](https://img.shields.io/badge/license-MIT-e07a2e)
 
@@ -17,7 +17,7 @@ English · Español · Հայերեն
 
 *2026 Congressional App Challenge · California's 30th District*
 
-<img src="docs/screenshots/results.png" width="720" alt="Results for the example family: the mother gets restricted Medi-Cal, her two-year-old gets full Medi-Cal, WIC, and Early Head Start." />
+<img src="docs/screenshots/results.png" width="720" alt="Results for the example family: an overview block with 9 programs likely and 2 possibly, each person with their own count, and the most the household could get each month." />
 
 </div>
 
@@ -36,7 +36,7 @@ Many low-income, immigrant, and mixed-status families in LA County miss help the
 | 🔗 **Source on every answer** | Each result shows the plain-language rule, the official source link, when it took effect, and when it was last checked. |
 | 💡 **Why, why not, what would change it** | "Could get full-scope Medi-Cal if pregnant." "Your income is $446 above this limit." Near misses and other options (food banks, 211, clinics) are shown. |
 | 🔒 **Provable privacy** | All screening runs on the device. No server, no cookies, no analytics, no accounts. A Content-Security-Policy blocks the page from contacting any other server. |
-| 🖨️ **Bilingual printable plan** | One page, the family's language and English side by side, with programs, where to apply, and a document checklist. |
+| 🖨️ **Bilingual printable plan** | A printable plan, the family's language and English side by side, with programs, where to apply, and a document checklist. |
 | 🚌 **Help nearby, by transit** | Local help organizations with "directions by bus or rail" links. The user picks an area — location is never requested. |
 | 🚪 **Quick exit** | One tap clears the screen and opens a neutral page, for people on a shared phone. |
 
@@ -114,10 +114,11 @@ src/
   i18n.tsx, i18n/      English, Spanish, Armenian
   components/          Start, HouseholdForm, Results, ProgramCard, Plan, Help
 tests/
-  personas.json        43 households with expected results and sources
+  personas.json        61 households with expected results and sources
   personas.test.ts     the answer key
   rules.test.ts        rule linter: schema, sources, dates, 90-day verification, translations
   engine.test.ts       three-valued logic, dated tables, and a no-network check
+  edge.test.ts         odd input, very large homes, deadline days, date limits, every language
 docs/                  sources log, submission kit, demo script
 PROGRESS.md            what's done, what's left, and who does it
 ```
@@ -148,6 +149,6 @@ This is a screening tool, not a determination. Only the agency that runs a progr
 
 ## Credits
 
-Built by Arthur and Aiden for the 2026 Congressional App Challenge (CA-30). AI assistance is disclosed in [docs/SUBMISSION.md](docs/SUBMISSION.md#ai-disclosure). Icons: [Lucide](https://lucide.dev) (ISC). Fonts: Public Sans, Fraunces, Noto Sans/Serif Armenian (SIL OFL).
+Built by Arthur and Aiden for the 2026 Congressional App Challenge (CA-30). AI assistance is disclosed in [docs/SUBMISSION.md](docs/SUBMISSION.md#ai-disclosure). Icons: [Lucide](https://lucide.dev) (ISC). Fonts: [Fraunces](https://fonts.google.com/specimen/Fraunces), [Figtree](https://fonts.google.com/specimen/Figtree), and Noto Sans/Serif Armenian (all SIL OFL), bundled through Fontsource.
 
 License: [MIT](LICENSE)

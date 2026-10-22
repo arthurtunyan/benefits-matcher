@@ -1,5 +1,5 @@
 import { useId, useState } from 'react'
-import { Check, ChevronDown, CircleHelp, ExternalLink, Phone, X } from 'lucide-react'
+import { ArrowUpRight, Check, ChevronDown, CircleHelp, ExternalLink, Phone, X } from 'lucide-react'
 import { useT, type T } from '../i18n'
 import { isChangeable, leaves, lookup, nearMiss, type CondResult, type Facts, type LeafResult, type ProgramResult } from '../engine'
 import { help, tables } from '../data'
@@ -35,7 +35,9 @@ export function leafLabel(l: LeafResult, t: T, facts: Facts): string {
     const fpl = lookup(tables, 'fpl-annual', typeof size === 'number' ? size : undefined, String(facts.asOf))
     money = fpl ? t.money(Math.round((fpl * exp) / 100 / 12)) : '—'
   }
-  return t(key, { v: fmt(fact, exp, t), money })
+  // Limit depends on a size we don't know: show the span it could be ("$19,104–$61,555") rather than "—".
+  const v = exp === undefined && l.range ? l.range.map((x) => fmt(fact, x, t)).join('–') : fmt(fact, exp, t)
+  return t(key, { v, money })
 }
 
 function Mark({ r }: { r: CondResult['result'] }) {
@@ -92,6 +94,33 @@ function blockerText(c: CondResult, t: T, facts: Facts) {
     .join(` ${t('cond.or')} `)
 }
 
+// "…if they are pregnant or had a baby in the last 12 months": yes/no answers about a person or the home read as a
+// sentence. Undefined when some condition has no such wording (income limits keep their label).
+function clauses(c: CondResult, t: T) {
+  const ls = leaves(c).filter((l) => l.result !== 'pass')
+  if (!ls.every((l) => l.expected === true && t.has(`ui.when.${l.leaf.fact}`))) return undefined
+  return [...new Set(ls.map((l) => t(`ui.when.${l.leaf.fact}`)))].join(` ${t('cond.or')} `)
+}
+
+// Possibly only because questions were skipped: name those questions once ("age, household income") instead of
+// spelling out every condition they feed. Undefined when anything else is unknown too.
+const SKIPPED: Record<string, string> = {
+  age: 'age', householdHasChild: 'ages', householdHasElderlyOrDisabled: 'ages', anyAge25to64: 'ages',
+  monthlyIncome: 'income', annualIncome: 'income', incomePctFPL: 'income', calworksIncome: 'income', earnedIncome: 'job',
+  status: 'status', ssnAdult: 'status', eitcKids: 'status', ctcKids: 'status', qualifiedAnyone: 'status', qualifiedAdult: 'status',
+  inLACounty: 'zip', daysSinceDisaster: 'disasterDate',
+}
+const unknowns = (c: CondResult): LeafResult[] => c.result !== 'unknown' ? [] : c.kind === 'leaf' ? [c] : c.children.flatMap(unknowns)
+function skippedText(blockers: CondResult[], t: T, facts: Facts) {
+  const names = blockers.flatMap(unknowns).map((l) => {
+    if (l.reason !== 'missing') return undefined
+    // Answered, but the limit depends on something that wasn't (e.g. how many children have an SSN).
+    const f = l.actual !== undefined ? (l.leaf[l.op] as { by?: string }).by ?? 'householdSize' : l.leaf.fact
+    return f === 'earnedIncome' && facts.annualIncome === undefined ? 'income' : SKIPPED[f]
+  })
+  return names.every(Boolean) ? [...new Set(names)].map((n) => t(`ui.skipped.${n}`)).join(', ') : undefined
+}
+
 export default function ProgramCard({ r, facts, names }: { r: ProgramResult; facts: Facts; names?: string }) {
   const t = useT()
   const [open, setOpen] = useState(false)
@@ -104,6 +133,8 @@ export default function ProgramCard({ r, facts, names }: { r: ProgramResult; fac
     : p.estimate && 'text' in p.estimate && outcome !== 'not' ? t(`values.${p.estimate.text}`) : null
   const detailsId = useId()
   const single = outcome === 'not' && best.blockers.length === 1 ? best.blockers[0] : undefined
+  const skipped = outcome === 'possibly' ? skippedText(best.blockers, t, facts) : undefined
+  const changeIf = single && clauses(single, t)
 
   return (
     <article className={`program program-${outcome}`}>
@@ -121,20 +152,26 @@ export default function ProgramCard({ r, facts, names }: { r: ProgramResult; fac
         </div>
       </div>
 
-      {r.upgrades.map((u) => (
-        <p key={u.rule.id} className="hint">
-          <strong>{t('ui.couldGet', { variant: u.rule.variant ? t(`variants.${u.rule.variant}`) : p.name })}</strong>{' '}
-          {blockerText(u.blockers[0], t, facts)}
-        </p>
-      ))}
+      {r.upgrades.map((u) => {
+        const v = u.rule.variant ? t(`variants.${u.rule.variant}`) : p.name
+        const conds = clauses(u.blockers[0], t)
+        return (
+          <p key={u.rule.id} className="hint">
+            {conds ? t('ui.couldGetIf', { variant: v, conds })
+              : <><strong>{t('ui.couldGet', { variant: v })}</strong> {blockerText(u.blockers[0], t, facts)}</>}
+          </p>
+        )
+      })}
       {outcome === 'possibly' && best.blockers.length > 0 && (
         <p className="hint hint-possibly">
-          <strong>{t('ui.dependsOn')}:</strong> {best.blockers.map((b) => blockerText(b, t, facts)).join('; ')}
+          {skipped ? <><strong>{t('ui.dependsOnSkipped')}:</strong> {skipped}</>
+            : <><strong>{t('ui.dependsOn')}:</strong> {best.blockers.map((b) => blockerText(b, t, facts)).join('; ')}</>}
         </p>
       )}
       {miss && <p className="hint hint-near">{t('ui.nearMiss', { amount: t.money(overMonthly(miss, facts)) })}</p>}
       {single && !miss && isChangeable(single) && (
-        <p className="hint"><strong>{t('ui.wouldChange')}</strong> {blockerText(single, t, facts)}</p>
+        <p className="hint">{changeIf ? t('ui.wouldChangeIf', { conds: changeIf })
+          : <><strong>{t('ui.wouldChange')}</strong> {blockerText(single, t, facts)}</>}</p>
       )}
 
       {best.notes.length > 0 && (
@@ -159,8 +196,8 @@ export default function ProgramCard({ r, facts, names }: { r: ProgramResult; fac
           {open ? t('ui.hideWhy') : t('ui.why')} <ChevronDown size={16} className={open ? 'flip' : ''} aria-hidden="true" />
         </button>
         {outcome !== 'not' && (
-          <a className="btn btn-small btn-primary" href={p.apply.url} target="_blank" rel="noopener noreferrer">
-            {t('ui.apply')} <ExternalLink size={14} aria-hidden="true" />
+          <a className="btn btn-small btn-ink" href={p.apply.url} target="_blank" rel="noopener noreferrer">
+            {t('ui.apply')} <ArrowUpRight size={18} aria-hidden="true" />
           </a>
         )}
         {outcome !== 'not' && p.apply.phone && (

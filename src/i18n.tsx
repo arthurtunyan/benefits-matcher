@@ -44,8 +44,14 @@ export function makeT(lang: Lang): T {
     new Intl.NumberFormat(INTL[lang], {
       style: 'currency', currency: 'USD', maximumFractionDigits: Number.isInteger(n) ? 0 : 2,
     }).format(n)
-  // Noon UTC keeps the calendar day stable in every time zone.
-  t.date = (iso) => new Intl.DateTimeFormat(INTL[lang], { dateStyle: 'long', timeZone: 'UTC' }).format(new Date(iso + 'T12:00:00Z'))
+  // Noon UTC keeps the calendar day stable in every time zone. Chrome ships no Armenian date data and would
+  // print English months, so then we spell the date ourselves from the dictionary's month names.
+  const native = Intl.DateTimeFormat.supportedLocalesOf(INTL[lang]).length > 0
+  t.date = (iso) => {
+    if (native) return new Intl.DateTimeFormat(INTL[lang], { dateStyle: 'long', timeZone: 'UTC' }).format(new Date(iso + 'T12:00:00Z'))
+    const [y, m, d] = iso.split('-')
+    return t('ui.dateLong', { y, month: t('ui.months').split(',')[Number(m) - 1], d: Number(d) })
+  }
   return t
 }
 

@@ -44,6 +44,8 @@ export default function App() {
   const [view, setView] = useState<View>(demo ? 'results' : 'start')
   const [household, setHousehold] = useState<Household>(demo ? exampleHousehold : emptyHousehold)
   const isExample = useRef(demo) // "Check my family" after the example starts from a blank home, not Maria's
+  // The example as loaded. Any edit makes a new household object, which hides the "example family" banner.
+  const example = useRef(demo ? household : undefined)
   // Each screen is a browser history entry, so the phone's Back gesture moves between screens instead of leaving.
   // `depth` lets Quick exit step back over these entries (see quickExit).
   const go = (v: View) => {
@@ -73,8 +75,12 @@ export default function App() {
   }, [lang, t])
 
   // Move focus to the new screen's heading so screen readers announce it.
+  // Not on first load: there the first Tab should reach the skip link and Quick exit.
+  const shownView = useRef(view)
   useEffect(() => {
     window.scrollTo(0, 0)
+    if (shownView.current === view) return
+    shownView.current = view
     document.querySelector<HTMLElement>('.view-heading')?.focus({ preventScroll: true })
   }, [view])
 
@@ -83,21 +89,23 @@ export default function App() {
 
   return (
     <I18n.Provider value={t}>
-      <a className="skip" href="#main">{t('ui.skip')}</a>
+      {/* No hash change: a #main history entry would break Quick exit's step back over this app's screens. */}
+      <a className="skip" href="#main" onClick={(e) => { e.preventDefault(); document.querySelector<HTMLElement>('.view-heading')?.focus() }}>{t('ui.skip')}</a>
       <Header view={view} setView={go} setLang={setLang} canSee={household.people.length > 0}
         dark={dark} toggleDark={() => setDark((d) => !d)} />
       <main id="main" className={`view view-${view}`}>
         {view === 'start' && (
           <Start setLang={setLang}
             onStart={() => { if (isExample.current) { setHousehold(emptyHousehold()); isExample.current = false } go('household') }}
-            onExample={() => { setHousehold(exampleHousehold()); isExample.current = true; setAsOf(todayISO()); go('results') }} />
+            onExample={() => { const ex = exampleHousehold(); example.current = ex; setHousehold(ex); isExample.current = true; setAsOf(todayISO()); go('results') }} />
         )}
         {view === 'household' && <HouseholdForm household={household} setHousehold={setHousehold} onDone={() => go('results')} />}
         {view === 'results' && (
           <Results screening={screening} changes={changes} asOf={asOf} setAsOf={setAsOf} updatePerson={updatePerson}
-            onBack={() => go('household')} onPlan={() => go('plan')} />
+            onBack={() => go('household')} onPlan={() => go('plan')} zip={household.zip} example={household === example.current}
+            onNew={() => { setHousehold(emptyHousehold()); isExample.current = false; go('household') }} />
         )}
-        {view === 'plan' && <Plan screening={screening} today={todayISO()} onBack={() => go('results')} />}
+        {view === 'plan' && <Plan screening={screening} today={todayISO()} zip={household.zip} onBack={() => go('results')} />}
       </main>
       <footer className="footer no-print">
         <p>{t('ui.footerMade')}</p>

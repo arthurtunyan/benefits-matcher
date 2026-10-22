@@ -1,23 +1,34 @@
 import { useState } from 'react'
-import { ExternalLink, Phone, TramFront } from 'lucide-react'
+import { ChevronDown, ExternalLink, Landmark, Phone, TramFront } from 'lucide-react'
 import { useT } from '../i18n'
-import { help } from '../data'
+import { help, zips } from '../data'
 
 const AREAS = ['countywide', 'glendale', 'burbank', 'north-hollywood', 'hollywood']
+
+// The help-directory area for a ZIP, from its city name ("Los Angeles (North Hollywood)" → north-hollywood).
+// "north-hollywood" is checked before "hollywood". Anything else is countywide.
+export const areaOf = (zip?: string) => {
+  const city = (zip && zips[zip]?.city.toLowerCase()) || ''
+  return AREAS.slice(1).find((a) => city.includes(a.replace('-', ' '))) ?? 'countywide'
+}
 
 // Google Maps transit directions to an address. Nothing is sent unless the user taps it.
 const transitLink = (address: string) =>
   `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(address)}&travelmode=transit`
 
-export default function Help() {
+// Starts folded, like the other reference sections at the bottom of Results.
+export default function Help({ zip }: { zip?: string }) {
   const t = useT()
-  const [area, setArea] = useState('countywide')
+  const [area, setArea] = useState(() => areaOf(zip))
   const places = help
     .filter((h) => h.area === area || (area !== 'countywide' && h.area === 'countywide' && h.languages.includes(t.lang)))
     .sort((a, b) => Number(b.languages.includes(t.lang)) - Number(a.languages.includes(t.lang)))
   return (
-    <section className="card help-section" aria-labelledby="help-title">
-      <h2 id="help-title" className="card-title">{t('ui.helpTitle')}</h2>
+    <details className="card person-results person-fold help-section">
+      <summary className="person-results-head">
+        <h2 className="fold-title">{t('ui.helpTitle')}</h2>
+        <ChevronDown className="fold-icon" size={22} aria-hidden="true" />
+      </summary>
       <p className="help">{t('ui.helpIntro')}</p>
       <div className="area-chips" role="group" aria-label={t('ui.helpTitle')}>
         {AREAS.map((a) => (
@@ -52,6 +63,14 @@ export default function Help() {
           </li>
         ))}
       </ul>
-    </section>
+      {/* Federal casework: one neutral pointer, no office address. The link only opens on tap. */}
+      <p className="note-info rep-help">
+        <Landmark size={18} aria-hidden="true" />
+        <span>
+          {t('ui.repHelp')}{' '}
+          <a href="https://www.house.gov/representatives/find-your-representative" target="_blank" rel="noopener noreferrer">{t('ui.repLink')}</a>
+        </span>
+      </p>
+    </details>
   )
 }

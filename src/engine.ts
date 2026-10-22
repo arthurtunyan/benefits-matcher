@@ -23,7 +23,7 @@ export interface Household {
   gasOther?: string // same for gas
   monthlyIncome?: number // gross, whole household; undefined = skipped
   hasEarnedIncome?: boolean
-  benefits: { calfresh?: boolean; calworks?: boolean; ssi?: boolean; wic?: boolean }
+  benefits: { calfresh?: boolean; calworks?: boolean; ssi?: boolean; wic?: boolean; none?: boolean } // none: answered "none of these"
   disaster?: boolean // a fire, flood, or other disaster hurt the home, food, or work; undefined = not answered
   disasterDate?: string // YYYY-MM-DD; deadlines count from here
   disasterLoss?: { home?: boolean; food?: boolean; work?: boolean }
@@ -96,7 +96,8 @@ export interface LeafResult {
   expected?: Scalar | Scalar[]
   actual?: Scalar
   result: Tri
-  reason?: 'missing' | 'unsure' | 'noData'
+  reason?: 'missing' | 'unsure' | 'noData' | 'nearData' // nearData: judged on the closest table version (still sure)
+  range?: [number, number] // limit unknown because the size is: the smallest and largest it could be
   over?: number // for failed upper limits: how far above the limit
 }
 export interface GroupResult { kind: 'all' | 'any' | 'not'; result: Tri; children: CondResult[] }
@@ -122,7 +123,18 @@ export const inRange = (r: DateRange, d: string) => r.from <= d && (r.to === nul
 
 export function lookup(tables: Tables, id: string, size: number | undefined, asOf: string): number | undefined {
   const v = tables[id]?.versions.find((x) => inRange(x.effective, asOf))
-  if (!v) return undefined
+  return v && valueAt(v, size)
+}
+
+// When no version covers the date: the latest one that ended before it, else the first one that starts after it.
+function nearest(tables: Tables, id: string, asOf: string): { v: TableVersion; older: boolean } | undefined {
+  const vs = tables[id]?.versions ?? []
+  const before = vs.filter((x) => x.effective.to !== null && x.effective.to < asOf).sort((a, b) => b.effective.from.localeCompare(a.effective.from))[0]
+  const after = vs.filter((x) => x.effective.from > asOf).sort((a, b) => a.effective.from.localeCompare(b.effective.from))[0]
+  return before ? { v: before, older: true } : after ? { v: after, older: false } : undefined
+}
+
+function valueAt(v: TableVersion, size: number | undefined): number | undefined {
   if (v.values.all !== undefined) return v.values.all
   if (size === undefined) return undefined
   const sizes = Object.keys(v.values).map(Number)
@@ -138,20 +150,31 @@ function isTable(v: unknown): v is TableRef {
 function evalLeaf(leaf: Leaf, facts: Facts, tables: Tables, asOf: string): LeafResult {
   const op = (['eq', 'ne', 'in', 'lt', 'lte', 'gt', 'gte'] as const).find((k) => leaf[k] !== undefined)!
   const raw = leaf[op] as Value | Scalar[]
+  const upper = op === 'lt' || op === 'lte'
   let expected: Scalar | Scalar[] | undefined
+  let near: ReturnType<typeof nearest>
+  let range: [number, number] | undefined // size unknown: the smallest and largest limit it could be
+  const sizeMissing = isTable(raw) && facts[raw.by ?? 'householdSize'] === undefined
   if (isTable(raw)) {
     const size = facts[raw.by ?? 'householdSize']
-    expected = lookup(tables, raw.table, typeof size === 'number' ? size : undefined, asOf)
+    const n = typeof size === 'number' ? size : undefined
+    const cover = tables[raw.table]?.versions.find((x) => inRange(x.effective, asOf))
+    near = cover ? undefined : nearest(tables, raw.table, asOf)
+    const v = cover ?? near?.v
+    expected = v && valueAt(v, n)
+    // Size unknown (e.g. how many children have an SSN): judge against the largest limit, which only a fail can use.
+    if (expected === undefined && v && sizeMissing && upper && v.each === undefined) {
+      const vals = Object.values(v.values)
+      range = [Math.min(...vals), Math.max(...vals)]
+      expected = range[1]
+    }
   } else expected = raw
   const actual = facts[leaf.fact]
   const base = { kind: 'leaf' as const, leaf, op, expected, actual }
-  if (actual === undefined) return { ...base, result: 'unknown', reason: 'missing' }
+  if (actual === undefined) return { ...base, result: 'unknown', reason: 'missing', ...(range ? { expected: undefined, range } : {}) }
   if (leaf.unsure?.includes(actual)) return { ...base, result: 'unknown', reason: 'unsure' }
   // No limit: either we lack the table for this date, or the size it's looked up by is unknown.
-  if (expected === undefined) {
-    const sizeMissing = isTable(raw) && facts[raw.by ?? 'householdSize'] === undefined
-    return { ...base, result: 'unknown', reason: sizeMissing ? 'missing' : 'noData' }
-  }
+  if (expected === undefined) return { ...base, result: 'unknown', reason: sizeMissing ? 'missing' : 'noData' }
   let ok: boolean
   switch (op) {
     case 'eq': ok = actual === expected; break
@@ -162,10 +185,21 @@ function evalLeaf(leaf: Leaf, facts: Facts, tables: Tables, asOf: string): LeafR
     case 'gt': ok = actual > (expected as Scalar); break
     case 'gte': ok = actual >= (expected as Scalar); break
   }
-  const res: LeafResult = { ...base, result: ok ? 'pass' : 'fail' }
-  if (!ok && (op === 'lt' || op === 'lte') && typeof actual === 'number' && typeof expected === 'number') {
-    res.over = actual - expected
+  // Under the largest limit: it depends on the size we don't know.
+  if (range && ok) return { ...base, expected: undefined, range, result: 'unknown', reason: 'missing' }
+  if (near) {
+    // ponytail: assumes limits never go down over time, never more than double past the last version we have, and
+    // are never negative. Then an older limit is at most the real one (passing it passes the real one; failing it
+    // by more than double fails the real one), a newer one at least the real one (failing it fails the real one),
+    // and $0 passes any upper limit. Every other answer stays "we don't have this limit". Ceiling: a limit that
+    // drops breaks it; adding the missing table version removes the guess.
+    const n = Number(expected)
+    const sure = ['lt', 'lte', 'gt', 'gte'].includes(op) && ((upper === near.older) === ok
+      || (upper && ok && actual === 0) || (upper && near.older && !ok && Number(actual) > 2 * n))
+    if (!sure) return { ...base, result: 'unknown', reason: 'noData' }
   }
+  const res: LeafResult = { ...base, result: ok ? 'pass' : 'fail', ...(near ? { reason: 'nearData' as const } : {}) }
+  if (!ok && upper && typeof actual === 'number' && typeof expected === 'number') res.over = actual - expected
   return res
 }
 
@@ -314,10 +348,17 @@ export function householdFacts(h: Household, tables: Tables, asOf: string): Fact
     earnedIncome: annual === undefined ? undefined : annual === 0 || h.hasEarnedIncome === false ? 0
       : h.hasEarnedIncome ? annual : undefined,
     ssnAdult: anyQualified(adults),
+    // Every adult has an SSN: then whoever files can claim the EITC and CTC. False once an adult is undocumented.
+    ssnAllAdults: adults.every((p) => QUALIFIED.has(p.status)) ? true : adults.some((p) => p.status === 'undocumented') ? false : undefined,
     eitcKids: countQualified(kids(h.people, 19)),
     ctcKids: countQualified(kids(h.people, 17)),
     taxKids: kids(h.people, 19).length, // California credits accept an ITIN, so status doesn't matter
     youngKids: kids(h.people, 6).length,
+    kidsUnder17: kids(h.people, 17).length, // at least as many as ctcKids: sizes the Child Tax Credit phase-out
+    // CAPI pays the individual or the couple rate: count the people who could apply (aged 65+ or disabled, not citizens).
+    capiApplicants: h.people.filter((p) => p.status !== 'citizen' && (p.disabled || (p.age ?? 0) >= 65)).length || undefined,
+    // Adults 18-59 without a disability: the usual CalWORKs caretaker when an older or disabled adult also lives here.
+    workingAgeAdults: h.people.filter((p) => p.age !== undefined && p.age >= 18 && p.age < 60 && !p.disabled).length,
     anyAge25to64: anyOf(adults.map((p) => (p.age === undefined ? undefined : p.age >= 25 && p.age <= 64))),
     // Disasters
     disaster: h.disaster === true, // disaster help is opt-in: not answering means no disaster

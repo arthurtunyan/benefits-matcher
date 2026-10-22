@@ -16,7 +16,11 @@
       "id": "caleitc",
       "effective": { "from": "2025-01-01", "to": null },
       "conditions": {
-        "all": [{ "fact": "earnedIncome", "gt": 0 }, { "fact": "earnedIncome", "lte": { "table": "caleitc-limit" } }]
+        "all": [
+          { "fact": "earnedIncome", "gt": 0 },
+          { "fact": "earnedIncome", "lte": { "table": "caleitc-limit" } },
+          { "fact": "annualIncome", "lte": { "table": "caleitc-limit" } }
+        ]
       },
       "explain": "tax.caleitc",
       "notes": [{ "key": "tax.itin" }, { "key": "tax.caResident" }, { "key": "tax.pastYears" }],

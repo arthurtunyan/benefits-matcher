@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react'
-import { Check, Flame, Mail, MapPin, Plus, ShoppingBasket, Siren, Zap } from 'lucide-react'
+import { ArrowRight, Check, Flame, Mail, MapPin, Plus, ShoppingBasket, Siren, Zap } from 'lucide-react'
 import { useT, type T } from '../i18n'
 import { inLACounty, type Household, type Person, type Status, type Utility } from '../engine'
 import { zips } from '../data'
@@ -13,8 +13,30 @@ const BENEFITS = ['calfresh', 'calworks', 'ssi', 'wic'] as const
 const LOSSES = { home: 'ui.lossHome', food: 'ui.lossFood', work: 'ui.lossWork' } as const
 const FLAGS = ['pregnant', 'recentBirth', 'disabled', 'hasMediCal'] as const
 
-// Blank, not a number, or negative = not answered.
-const num = (s: string) => (s.trim() === '' || !(Number(s) >= 0) ? undefined : Number(s))
+// Blank, not a plain number, or negative = not answered ("1e6", "0x10" and "Infinity" aren't amounts people mean).
+export const num = (s: string) => (/^(\d+\.?\d*|\.\d+)$/.test(s.trim()) ? Number(s) : undefined)
+// Money as typed: "$1,500.50" is 1500.5.
+export const parseMoney = (s: string) => num(s.replace(/[$,\s]/g, ''))
+
+// A typed ZIP keeps its first 5 digits. Known LA County ZIPs pre-fill the utilities; the user can still change them.
+export function zipAnswer(input: string): Partial<Household> {
+  const z = input.replace(/\D/g, '').slice(0, 5)
+  const info = zips[z]
+  return {
+    zip: z || undefined,
+    ...(info?.electric ? { electric: info.electric as Utility } : {}),
+    // Long Beach (908xx) has its own gas company; the rest of the county has SoCalGas.
+    ...(z.length === 5 && inLACounty(z) ? z.startsWith('908') ? { gas: 'other', gasOther: 'Long Beach Utilities' } : { gas: 'socalgas', gasOther: undefined } : {}),
+  }
+}
+
+// A new age (over 120 counts as not answered, like a negative one). Pregnancy answers are dropped
+// outside ages 10 to 55, where the question isn't shown.
+export function withAge(p: Person, input: string): Person {
+  const n = num(input)
+  const age = n !== undefined && n <= 120 ? n : undefined
+  return { ...p, age, ...(age === undefined || (age >= 10 && age <= 55) ? {} : { pregnant: undefined, recentBirth: undefined }) }
+}
 
 export function StatusSelect({ value, onChange, id }: { value?: Status; onChange: (s?: Status) => void; id: string }) {
   const t = useT()
@@ -30,10 +52,10 @@ export function StatusSelect({ value, onChange, id }: { value?: Status; onChange
 export const initial = (p: Person, index: number, t: T) =>
   p.name.trim().charAt(0).toUpperCase() || (index === 0 ? t('ui.you').charAt(0).toUpperCase() : String(index + 1))
 
-// A person shown as a round face with their first initial.
+// A person shown as a round face with their first initial, in one of four warm colors.
 export function Face({ p, index }: { p: Person; index: number }) {
   const t = useT()
-  return <span className="face" aria-hidden="true">{initial(p, index, t)}</span>
+  return <span className={`face face-${index % 4}`} aria-hidden="true">{initial(p, index, t)}</span>
 }
 
 // A big answer button. Single-choice tiles are pressed buttons (tapping one can move on, so no arrow-key
@@ -63,7 +85,7 @@ function MoneyInput({ value, onChange }: { value?: number; onChange: (n?: number
   return (
     <input id="income" className="input-big" inputMode="decimal" autoComplete="off" placeholder={t('ui.incomePlaceholder')}
       value={raw} aria-describedby="income-help"
-      onChange={(e) => { setRaw(e.target.value); onChange(num(e.target.value.replace(/[$,\s]/g, ''))) }} />
+      onChange={(e) => { setRaw(e.target.value); onChange(parseMoney(e.target.value)) }} />
   )
 }
 
@@ -141,8 +163,14 @@ export default function HouseholdForm({ household: h, setHousehold, onDone }: {
   const t = useT()
   const set = (patch: Partial<Household>) => setHousehold({ ...h, ...patch })
   const order: Part[] = ['zip', 'electric', 'gas', 'income', 'benefits', 'disaster', ...h.people.map((p) => `p:${p.id}` as Part)]
-  const [part, setPart] = useState<Part>('zip')
-  const [left, setLeft] = useState<Set<Part>>(() => new Set()) // parts the user has moved past
+  const gotBenefits = BENEFITS.filter((b) => h.benefits[b])
+  const answered: Record<string, boolean> = {
+    zip: !!h.zip, electric: h.electric !== 'unknown', gas: h.gas !== 'unknown',
+    income: h.monthlyIncome !== undefined, benefits: gotBenefits.length > 0 || !!h.benefits.none, disaster: h.disaster !== undefined,
+  }
+  const done = (p: Part) => (p.startsWith('p:') ? h.people.find((x) => `p:${x.id}` === p)?.age !== undefined : answered[p])
+  // Coming back to edit: open at the first question still unanswered.
+  const [part, setPart] = useState<Part>(() => order.find((p) => !done(p)) ?? 'zip')
   const [helper, setHelper] = useState(false)
   const current: Part = order.includes(part) ? part : 'zip'
   const at = order.indexOf(current)
@@ -166,7 +194,6 @@ export default function HouseholdForm({ household: h, setHousehold, onDone }: {
   const go = (p: Part) => {
     window.clearTimeout(advance.current)
     moved.current = true
-    setLeft((s) => new Set(s).add(current))
     setPart(p)
   }
   const next = () => (last ? onDone() : go(order[at + 1]))
@@ -175,16 +202,6 @@ export default function HouseholdForm({ household: h, setHousehold, onDone }: {
 
   const zipInfo = h.zip ? zips[h.zip] : undefined
   const outside = inLACounty(h.zip) === false
-  function setZip(zip: string) {
-    const z = zip.replace(/\D/g, '').slice(0, 5)
-    const info = zips[z]
-    // Pre-fill utilities from the ZIP; the user can still change them.
-    set({
-      zip: z || undefined,
-      ...(info?.electric ? { electric: info.electric as Utility } : {}),
-      ...(z.length === 5 && inLACounty(z) ? { gas: z.startsWith('908') ? 'other' : 'socalgas', gasOther: undefined } : {}),
-    })
-  }
   const updatePerson = (p: Person) => set({ people: h.people.map((x) => (x.id === p.id ? p : x)) })
   // Removing the person on screen moves to the person before them (or the first one).
   const removePerson = (id: string) => {
@@ -196,14 +213,6 @@ export default function HouseholdForm({ household: h, setHousehold, onDone }: {
   const addPerson = () => { const np = newPerson(); set({ people: [...h.people, np] }); go(`p:${np.id}`) }
 
   // ---- What the house shows ----
-  const gotBenefits = BENEFITS.filter((b) => h.benefits[b])
-  const answered: Record<string, boolean> = {
-    zip: !!h.zip, electric: h.electric !== 'unknown', gas: h.gas !== 'unknown',
-    income: h.monthlyIncome !== undefined, benefits: gotBenefits.length > 0, disaster: h.disaster !== undefined,
-  }
-  // Done = answered. Only the benefits basket counts once passed, since "none of these" is an answer.
-  const done = (p: Part) => (p.startsWith('p:') ? h.people.find((x) => `p:${x.id}` === p)?.age !== undefined : answered[p])
-    || (p === 'benefits' && left.has(p) && p !== current)
   const spot = (id: Part, x: number, y: number, icon: ReactNode, label: string, value?: string): HousePart =>
     ({ id, x, y, icon, label, value, done: done(id), active: current === id, onClick: () => go(id) })
   const parts: HousePart[] = [
@@ -211,7 +220,7 @@ export default function HouseholdForm({ household: h, setHousehold, onDone }: {
     spot('electric', 91.5, 22, <Zap size={20} />, t('ui.stepElectric'), answered.electric ? shortUtility(h.electric, h.electricOther, t) : undefined),
     spot('gas', 26.75, 80, <Flame size={20} />, t('ui.stepGas'), answered.gas ? (h.gasOther === NO_GAS ? t('ui.noGas') : shortUtility(h.gas, h.gasOther, t)) : undefined),
     spot('income', 85.5, 75, <Mail size={20} />, t('ui.stepIncome'), answered.income ? t.money(h.monthlyIncome!) : undefined),
-    spot('benefits', 62, 82, <ShoppingBasket size={20} />, t('ui.stepBenefits'), gotBenefits.length ? gotBenefits.map((b) => t(`benefits.${b}`).replace(/\s*\(.*\)$/, '')).join(', ') : undefined),
+    spot('benefits', 62, 82, <ShoppingBasket size={20} />, t('ui.stepBenefits'), gotBenefits.length ? gotBenefits.map((b) => t(`benefits.${b}`).replace(/\s*\(.*\)$/, '')).join(', ') : h.benefits.none ? t('ui.no') : undefined),
     // Smoke from the chimney: the disaster question.
     spot('disaster', 65, 9, <Siren size={20} />, t('ui.stepDisaster'), h.disaster === undefined ? undefined
       : h.disaster ? (h.disasterDate ? t.date(h.disasterDate) : t('ui.yes')) : t('ui.no')),
@@ -239,7 +248,7 @@ export default function HouseholdForm({ household: h, setHousehold, onDone }: {
       <div className="field">
         <label htmlFor="zip" className="sr-only">{t('ui.zip')}</label>
         <input id="zip" className="input-zip input-big" inputMode="numeric" autoComplete="off" value={h.zip ?? ''}
-          placeholder={t('ui.zipPlaceholder')} aria-describedby="zip-help zip-note" onChange={(e) => setZip(e.target.value)} />
+          placeholder={t('ui.zipPlaceholder')} aria-describedby="zip-help zip-note" onChange={(e) => set(zipAnswer(e.target.value))} />
         <p id="zip-note" aria-live="polite" className={outside ? 'note-warn' : 'note-ok'}>
           {outside ? t('ui.zipOutside') : zipInfo ? t('ui.zipArea', { city: zipInfo.city }) : ''}
         </p>
@@ -291,8 +300,11 @@ export default function HouseholdForm({ household: h, setHousehold, onDone }: {
           </div>
           <p className="help" id="income-help">{t('ui.incomeHelp')}</p>
         </div>
-        <div className="tiles">
-          <Tile role="checkbox" selected={!!h.hasEarnedIncome} onClick={() => set({ hasEarnedIncome: h.hasEarnedIncome ? undefined : true })}>{t('ui.earned')}</Tile>
+        {/* A real yes/no: "no" matters for the tax credits, and an unchecked box can't say it. */}
+        <p className="question-sub" id="earned-q">{t('ui.earned')}</p>
+        <div className="tiles" role="group" aria-labelledby="earned-q">
+          <Tile selected={h.hasEarnedIncome === true} onClick={() => set({ hasEarnedIncome: true })}>{t('ui.yes')}</Tile>
+          <Tile selected={h.hasEarnedIncome === false} onClick={() => set({ hasEarnedIncome: false })}>{t('ui.no')}</Tile>
         </div>
       </>
     )
@@ -303,9 +315,9 @@ export default function HouseholdForm({ household: h, setHousehold, onDone }: {
       <div className="tiles" role="group" aria-label={title}>
         {BENEFITS.map((b) => (
           <Tile key={b} role="checkbox" selected={!!h.benefits[b]}
-            onClick={() => set({ benefits: { ...h.benefits, [b]: !h.benefits[b] } })}>{t(`benefits.${b}`)}</Tile>
+            onClick={() => set({ benefits: { ...h.benefits, none: undefined, [b]: !h.benefits[b] } })}>{t(`benefits.${b}`)}</Tile>
         ))}
-        <Tile selected={false} onClick={() => { set({ benefits: {} }); nextSoon() }}>{t('ui.noneOfThese')}</Tile>
+        <Tile selected={!!h.benefits.none} onClick={() => { set({ benefits: { none: true } }); nextSoon() }}>{t('ui.noneOfThese')}</Tile>
       </div>
     )
   } else if (current === 'disaster') {
@@ -323,8 +335,12 @@ export default function HouseholdForm({ household: h, setHousehold, onDone }: {
           <>
             <div className="field other-field">
               <label htmlFor="disaster-date">{t('ui.disasterWhen')}</label>
-              <input id="disaster-date" type="date" max={todayISO()} value={h.disasterDate ?? ''}
+              <input id="disaster-date" type="date" max={todayISO()} value={h.disasterDate ?? ''} aria-describedby="disaster-date-note"
                 onChange={(e) => set({ disasterDate: e.target.value || undefined })} />
+              {/* A typed future date hides all disaster help (it hasn't happened yet), so say why. */}
+              <p id="disaster-date-note" className="note-warn" role="status">
+                {h.disasterDate && h.disasterDate > todayISO() ? t('ui.disasterFuture') : ''}
+              </p>
             </div>
             <p className="question-sub" id="loss-q">{t('ui.disasterWhat')}</p>
             <div className="tiles tiles-compact" role="group" aria-labelledby="loss-q">
@@ -355,11 +371,7 @@ export default function HouseholdForm({ household: h, setHousehold, onDone }: {
           <div className="field field-age">
             <label htmlFor={`p${p.id}-age`}>{t('ui.age')}</label>
             <input id={`p${p.id}-age`} type="number" inputMode="numeric" min={0} max={120} value={p.age ?? ''}
-              aria-describedby="age-help" onChange={(e) => {
-                const age = num(e.target.value)
-                const canBe = age === undefined || (age >= 10 && age <= 55)
-                updatePerson({ ...p, age, ...(canBe ? {} : { pregnant: undefined, recentBirth: undefined }) })
-              }} />
+              aria-describedby="age-help" onChange={(e) => updatePerson(withAge(p, e.target.value))} />
           </div>
         </div>
         <p className="help" id="age-help">{t('ui.ageHelp')}</p>
@@ -410,7 +422,7 @@ export default function HouseholdForm({ household: h, setHousehold, onDone }: {
 
       <div className="action-bar">
         {!last && <button type="button" className="btn btn-ghost" onClick={onDone}>{t('ui.seeResults')}</button>}
-        <button type="submit" className="btn btn-primary btn-lg">{last ? t('ui.seeResults') : t('ui.next')}</button>
+        <button type="submit" className="btn btn-primary btn-lg">{last ? t('ui.seeResults') : t('ui.next')} <ArrowRight size={20} aria-hidden="true" /></button>
       </div>
     </form>
   )

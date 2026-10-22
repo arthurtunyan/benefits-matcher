@@ -18,7 +18,7 @@
       "conditions": {
         "all": [
           { "fact": "earnedIncome", "gt": 0 },
-          { "fact": "ssnAdult", "eq": true },
+          { "fact": "ssnAllAdults", "eq": true },
           { "any": [{ "fact": "eitcKids", "gte": 1 }, { "fact": "anyAge25to64", "eq": true }] },
           { "fact": "annualIncome", "lte": { "table": "eitc-limit-single", "by": "eitcKids" } }
         ]
@@ -27,6 +27,24 @@
       "notes": [{ "key": "tax.ssnKids" }, { "key": "tax.pastYears" }],
       "source": "https://www.irs.gov/Credits-&-Deductions/Individuals/Earned-Income-Tax-Credit/EITC-Income-Limits-Maximum-Credit-Amounts",
       "lastVerified": "2026-10-19",
+      "verifiedBy": "claude-draft"
+    },
+    {
+      "id": "eitc-single-filer-ssn",
+      "effective": { "from": "2025-01-01", "to": null },
+      "conditions": {
+        "all": [
+          { "fact": "earnedIncome", "gt": 0 },
+          { "fact": "ssnAdult", "eq": true },
+          { "any": [{ "fact": "eitcKids", "gte": 1 }, { "fact": "anyAge25to64", "eq": true }] },
+          { "fact": "annualIncome", "lte": { "table": "eitc-limit-single", "by": "eitcKids" } }
+        ]
+      },
+      "outcome": "possibly",
+      "explain": "tax.eitc",
+      "notes": [{ "key": "tax.filerSsn" }, { "key": "tax.ssnKids" }, { "key": "tax.pastYears" }],
+      "source": "https://www.irs.gov/credits-deductions/individuals/earned-income-tax-credit/who-qualifies-for-the-earned-income-tax-credit-eitc",
+      "lastVerified": "2026-10-22",
       "verifiedBy": "claude-draft"
     },
     {
@@ -42,7 +60,7 @@
       },
       "outcome": "possibly",
       "explain": "tax.eitc",
-      "notes": [{ "key": "tax.jointOnly" }, { "key": "tax.ssnKids" }, { "key": "tax.pastYears" }],
+      "notes": [{ "key": "tax.jointOnly" }, { "key": "tax.filerSsn", "when": { "fact": "ssnAllAdults", "eq": false } }, { "key": "tax.ssnKids" }, { "key": "tax.pastYears" }],
       "source": "https://www.irs.gov/Credits-&-Deductions/Individuals/Earned-Income-Tax-Credit/EITC-Income-Limits-Maximum-Credit-Amounts",
       "lastVerified": "2026-10-19",
       "verifiedBy": "claude-draft"

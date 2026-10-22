@@ -53,7 +53,7 @@
     "expect": {
       "m": { "medi-cal": "likely:full" },
       "c2": { "medi-cal": "likely:full", "wic": "likely" },
-      "household": { "socalgas-care": "likely", "california-lifeline": "possibly", "ladwp-ez-save": "possibly", "metro-life": "possibly" }
+      "household": { "socalgas-care": "likely", "california-lifeline": "likely", "ladwp-ez-save": "likely", "metro-life": "likely" }
     }
   },
   {
@@ -561,5 +561,156 @@
     },
     "expect": { "a": { "medi-cal": "not", "covered-california": "likely:withHelp" } },
     "nearMiss": { "a": ["medi-cal"] }
+  },
+  {
+    "id": "nh-as-of-jul-2027",
+    "title": "Same family as of July 2027, past the last income tables we have: $0 income still passes every limit, so nothing drops to possibly",
+    "source": "https://www.cpuc.ca.gov/-/media/cpuc-website/about-cpuc/documents/transparency-and-reporting/fact_sheets/california-lifeline/lifeline_onesheet_051126.pdf",
+    "asOf": "2027-07-15",
+    "household": {
+      "zip": "91605", "electric": "ladwp", "gas": "socalgas", "monthlyIncome": 0,
+      "people": [
+        { "id": "m", "age": 25, "status": "undocumented" },
+        { "id": "c2", "age": 2 }, { "id": "c4", "age": 4 }, { "id": "c7", "age": 7 }, { "id": "c10", "age": 10 }
+      ]
+    },
+    "expect": {
+      "m": { "medi-cal": "likely:restricted" },
+      "c2": { "wic": "likely", "calworks": "possibly" },
+      "household": { "california-lifeline": "likely", "socalgas-care": "likely", "ladwp-ez-save": "likely", "metro-life": "likely", "yctc": "likely" }
+    }
+  },
+  {
+    "id": "lifeline-older-limit-pass",
+    "title": "Single adult, $18,000 a year, July 2027: under the 2026-27 LifeLine limit ($24,600), and limits only go up, so still likely",
+    "source": "https://www.cpuc.ca.gov/-/media/cpuc-website/about-cpuc/documents/transparency-and-reporting/fact_sheets/california-lifeline/lifeline_onesheet_051126.pdf",
+    "asOf": "2027-07-15",
+    "household": { "zip": "91605", "electric": "ladwp", "gas": "socalgas", "monthlyIncome": 1500, "people": [{ "id": "a", "age": 40, "status": "citizen" }] },
+    "expect": { "household": { "california-lifeline": "likely" } }
+  },
+  {
+    "id": "lifeline-older-limit-fail",
+    "title": "Single adult, $30,000 a year, July 2027: over the 2026-27 limit, but the 2027-28 limit isn't published, so possibly (not \"not\")",
+    "source": "https://www.cpuc.ca.gov/-/media/cpuc-website/about-cpuc/documents/transparency-and-reporting/fact_sheets/california-lifeline/lifeline_onesheet_051126.pdf",
+    "asOf": "2027-07-15",
+    "household": { "zip": "91605", "electric": "ladwp", "gas": "socalgas", "monthlyIncome": 2500, "people": [{ "id": "a", "age": 40, "status": "citizen" }] },
+    "expect": { "household": { "california-lifeline": "possibly" } }
+  },
+  {
+    "id": "lifeline-newer-limit-pass",
+    "title": "Single adult, $18,000 a year, December 2025: under the 2026-27 limit, but the 2025-26 limit could be lower, so possibly",
+    "source": "https://www.cpuc.ca.gov/-/media/cpuc-website/about-cpuc/documents/transparency-and-reporting/fact_sheets/california-lifeline/lifeline_onesheet_051126.pdf",
+    "asOf": "2025-12-15",
+    "household": { "zip": "91605", "electric": "ladwp", "gas": "socalgas", "monthlyIncome": 1500, "people": [{ "id": "a", "age": 40, "status": "citizen" }] },
+    "expect": { "household": { "california-lifeline": "possibly" } }
+  },
+  {
+    "id": "tax-millionaire-job",
+    "title": "Review bug B4: $1,000,000 a month, some from a job, 8 children, all citizens: no tax credit at all",
+    "source": "https://www.irs.gov/credits-deductions/individuals/child-tax-credit",
+    "asOf": "2026-10-22",
+    "household": { "zip": "91601", "electric": "ladwp", "gas": "socalgas", "monthlyIncome": 1000000, "hasEarnedIncome": true,
+      "people": [{ "id": "p0", "age": 40, "status": "citizen" }, { "id": "p1", "age": 38, "status": "citizen" }, { "id": "p2", "age": 17, "status": "citizen" }, { "id": "p3", "age": 15, "status": "citizen" }, { "id": "p4", "age": 12, "status": "citizen" }, { "id": "p5", "age": 9, "status": "citizen" }, { "id": "p6", "age": 6, "status": "citizen" }, { "id": "p7", "age": 3, "status": "citizen" }, { "id": "p8", "age": 1, "status": "citizen" }, { "id": "p9", "age": 70, "status": "citizen" }] },
+    "expect": { "household": { "federal-eitc": "not", "child-tax-credit": "not", "caleitc": "not", "yctc": "not" } }
+  },
+  {
+    "id": "tax-millionaire-unknown",
+    "title": "Review bug B5: same income, job question and every status skipped: income is above every possible limit, so still no tax credit",
+    "source": "https://www.irs.gov/credits-deductions/individuals/child-tax-credit",
+    "asOf": "2026-10-22",
+    "household": { "zip": "91601", "electric": "ladwp", "gas": "socalgas", "monthlyIncome": 1000000,
+      "people": [{ "id": "p0", "age": 40 }, { "id": "p1", "age": 38 }, { "id": "p2", "age": 17 }, { "id": "p3", "age": 15 }, { "id": "p4", "age": 12 }, { "id": "p5", "age": 9 }, { "id": "p6", "age": 6 }, { "id": "p7", "age": 3 }, { "id": "p8", "age": 1 }, { "id": "p9", "age": 70 }] },
+    "expect": { "household": { "federal-eitc": "not", "child-tax-credit": "not", "caleitc": "not", "yctc": "not" }, "p9": { "capi": "not" } }
+  },
+  {
+    "id": "tax-millionaire-no-job",
+    "title": "Same income, none of it from a job: no tax credit (California's credits also cap total income)",
+    "source": "https://caleitc4me.org/",
+    "asOf": "2026-10-22",
+    "household": { "zip": "91601", "electric": "ladwp", "gas": "socalgas", "monthlyIncome": 1000000, "hasEarnedIncome": false,
+      "people": [{ "id": "p0", "age": 40, "status": "citizen" }, { "id": "p1", "age": 38, "status": "citizen" }, { "id": "p2", "age": 17, "status": "citizen" }, { "id": "p3", "age": 15, "status": "citizen" }, { "id": "p4", "age": 12, "status": "citizen" }, { "id": "p5", "age": 9, "status": "citizen" }, { "id": "p6", "age": 6, "status": "citizen" }, { "id": "p7", "age": 3, "status": "citizen" }, { "id": "p8", "age": 1, "status": "citizen" }, { "id": "p9", "age": 70, "status": "citizen" }] },
+    "expect": { "household": { "federal-eitc": "not", "child-tax-credit": "not", "caleitc": "not", "yctc": "not" } }
+  },
+  {
+    "id": "ctc-under-200k",
+    "title": "Two citizen parents, two children, $180,000 a year from work: full Child Tax Credit",
+    "source": "https://www.irs.gov/credits-deductions/individuals/child-tax-credit",
+    "asOf": "2026-10-22",
+    "household": { "zip": "91605", "electric": "ladwp", "gas": "socalgas", "monthlyIncome": 15000, "hasEarnedIncome": true,
+      "people": [{ "id": "a", "age": 40, "status": "citizen" }, { "id": "b", "age": 38, "status": "citizen" }, { "id": "k1", "age": 8, "status": "citizen" }, { "id": "k2", "age": 5, "status": "citizen" }] },
+    "expect": { "household": { "child-tax-credit": "likely" } },
+    "estimates": { "household": { "child-tax-credit": 3400 } }
+  },
+  {
+    "id": "ctc-phase-out",
+    "title": "Same family at $300,000 a year: over $200,000, so a full credit only on a joint return (possibly)",
+    "source": "https://www.law.cornell.edu/uscode/text/26/24",
+    "asOf": "2026-10-22",
+    "household": { "zip": "91605", "electric": "ladwp", "gas": "socalgas", "monthlyIncome": 25000, "hasEarnedIncome": true,
+      "people": [{ "id": "a", "age": 40, "status": "citizen" }, { "id": "b", "age": 38, "status": "citizen" }, { "id": "k1", "age": 8, "status": "citizen" }, { "id": "k2", "age": 5, "status": "citizen" }] },
+    "expect": { "household": { "child-tax-credit": "possibly" } }
+  },
+  {
+    "id": "ctc-phased-out",
+    "title": "Same family at $600,000 a year: past $488,000 the credit is gone even on a joint return",
+    "source": "https://www.law.cornell.edu/uscode/text/26/24",
+    "asOf": "2026-10-22",
+    "household": { "zip": "91605", "electric": "ladwp", "gas": "socalgas", "monthlyIncome": 50000, "hasEarnedIncome": true,
+      "people": [{ "id": "a", "age": 40, "status": "citizen" }, { "id": "b", "age": 38, "status": "citizen" }, { "id": "k1", "age": 8, "status": "citizen" }, { "id": "k2", "age": 5, "status": "citizen" }] },
+    "expect": { "household": { "child-tax-credit": "not" } }
+  },
+  {
+    "id": "job-answer-no",
+    "title": "Review bug B13: $2,000 a month, none from a job (answered No): no earned-income credits, but the Young Child Tax Credit works with $0 earnings",
+    "source": "https://caleitc4me.org/",
+    "asOf": "2026-10-22",
+    "household": { "zip": "91605", "electric": "ladwp", "gas": "socalgas", "monthlyIncome": 2000, "hasEarnedIncome": false,
+      "people": [{ "id": "a", "age": 30, "status": "citizen" }, { "id": "k", "age": 3, "status": "citizen" }] },
+    "expect": { "household": { "federal-eitc": "not", "child-tax-credit": "not", "caleitc": "not", "yctc": "likely" } }
+  },
+  {
+    "id": "b10-grandfather",
+    "title": "Review bugs B10/B11: undocumented mother (34, new baby), citizen baby, disabled grandfather (99, green card): grandfather's CalWORKs and CAPI only possibly, CAPI at the individual rate, EITC possibly because the mother has no SSN",
+    "source": "https://dpss.lacounty.gov/en/cash/capi.html",
+    "asOf": "2026-10-22",
+    "household": { "zip": "91205", "electric": "gwp", "gas": "socalgas", "monthlyIncome": 1500.5, "hasEarnedIncome": true,
+      "people": [{ "id": "ana", "age": 34, "status": "undocumented", "recentBirth": true }, { "id": "leo", "age": 0, "status": "citizen" },
+        { "id": "abuelo", "age": 99, "status": "lpr5", "disabled": true }] },
+    "expect": {
+      "abuelo": { "calworks": "possibly", "capi": "possibly" },
+      "leo": { "calworks": "likely" },
+      "ana": { "calworks": "not", "medi-cal": "likely:full" },
+      "household": { "federal-eitc": "possibly", "child-tax-credit": "possibly" }
+    },
+    "estimates": { "abuelo": { "capi": 1233.94 } }
+  },
+  {
+    "id": "capi-couple",
+    "title": "Two green-card holders 70 and 72, $1,800 a month: both can apply, so the couple rate",
+    "source": "https://ca.db101.org/ca/programs/income_support/capi/program.htm",
+    "asOf": "2026-10-22",
+    "household": { "zip": "91205", "electric": "gwp", "gas": "socalgas", "monthlyIncome": 1800,
+      "people": [{ "id": "g", "age": 70, "status": "lpr5" }, { "id": "h", "age": 72, "status": "lpr5" }] },
+    "expect": { "g": { "capi": "likely" }, "h": { "capi": "likely" } },
+    "estimates": { "g": { "capi": 2098.83 } }
+  },
+  {
+    "id": "grandma-caretaker",
+    "title": "Grandmother (66, green card) raising a grandchild alone on $800 a month: she is the CalWORKs caretaker, and CAPI is at the individual rate",
+    "source": "https://my.dpss.lacounty.gov/public/en/home/epolicy/program/calworks/composition/minimum-basic-standard-of-adequate-care.html",
+    "asOf": "2026-10-22",
+    "household": { "zip": "91205", "electric": "gwp", "gas": "socalgas", "monthlyIncome": 800,
+      "people": [{ "id": "g", "age": 66, "status": "lpr5" }, { "id": "k", "age": 8, "status": "citizen" }] },
+    "expect": { "g": { "calworks": "likely", "capi": "likely" } },
+    "estimates": { "g": { "capi": 1233.94 } }
+  },
+  {
+    "id": "eitc-child-status-skipped",
+    "title": "Citizen parent, $2,000 a month from work, child's status skipped: EITC depends on the child's SSN (possibly), never not",
+    "source": "https://www.irs.gov/Credits-&-Deductions/Individuals/Earned-Income-Tax-Credit/EITC-Income-Limits-Maximum-Credit-Amounts",
+    "asOf": "2026-10-22",
+    "household": { "zip": "91605", "electric": "ladwp", "gas": "socalgas", "monthlyIncome": 2000, "hasEarnedIncome": true,
+      "people": [{ "id": "a", "age": 30, "status": "citizen" }, { "id": "k", "age": 3 }] },
+    "expect": { "household": { "federal-eitc": "possibly" } }
   }
 ]

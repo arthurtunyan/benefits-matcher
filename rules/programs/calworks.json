@@ -44,10 +44,30 @@
         { "fact": "age", "gte": 18 },
         { "fact": "householdHasChild", "eq": true },
         { "fact": "status", "in": ["citizen", "lpr5", "lpr", "humanitarian"], "unsure": ["otherLawful"] },
-        { "any": [{ "fact": "calworksIncome", "lt": { "table": "calworks-mbsac" } }, { "fact": "getsCalWORKs", "eq": true }] }
+        { "any": [{ "fact": "calworksIncome", "lt": { "table": "calworks-mbsac" } }, { "fact": "getsCalWORKs", "eq": true }] },
+        { "any": [
+          { "all": [{ "fact": "age", "lt": 60 }, { "fact": "disabled", "eq": false }] },
+          { "fact": "workingAgeAdults", "eq": 0 }
+        ]}
       ]},
       "explain": "cw.caretaker",
       "notes": [{ "key": "cw.workRules" }],
+      "source": "https://my.dpss.lacounty.gov/public/en/home/epolicy/program/calworks/composition/minimum-basic-standard-of-adequate-care.html",
+      "lastVerified": "2026-10-07",
+      "verifiedBy": "claude-draft"
+    },
+    {
+      "id": "calworks-caretaker-older-or-disabled",
+      "effective": { "from": "2016-01-01", "to": null },
+      "conditions": { "all": [
+        { "fact": "age", "gte": 18 },
+        { "fact": "householdHasChild", "eq": true },
+        { "fact": "status", "in": ["citizen", "lpr5", "lpr", "humanitarian"], "unsure": ["otherLawful"] },
+        { "any": [{ "fact": "calworksIncome", "lt": { "table": "calworks-mbsac" } }, { "fact": "getsCalWORKs", "eq": true }] }
+      ]},
+      "outcome": "possibly",
+      "explain": "cw.caretaker",
+      "notes": [{ "key": "cw.olderCaretaker" }],
       "source": "https://my.dpss.lacounty.gov/public/en/home/epolicy/program/calworks/composition/minimum-basic-standard-of-adequate-care.html",
       "lastVerified": "2026-10-07",
       "verifiedBy": "claude-draft"

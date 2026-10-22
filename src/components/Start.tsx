@@ -1,5 +1,5 @@
 import { LANGS, useT, type Lang } from '../i18n'
-import { Flame, Mail, MapPin, ShoppingBasket, Zap } from 'lucide-react'
+import { ArrowRight, BookOpenCheck, Flame, Mail, MapPin, ShieldCheck, ShoppingBasket, Users, Zap } from 'lucide-react'
 import { programs } from '../data'
 import House from './House'
 
@@ -8,15 +8,17 @@ export default function Start({ onStart, onExample, setLang }: {
 }) {
   const t = useT()
   const points = [
-    { title: 'ui.pointPrivacyTitle', body: 'ui.pointPrivacyBody' },
-    { title: 'ui.pointPeopleTitle', body: 'ui.pointPeopleBody' },
-    { title: 'ui.pointSourcesTitle', body: 'ui.pointSourcesBody' },
+    { title: 'ui.pointPrivacyTitle', body: 'ui.pointPrivacyBody', Icon: ShieldCheck },
+    { title: 'ui.pointPeopleTitle', body: 'ui.pointPeopleBody', Icon: Users },
+    { title: 'ui.pointSourcesTitle', body: 'ui.pointSourcesBody', Icon: BookOpenCheck },
   ]
   return (
     <div className="start">
       <section className="hero">
         <div className="hero-copy">
-          <h1 tabIndex={-1} className="view-heading">{t('ui.tagline')}</h1>
+          <p className="eyebrow">{t('ui.eyebrow')}</p>
+          {/* *Starred words* in the tagline get the hand-drawn underline. */}
+          <h1 tabIndex={-1} className="view-heading">{t('ui.tagline').split('*').map((s, i) => (i % 2 ? <em key={i}>{s}</em> : s))}</h1>
           <div className="lang-big" role="group" aria-label={t('ui.language')}>
             {LANGS.map((l) => (
               <button key={l} lang={l} aria-pressed={t.lang === l} onClick={() => setLang(l)}>
@@ -25,7 +27,7 @@ export default function Start({ onStart, onExample, setLang }: {
             ))}
           </div>
           <div className="hero-cta">
-            <button className="btn btn-primary btn-lg" onClick={onStart}>{t('ui.startCta')}</button>
+            <button className="btn btn-primary btn-lg" onClick={onStart}>{t('ui.startCta')} <ArrowRight size={20} aria-hidden="true" /></button>
             <button className="btn btn-ghost" onClick={onExample}>{t('ui.example')}</button>
           </div>
           <p className="muted small">{t('ui.programsCovered', { n: programs.length })}. {t('ui.minutes')}</p>
@@ -42,8 +44,9 @@ export default function Start({ onStart, onExample, setLang }: {
       </section>
 
       <ul className="points">
-        {points.map(({ title, body }) => (
-          <li key={title} className="point">
+        {points.map(({ title, body, Icon }, i) => (
+          <li key={title} className={`point ${i ? 'block-forest' : ''}`}>
+            <Icon className="point-icon" size={26} aria-hidden="true" />
             <h2>{t(title)}</h2>
             <p>{t(body)}</p>
           </li>
