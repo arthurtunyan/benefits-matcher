@@ -45,7 +45,7 @@ export default function Start({ onStart, onExample, setLang }: {
 
       <ul className="points">
         {points.map(({ title, body, Icon }, i) => (
-          <li key={title} className={`point ${i ? 'block-forest' : ''}`}>
+          <li key={title} className={`point ${i ? 'block-harbor' : ''}`}>
             <Icon className="point-icon" size={26} aria-hidden="true" />
             <h2>{t(title)}</h2>
             <p>{t(body)}</p>

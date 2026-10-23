@@ -6,11 +6,11 @@ export function Logo({ size = 36 }: { size?: number }) {
   // An open doorway with the sun rising behind it, and sunlight on the open door.
   return (
     <svg width={size} height={size} viewBox="0 0 48 48" aria-hidden="true" className="logo">
-      <rect width="48" height="48" fill="var(--forest)" />
+      <rect width="48" height="48" fill="var(--harbor)" />
       <circle cx="33" cy="14.5" r="6" fill="var(--sun)" />
-      <path d="M13 41V22a11 11 0 0 1 22 0v19" fill="none" stroke="var(--on-forest)" strokeWidth="3.5" />
+      <path d="M13 41V22a11 11 0 0 1 22 0v19" fill="none" stroke="var(--on-harbor)" strokeWidth="3.5" />
       <path d="M24 41V26.5l8 3.5v11z" fill="var(--sun)" />
-      <path d="M6 41h36" stroke="var(--on-forest)" strokeWidth="3" />
+      <path d="M6 41h36" stroke="var(--on-harbor)" strokeWidth="3" />
     </svg>
   )
 }

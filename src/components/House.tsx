@@ -47,8 +47,8 @@ function Art() {
       <path className="h-wall ln" d="M76 132l-2 158h232l-2-158" />
       <path className="h-roof ln" d="M56 141L190 35l135 106c2 3 0 5-3 5H59c-4 0-5-3-3-5z" />
       {/* bushes */}
-      <path className="h-blob ln" d="M128 291c-8-12 2-24 13-19 3-11 19-12 22 0 10-3 17 9 10 19" />
-      <path className="h-blob ln" d="M262 291c-6-11 3-21 12-16 4-9 17-8 19 2 8-1 12 8 7 14" />
+      <path className="h-leaf ln" d="M128 291c-8-12 2-24 13-19 3-11 19-12 22 0 10-3 17 9 10 19" />
+      <path className="h-leaf ln" d="M262 291c-6-11 3-21 12-16 4-9 17-8 19 2 8-1 12 8 7 14" />
       {/* door with an arched top, and the step */}
       <path className="h-door ln" d="M172 290v-40a18 18 0 0 1 36 0v40" />
       <circle className="h-ink" cx="200" cy="268" r="3" />

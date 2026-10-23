@@ -269,7 +269,7 @@ export default function Results({ screening: s, changes, asOf, setAsOf, updatePe
       {people.length === 0 && <p>{t('ui.noPeople')}</p>}
 
       {people.length > 0 && (
-        <section className="card overview block-forest" aria-labelledby="overview-title">
+        <section className="card overview block-harbor" aria-labelledby="overview-title">
           <h2 id="overview-title" className="card-title">{t('ui.overview')}</h2>
           <p className="sr-only">{t('ui.overviewCount', { likely: o.likely, possibly: o.possibly })}</p>
           <div className="stats" aria-hidden="true">
