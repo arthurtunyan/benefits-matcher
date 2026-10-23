@@ -2,12 +2,9 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 // Fonts are bundled with the app (no Google Fonts request). Armenian files
 // download only when Armenian text is on screen, thanks to unicode-range.
-import '@fontsource-variable/figtree'
+// Inter with its optical-size axis: big headings get the tighter Display cut automatically.
+import '@fontsource-variable/inter/opsz.css'
 import '@fontsource-variable/noto-sans-armenian'
-// Headlines: Fraunces with its "soft" axis (rounded, friendly serifs). It has no Armenian letters,
-// so Armenian headlines fall back to Noto Serif Armenian.
-import '@fontsource-variable/fraunces/soft.css'
-import '@fontsource-variable/noto-serif-armenian'
 import './styles.css'
 import App from './App'
 

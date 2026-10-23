@@ -196,12 +196,12 @@ export default function ProgramCard({ r, facts, names }: { r: ProgramResult; fac
           {open ? t('ui.hideWhy') : t('ui.why')} <ChevronDown size={16} className={open ? 'flip' : ''} aria-hidden="true" />
         </button>
         {outcome !== 'not' && (
-          <a className="btn btn-small btn-ink" href={p.apply.url} target="_blank" rel="noopener noreferrer">
+          <a className="btn btn-small btn-primary" href={p.apply.url} target="_blank" rel="noopener noreferrer">
             {t('ui.apply')} <ArrowUpRight size={18} aria-hidden="true" />
           </a>
         )}
         {outcome !== 'not' && p.apply.phone && (
-          <a className="btn btn-small btn-soft" href={`tel:${p.apply.phone.replace(/[^\d+]/g, '')}`}>
+          <a className="btn btn-small btn-secondary" href={`tel:${p.apply.phone.replace(/[^\d+]/g, '')}`}>
             <Phone size={14} aria-hidden="true" /> {p.apply.phone}
           </a>
         )}

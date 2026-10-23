@@ -44,17 +44,17 @@ export default function Help({ zip }: { zip?: string }) {
             <p className="small muted">{t('ui.speaks', { langs: h.languages.map((l) => (t.has(`lang.${l}`) ? t(`lang.${l}`) : l.toUpperCase())).join(', ') })}</p>
             <div className="place-actions">
               {h.phone && (
-                <a className="btn btn-small btn-soft" href={`tel:${h.phone.replace(/[^\d+]/g, '')}`}>
+                <a className="btn btn-small btn-secondary" href={`tel:${h.phone.replace(/[^\d+]/g, '')}`}>
                   <Phone size={14} aria-hidden="true" /> {h.phone}
                 </a>
               )}
               {h.url && (
-                <a className="btn btn-small btn-soft" href={h.url} target="_blank" rel="noopener noreferrer">
+                <a className="btn btn-small btn-secondary" href={h.url} target="_blank" rel="noopener noreferrer">
                   {t('ui.website')} <ExternalLink size={14} aria-hidden="true" />
                 </a>
               )}
               {h.address && (
-                <a className="btn btn-small btn-soft" href={transitLink(h.address)} target="_blank" rel="noopener noreferrer">
+                <a className="btn btn-small btn-secondary" href={transitLink(h.address)} target="_blank" rel="noopener noreferrer">
                   <TramFront size={14} aria-hidden="true" /> {t('ui.directions')}
                   <span className="sr-only"> ({t('ui.directionsNote')})</span>
                 </a>

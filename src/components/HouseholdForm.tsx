@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react'
-import { ArrowRight, Check, Flame, Mail, MapPin, Plus, ShoppingBasket, Siren, Zap } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Check, Flame, Mail, MapPin, Plus, ShoppingBasket, Siren, Zap } from 'lucide-react'
 import { useT, type T } from '../i18n'
 import { inLACounty, type Household, type Person, type Status, type Utility } from '../engine'
 import { zips } from '../data'
@@ -67,7 +67,7 @@ function Tile({ selected, onClick, children, role }: {
   return (
     <button type="button" {...state} className="tile" onClick={onClick}>
       <span>{children}</span>
-      <span className="tile-check" aria-hidden="true">{selected && <Check size={16} strokeWidth={3.5} />}</span>
+      <span className="tile-check" aria-hidden="true">{selected && <Check size={14} strokeWidth={3.5} />}</span>
     </button>
   )
 }
@@ -389,7 +389,7 @@ export default function HouseholdForm({ household: h, setHousehold, onDone }: {
             <Tile key={f} role="checkbox" selected={!!p[f]} onClick={() => updatePerson({ ...p, [f]: !p[f] })}>{t(`flags.${f}`)}</Tile>
           ))}
         </div>
-        <button type="button" className="btn btn-soft add-more" onClick={addPerson}><Plus size={18} aria-hidden="true" /> {t('ui.addPerson')}</button>
+        <button type="button" className="btn btn-secondary add-more" onClick={addPerson}><Plus size={18} aria-hidden="true" /> {t('ui.addPerson')}</button>
       </>
     )
   }
@@ -407,7 +407,7 @@ export default function HouseholdForm({ household: h, setHousehold, onDone }: {
           <p className="home-hint">{t('ui.peopleHelp')}</p>
         </div>
 
-        <div className="home-panel bubble" ref={panel}>
+        <div className="home-panel" ref={panel}>
           <div className="panel-top">
             <span className="panel-part">{partName}</span>
             <span className="panel-count">{t('ui.partsDone', { n: doneCount, total: order.length })}</span>
@@ -421,6 +421,7 @@ export default function HouseholdForm({ household: h, setHousehold, onDone }: {
       </div>
 
       <div className="action-bar">
+        {at > 0 && <button type="button" className="btn btn-secondary" onClick={() => go(order[at - 1])}><ArrowLeft size={18} aria-hidden="true" /> {t('ui.back')}</button>}
         {!last && <button type="button" className="btn btn-ghost" onClick={onDone}>{t('ui.seeResults')}</button>}
         <button type="submit" className="btn btn-primary btn-lg">{last ? t('ui.seeResults') : t('ui.next')} <ArrowRight size={20} aria-hidden="true" /></button>
       </div>

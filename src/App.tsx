@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { I18n, LANGS, makeT, type Lang, type T } from './i18n'
 import { screen, timeline, type Household, type Person } from './engine'
 import { lastFullCheck, programs, rulesDraft, tables } from './data'
-import Header from './components/Header'
+import Header, { Logo } from './components/Header'
 import Start from './components/Start'
 import HouseholdForm from './components/HouseholdForm'
 import Results from './components/Results'
@@ -108,8 +108,11 @@ export default function App() {
         {view === 'plan' && <Plan screening={screening} today={todayISO()} zip={household.zip} onBack={() => go('results')} />}
       </main>
       <footer className="footer no-print">
-        <p>{t('ui.footerMade')}</p>
-        <p>{rulesDraft ? t('ui.footerDraft') : t('ui.footerData', { date: t.date(lastFullCheck) })}</p>
+        <div className="footer-inner">
+          <p className="footer-brand"><Logo size={28} /> {t('ui.appName')}</p>
+          <p>{t('ui.footerMade')}</p>
+          <p>{rulesDraft ? t('ui.footerDraft') : t('ui.footerData', { date: t.date(lastFullCheck) })}</p>
+        </div>
       </footer>
     </I18n.Provider>
   )

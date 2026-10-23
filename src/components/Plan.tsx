@@ -105,7 +105,7 @@ export default function Plan({ screening: s, today, zip, onBack }: { screening: 
         <h1 tabIndex={-1} className="view-heading">{t('ui.stepPlan')}</h1>
         {cols.length > 1 && <p className="muted">{t('ui.planBothLanguages')}</p>}
         <div className="row">
-          <button className="btn btn-ghost" onClick={onBack}><ArrowLeft size={18} aria-hidden="true" /> {t('ui.back')}</button>
+          <button className="btn btn-secondary" onClick={onBack}><ArrowLeft size={18} aria-hidden="true" /> {t('ui.back')}</button>
           <button className="btn btn-primary" onClick={() => window.print()}><Printer size={18} aria-hidden="true" /> {t('ui.print')}</button>
         </div>
       </div>

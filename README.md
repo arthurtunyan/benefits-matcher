@@ -149,6 +149,6 @@ This is a screening tool, not a determination. Only the agency that runs a progr
 
 ## Credits
 
-Built by Arthur and Aiden for the 2026 Congressional App Challenge (CA-30). AI assistance is disclosed in [docs/SUBMISSION.md](docs/SUBMISSION.md#ai-disclosure). Icons: [Lucide](https://lucide.dev) (ISC). Fonts: [Fraunces](https://fonts.google.com/specimen/Fraunces), [Figtree](https://fonts.google.com/specimen/Figtree), and Noto Sans/Serif Armenian (all SIL OFL), bundled through Fontsource.
+Built by Arthur and Aiden for the 2026 Congressional App Challenge (CA-30). AI assistance is disclosed in [docs/SUBMISSION.md](docs/SUBMISSION.md#ai-disclosure). Icons: [Lucide](https://lucide.dev) (ISC). Fonts: [Inter](https://rsms.me/inter/) and Noto Sans Armenian (both SIL OFL), bundled through Fontsource.
 
 License: [MIT](LICENSE)

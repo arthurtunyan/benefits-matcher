@@ -1,5 +1,5 @@
 import { useEffect, useState, type ReactNode } from 'react'
-import { ArrowLeft, ArrowRight, ArrowUpRight, CalendarClock, ChevronDown, History, Info, Phone, Printer } from 'lucide-react'
+import { ArrowLeft, ArrowRight, ArrowUpRight, CalendarClock, ChevronDown, ChevronRight, History, Info, Phone, Printer, ShieldCheck, Users } from 'lucide-react'
 import { useT, type T } from '../i18n'
 import { deadlineDays, leaves, type Change, type Outcome, type Person, type ProgramResult, type Screening, type Status } from '../engine'
 import { MAX_DATE, MIN_DATE, personLabel, todayISO } from '../App'
@@ -200,11 +200,11 @@ function StartHere({ s }: { s: Screening }) {
               <p className="small muted">{t('ui.planFor', { names: g.names.join(', ') })}</p>
               {d !== undefined && <p className="start-deadline">{d < 0 ? t('ui.deadlinePassed') : t('ui.daysLeft', { n: String(d) })}</p>}
               <div className="start-actions">
-                <a className="btn btn-small btn-ink" href={apply.url} target="_blank" rel="noopener noreferrer">
+                <a className="btn btn-small btn-primary" href={apply.url} target="_blank" rel="noopener noreferrer">
                   {t('ui.apply')} <ArrowUpRight size={18} aria-hidden="true" />
                 </a>
                 {apply.phone && (
-                  <a className="btn btn-small btn-soft" href={`tel:${apply.phone.replace(/[^\d+]/g, '')}`}>
+                  <a className="btn btn-small btn-secondary" href={`tel:${apply.phone.replace(/[^\d+]/g, '')}`}>
                     <Phone size={14} aria-hidden="true" /> {apply.phone}
                   </a>
                 )}
@@ -254,7 +254,7 @@ export default function Results({ screening: s, changes, asOf, setAsOf, updatePe
   return (
     <div className="results">
       <div className="results-top">
-        <p className="eyebrow">{t('ui.privacyChip')}</p>
+        <p className="eyebrow eyebrow-ok"><ShieldCheck size={16} aria-hidden="true" /> {t('ui.privacyChip')}</p>
         <h1 tabIndex={-1} className="view-heading">{t('ui.stepResults')}</h1>
         {asOf !== today && <p className="note-warn" role="status">{t('ui.notToday', { date: t.date(asOf) })}</p>}
       </div>
@@ -266,10 +266,16 @@ export default function Results({ screening: s, changes, asOf, setAsOf, updatePe
         </div>
       )}
 
-      {people.length === 0 && <p>{t('ui.noPeople')}</p>}
+      {people.length === 0 && (
+        <div className="card empty-state">
+          <Users size={32} aria-hidden="true" />
+          <p>{t('ui.noPeople')}</p>
+          <button className="btn btn-primary" onClick={onBack}>{t('ui.edit')}</button>
+        </div>
+      )}
 
       {people.length > 0 && (
-        <section className="card overview block-harbor" aria-labelledby="overview-title">
+        <section className="card overview" aria-labelledby="overview-title">
           <h2 id="overview-title" className="card-title">{t('ui.overview')}</h2>
           <p className="sr-only">{t('ui.overviewCount', { likely: o.likely, possibly: o.possibly })}</p>
           <div className="stats" aria-hidden="true">
@@ -285,6 +291,7 @@ export default function Results({ screening: s, changes, asOf, setAsOf, updatePe
                     <span className="who-name">{personLabel(p, i, t)}</span>
                     <span className="who-sum">{t('ui.summary', { likely: count(results, 'likely'), possibly: count(results, 'possibly') })}</span>
                   </span>
+                  <ChevronRight className="who-go" size={20} aria-hidden="true" />
                 </a>
               </li>
             ))}
@@ -314,7 +321,7 @@ export default function Results({ screening: s, changes, asOf, setAsOf, updatePe
       {o.skipped && (
         <div className="skipped-note">
           <p className="hint hint-possibly">{t('ui.skippedNote')}</p>
-          <button className="btn btn-soft" onClick={onBack}>{t('ui.answerSkipped')}</button>
+          <button className="btn btn-secondary" onClick={onBack}>{t('ui.answerSkipped')}</button>
         </div>
       )}
 
@@ -418,7 +425,7 @@ export default function Results({ screening: s, changes, asOf, setAsOf, updatePe
       <Help zip={zip} />
 
       <div className="action-bar">
-        <button className="btn btn-ghost" onClick={onBack}><ArrowLeft size={18} aria-hidden="true" /> {t('ui.edit')}</button>
+        <button className="btn btn-secondary" onClick={onBack}><ArrowLeft size={18} aria-hidden="true" /> {t('ui.edit')}</button>
         <button className="btn btn-primary btn-lg" onClick={onPlan}><Printer size={20} aria-hidden="true" /> {t('ui.makePlan')}</button>
       </div>
     </div>

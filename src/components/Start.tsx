@@ -1,5 +1,5 @@
 import { LANGS, useT, type Lang } from '../i18n'
-import { ArrowRight, BookOpenCheck, Flame, Mail, MapPin, ShieldCheck, ShoppingBasket, Users, Zap } from 'lucide-react'
+import { ArrowRight, BookOpenCheck, CircleCheck, Flame, Mail, MapPin, ShieldCheck, ShoppingBasket, Users, Zap } from 'lucide-react'
 import { programs } from '../data'
 import House from './House'
 
@@ -16,9 +16,7 @@ export default function Start({ onStart, onExample, setLang }: {
     <div className="start">
       <section className="hero">
         <div className="hero-copy">
-          <p className="eyebrow">{t('ui.eyebrow')}</p>
-          {/* *Starred words* in the tagline get the hand-drawn underline. */}
-          <h1 tabIndex={-1} className="view-heading">{t('ui.tagline').split('*').map((s, i) => (i % 2 ? <em key={i}>{s}</em> : s))}</h1>
+          {/* First, so people who read Spanish or Armenian can switch before reading on. */}
           <div className="lang-big" role="group" aria-label={t('ui.language')}>
             {LANGS.map((l) => (
               <button key={l} lang={l} aria-pressed={t.lang === l} onClick={() => setLang(l)}>
@@ -26,11 +24,19 @@ export default function Start({ onStart, onExample, setLang }: {
               </button>
             ))}
           </div>
+          <p className="eyebrow"><MapPin size={16} aria-hidden="true" /> {t('ui.eyebrow')}</p>
+          <h1 tabIndex={-1} className="view-heading hero-title">{t('ui.heroTitle')}</h1>
+          {/* *Starred words* get a soft highlight. */}
+          <p className="hero-lead">{t('ui.heroLead', { n: programs.length }).split('*').map((s, i) => (i % 2 ? <em key={i}>{s}</em> : s))}</p>
           <div className="hero-cta">
             <button className="btn btn-primary btn-lg" onClick={onStart}>{t('ui.startCta')} <ArrowRight size={20} aria-hidden="true" /></button>
-            <button className="btn btn-ghost" onClick={onExample}>{t('ui.example')}</button>
+            <button className="btn btn-secondary btn-lg" onClick={onExample}>{t('ui.example')}</button>
           </div>
-          <p className="muted small">{t('ui.programsCovered', { n: programs.length })}. {t('ui.minutes')}</p>
+          <ul className="trust">
+            {['trustFree', 'trustPrivate', 'trustTime', 'trustNoSignup'].map((k) => (
+              <li key={k}><CircleCheck size={18} aria-hidden="true" /> {t(`ui.${k}`)}</li>
+            ))}
+          </ul>
         </div>
         <div className="hero-house">
           <House decorative parts={[
@@ -44,9 +50,9 @@ export default function Start({ onStart, onExample, setLang }: {
       </section>
 
       <ul className="points">
-        {points.map(({ title, body, Icon }, i) => (
-          <li key={title} className={`point ${i ? 'block-harbor' : ''}`}>
-            <Icon className="point-icon" size={26} aria-hidden="true" />
+        {points.map(({ title, body, Icon }) => (
+          <li key={title} className="point">
+            <Icon className="point-icon" size={22} aria-hidden="true" />
             <h2>{t(title)}</h2>
             <p>{t(body)}</p>
           </li>

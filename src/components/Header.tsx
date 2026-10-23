@@ -3,14 +3,12 @@ import { LANGS, useT, type Lang } from '../i18n'
 import type { View } from '../App'
 
 export function Logo({ size = 36 }: { size?: number }) {
-  // An open doorway with the sun rising behind it, and sunlight on the open door.
+  // A home with a warm, open door. Fixed colors, so it matches the app icon and prints the same.
   return (
     <svg width={size} height={size} viewBox="0 0 48 48" aria-hidden="true" className="logo">
-      <rect width="48" height="48" fill="var(--harbor)" />
-      <circle cx="33" cy="14.5" r="6" fill="var(--sun)" />
-      <path d="M13 41V22a11 11 0 0 1 22 0v19" fill="none" stroke="var(--on-harbor)" strokeWidth="3.5" />
-      <path d="M24 41V26.5l8 3.5v11z" fill="var(--sun)" />
-      <path d="M6 41h36" stroke="var(--on-harbor)" strokeWidth="3" />
+      <rect width="48" height="48" rx="12" fill="#1b6497" />
+      <path d="M12.5 22.5 24 13l11.5 9.5V34a2 2 0 0 1-2 2h-19a2 2 0 0 1-2-2z" fill="none" stroke="#fff" strokeWidth="3" strokeLinejoin="round" />
+      <path d="M20 34.5v-5a4 4 0 0 1 8 0v5z" fill="#f4a261" />
     </svg>
   )
 }
