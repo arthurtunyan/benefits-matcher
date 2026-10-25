@@ -1,4 +1,4 @@
-import { LogOut, Moon, Sun } from 'lucide-react'
+import { LogOut, Moon, Sun } from './Icons'
 import { LANGS, useT, type Lang } from '../i18n'
 import type { View } from '../App'
 
@@ -69,7 +69,7 @@ export default function Header({ view, setView, setLang, canSee, dark, toggleDar
           </button>
         </div>
       </div>
-      {view !== 'start' && (
+      {view !== 'start' && view !== 'privacy' && view !== 'terms' && (
         <nav className="steps" aria-label={t('ui.steps')}>
           {STEPS.map((s, i) => (
             <button

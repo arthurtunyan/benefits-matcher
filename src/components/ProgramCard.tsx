@@ -1,5 +1,5 @@
 import { useId, useState } from 'react'
-import { ArrowUpRight, Check, ChevronDown, CircleHelp, ExternalLink, Phone, X } from 'lucide-react'
+import { ArrowUpRight, Check, ChevronDown, CircleHelp, ExternalLink, Phone, X } from './Icons'
 import { useT, type T } from '../i18n'
 import { isChangeable, leaves, lookup, nearMiss, type CondResult, type Facts, type LeafResult, type ProgramResult } from '../engine'
 import { help, tables } from '../data'
@@ -56,8 +56,8 @@ function CondList({ c, facts }: { c: CondResult; facts: Facts }) {
         <Mark r={c.result} />
         <span>
           {leafLabel(c, t, facts)}
-          {showYours && <span className="muted"> · {t('ui.yours', { value: fmtYours(c.leaf.fact, c.actual, t) })}</span>}
-          {c.reason && <span className="muted"> · {t(`ui.${c.reason}`)}</span>}
+          {showYours && <span className="muted"> ({t('ui.yours', { value: fmtYours(c.leaf.fact, c.actual, t) })})</span>}
+          {c.reason && <span className="muted"> ({t(`ui.${c.reason}`)})</span>}
         </span>
       </li>
     )

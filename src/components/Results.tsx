@@ -1,5 +1,5 @@
 import { useEffect, useState, type ReactNode } from 'react'
-import { ArrowLeft, ArrowRight, ArrowUpRight, CalendarClock, ChevronDown, ChevronRight, History, Info, Phone, Printer, ShieldCheck, Users } from 'lucide-react'
+import { ArrowLeft, ArrowUpRight, ChevronDown, ChevronRight, Phone, Printer } from './Icons'
 import { useT, type T } from '../i18n'
 import { deadlineDays, leaves, type Change, type Outcome, type Person, type ProgramResult, type Screening, type Status } from '../engine'
 import { MAX_DATE, MIN_DATE, personLabel, todayISO } from '../App'
@@ -191,7 +191,7 @@ function StartHere({ s }: { s: Screening }) {
               <h3>
                 {g.programs.map(({ r, possibly }, i) => (
                   <span key={r.program.id}>
-                    {i > 0 && ' · '}<span lang="en">{r.program.name}</span>
+                    {i > 0 && ', '}<span lang="en">{r.program.name}</span>
                     {possibly && <> <span className="badge badge-possibly">{t('ui.possiblyShort')}</span></>}
                   </span>
                 ))}
@@ -254,7 +254,7 @@ export default function Results({ screening: s, changes, asOf, setAsOf, updatePe
   return (
     <div className="results">
       <div className="results-top">
-        <p className="eyebrow eyebrow-ok"><ShieldCheck size={16} aria-hidden="true" /> {t('ui.privacyChip')}</p>
+        <p className="eyebrow eyebrow-ok">{t('ui.privacyChip')}</p>
         <h1 tabIndex={-1} className="view-heading">{t('ui.stepResults')}</h1>
         {asOf !== today && <p className="note-warn" role="status">{t('ui.notToday', { date: t.date(asOf) })}</p>}
       </div>
@@ -262,13 +262,12 @@ export default function Results({ screening: s, changes, asOf, setAsOf, updatePe
       {example && onNew && (
         <div className="example-banner">
           <p>{t('ui.exampleBanner')}</p>
-          <button className="btn btn-small btn-primary" onClick={onNew}>{t('ui.checkOwn')} <ArrowRight size={18} aria-hidden="true" /></button>
+          <button className="btn btn-small btn-primary" onClick={onNew}>{t('ui.checkOwn')}</button>
         </div>
       )}
 
       {people.length === 0 && (
         <div className="card empty-state">
-          <Users size={32} aria-hidden="true" />
           <p>{t('ui.noPeople')}</p>
           <button className="btn btn-primary" onClick={onBack}>{t('ui.edit')}</button>
         </div>
@@ -277,11 +276,8 @@ export default function Results({ screening: s, changes, asOf, setAsOf, updatePe
       {people.length > 0 && (
         <section className="card overview" aria-labelledby="overview-title">
           <h2 id="overview-title" className="card-title">{t('ui.overview')}</h2>
-          <p className="sr-only">{t('ui.overviewCount', { likely: o.likely, possibly: o.possibly })}</p>
-          <div className="stats" aria-hidden="true">
-            <p className="stat"><b>{o.likely}</b>{t('ui.likely')}</p>
-            {o.possibly > 0 && <p className="stat stat-possibly"><b>{o.possibly}</b>{t('ui.possibly')}</p>}
-          </div>
+          {/* One plain sentence instead of big number tiles. */}
+          <p className="overview-count">{t('ui.overviewCount', { likely: o.likely, possibly: o.possibly })}</p>
           <ul className="who">
             {people.map(({ person: p, results }, i) => (
               <li key={p.id}>
@@ -344,7 +340,7 @@ export default function Results({ screening: s, changes, asOf, setAsOf, updatePe
             <summary className="person-results-head">
               <Face p={p} index={i} />
               <div className="person-results-name">
-                <h2 id={`pr-${p.id}`}>{name}{p.age !== undefined && <span className="age"> · {p.age}</span>}</h2>
+                <h2 id={`pr-${p.id}`}>{name}{p.age !== undefined && <span className="age">, {p.age}</span>}</h2>
                 <p className="summary">{t('ui.summary', { likely: count(results, 'likely'), possibly: count(results, 'possibly') })}</p>
               </div>
               <ChevronDown className="fold-icon" size={22} aria-hidden="true" />
@@ -368,7 +364,7 @@ export default function Results({ screening: s, changes, asOf, setAsOf, updatePe
             </div>
             <ChevronDown className="fold-icon" size={22} aria-hidden="true" />
           </summary>
-          {unknownUtility && <p className="note-info"><Info size={16} aria-hidden="true" /> {t('ui.utilityUnknown')}</p>}
+          {unknownUtility && <p className="note-info">{t('ui.utilityUnknown')}</p>}
           <Groups results={home} facts={s.facts} />
         </details>
       )}
@@ -378,7 +374,6 @@ export default function Results({ screening: s, changes, asOf, setAsOf, updatePe
 
       <details className="asof card person-results person-fold fold-section">
         <summary className="person-results-head">
-          <CalendarClock size={22} aria-hidden="true" className="asof-icon" />
           <h2 className="fold-title">{t('ui.asOf')}: {t.date(asOf)}</h2>
           <ChevronDown className="fold-icon" size={22} aria-hidden="true" />
         </summary>
@@ -399,7 +394,6 @@ export default function Results({ screening: s, changes, asOf, setAsOf, updatePe
       {people.length > 0 && (
         <details className="card person-results person-fold fold-section tm-fold">
           <summary className="person-results-head">
-            <History size={22} aria-hidden="true" className="asof-icon" />
             <h2 className="fold-title">{t('ui.tmTitle')}</h2>
             <ChevronDown className="fold-icon" size={22} aria-hidden="true" />
           </summary>

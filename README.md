@@ -4,7 +4,7 @@
 
 # Benefits Matcher · LA County
 
-**A private, multilingual screener that shows LA County families which public benefits *each person* in their household may qualify for — under the rules in effect today.**
+**A private, multilingual screener that shows LA County families which public benefits *each person* in their household may qualify for, under the rules in effect today.**
 
 English · Español · Հայերեն
 
@@ -31,14 +31,14 @@ Many low-income, immigrant, and mixed-status families in LA County miss help the
 
 | | |
 |---|---|
-| 👪 **Per-person results** | Every household member gets their own list: *Likely*, *Possibly*, or *Not eligible* — because that's how California benefits actually work. |
-| 📅 **Dated rules engine** | Every rule has start and end dates. Change the "as of" date and see the same family under December 2025 rules, today's rules, or rules already scheduled for 2027. |
-| 🔗 **Source on every answer** | Each result shows the plain-language rule, the official source link, when it took effect, and when it was last checked. |
-| 💡 **Why, why not, what would change it** | "Could get full-scope Medi-Cal if pregnant." "Your income is $446 above this limit." Near misses and other options (food banks, 211, clinics) are shown. |
-| 🔒 **Provable privacy** | All screening runs on the device. No server, no cookies, no analytics, no accounts. A Content-Security-Policy blocks the page from contacting any other server. |
-| 🖨️ **Bilingual printable plan** | A printable plan, the family's language and English side by side, with programs, where to apply, and a document checklist. |
-| 🚌 **Help nearby, by transit** | Local help organizations with "directions by bus or rail" links. The user picks an area — location is never requested. |
-| 🚪 **Quick exit** | One tap clears the screen and opens a neutral page, for people on a shared phone. |
+| **Per-person results** | Every household member gets their own list: *Likely*, *Possibly*, or *Not eligible*, because that's how California benefits actually work. |
+| **Dated rules engine** | Every rule has start and end dates. Change the "as of" date and see the same family under December 2025 rules, today's rules, or rules already scheduled for 2027. |
+| **Source on every answer** | Each result shows the plain-language rule, the official source link, when it took effect, and when it was last checked. |
+| **Why, why not, what would change it** | "Could get full-scope Medi-Cal if pregnant." "Your income is $446 above this limit." Near misses and other options (food banks, 211, clinics) are shown. |
+| **Provable privacy** | All screening runs on the device. No server, no cookies, no analytics, no accounts. A Content-Security-Policy blocks the page from contacting any other server. |
+| **Bilingual printable plan** | A printable plan, the family's language and English side by side, with programs, where to apply, and a document checklist. |
+| **Help nearby, by transit** | Local help organizations with "directions by bus or rail" links. The user picks an area. Location is never requested. |
+| **Quick exit** | One tap clears the screen and opens a neutral page, for people on a shared phone. |
 
 ### Programs checked (25)
 
@@ -57,7 +57,7 @@ flowchart LR
   C -->|a condition fails| N[Not eligible<br/>+ what would change it<br/>+ other help]
 ```
 
-Every condition returns **pass**, **fail**, or **unknown** (when a question was skipped — "unknown" is not "no"). A rule looks like this:
+Every condition returns **pass**, **fail**, or **unknown** (when a question was skipped, and "unknown" never counts as "no"). A rule looks like this:
 
 ```json
 {
@@ -77,7 +77,7 @@ Every condition returns **pass**, **fail**, or **unknown** (when a question was 
 }
 ```
 
-A rule change is a data edit, not a code rewrite.
+A rule change is a data edit. No code changes.
 
 ## Quick start
 
@@ -89,7 +89,7 @@ npm install
 npm run dev
 ```
 
-Open http://localhost:5173 — or http://localhost:5173/#example to jump straight to the example family.
+Open http://localhost:5173, or http://localhost:5173/#example to jump straight to the example family.
 
 ```bash
 npm test
@@ -105,7 +105,7 @@ npm run build
 rules/                 ← the open dataset (anyone can reuse it)
   programs/*.json      one file per program, each rule dated and sourced
   tables.json          dated income limits and benefit amounts
-  program.schema.json  JSON Schema — editors autocomplete rule files
+  program.schema.json  JSON Schema, so editors autocomplete rule files
   zips.json            ZIP → area and usual electric utility
   help.json            local help organizations
 src/
@@ -126,7 +126,7 @@ PROGRESS.md            what's done, what's left, and who does it
 ## Updating a rule
 
 1. Open the program file in `rules/programs/`. Your editor autocompletes from the schema.
-2. **Don't edit old rules** — end them (`"to": "2026-12-31"`) and add a new rule that starts the next day. That keeps the "as of" date accurate.
+2. **Don't edit old rules.** End them (`"to": "2026-12-31"`) and add a new rule that starts the next day. That keeps the "as of" date accurate.
 3. Set `source` to the official page, `lastVerified` to today, and `verifiedBy` to your name.
 4. Add or update a persona in `tests/personas.json` whose answer comes from that source.
 5. `npm test`. The linter fails if a source, date, or translation is missing, or if any rule hasn't been re-checked in 90 days.
@@ -135,7 +135,7 @@ PROGRESS.md            what's done, what's left, and who does it
 
 - No server, database, accounts, cookies, analytics, or third-party scripts. Fonts are bundled.
 - Answers live only in memory and disappear when the tab closes.
-- ZIP code only — never a street address. Immigration status is optional, with "Prefer not to say".
+- ZIP code only, never a street address. Immigration status is optional, with "Prefer not to say".
 - Production builds ship a `Content-Security-Policy` with `connect-src 'self'`, so the page *cannot* send data elsewhere.
 - **Check it yourself:** open DevTools → Network, clear it, run a full screening. Zero requests.
 
@@ -145,10 +145,10 @@ Plain language (about 6th-grade level), 48px tap targets, WCAG 2.1 AA color cont
 
 ## Disclaimer
 
-This is a screening tool, not a determination. Only the agency that runs a program can decide eligibility. Rules change — every result shows when it was last checked.
+This is a screening tool. Only the agency that runs a program can decide eligibility. Rules change, so every result shows when it was last checked.
 
 ## Credits
 
-Built by Arthur and Aiden for the 2026 Congressional App Challenge (CA-30). AI assistance is disclosed in [docs/SUBMISSION.md](docs/SUBMISSION.md#ai-disclosure). Icons: [Lucide](https://lucide.dev) (ISC). Fonts: [Inter](https://rsms.me/inter/) and Noto Sans Armenian (both SIL OFL), bundled through Fontsource.
+Built by Arthur and Aiden for the 2026 Congressional App Challenge (CA-30). AI assistance is disclosed in [docs/SUBMISSION.md](docs/SUBMISSION.md#ai-disclosure). Icons are drawn for this project. Fonts: [Bricolage Grotesque](https://fonts.google.com/specimen/Bricolage+Grotesque) and Noto Sans Armenian (both SIL OFL), bundled through Fontsource.
 
 License: [MIT](LICENSE)

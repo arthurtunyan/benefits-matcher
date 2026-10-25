@@ -2,8 +2,8 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 // Fonts are bundled with the app (no Google Fonts request). Armenian files
 // download only when Armenian text is on screen, thanks to unicode-range.
-// Inter with its optical-size axis: big headings get the tighter Display cut automatically.
-import '@fontsource-variable/inter/opsz.css'
+// Bricolage Grotesque: one variable family for headings and text.
+import '@fontsource-variable/bricolage-grotesque'
 import '@fontsource-variable/noto-sans-armenian'
 import './styles.css'
 import App from './App'
