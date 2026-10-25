@@ -1,5 +1,5 @@
 import { Fragment } from 'react'
-import { ExternalLink, History } from 'lucide-react'
+import { ExternalLink } from './Icons'
 import { useT } from '../i18n'
 import type { Change, ProgramResult, Screening } from '../engine'
 import { MAX_DATE, MIN_DATE, personLabel, todayISO } from '../App'
@@ -34,13 +34,13 @@ export default function Timeline({ changes, people, asOf, setAsOf }: {
     const i = people.findIndex((x) => x.person.id === id)
     return i < 0 ? t('ui.householdGroup') : personLabel(people[i].person, i, t)
   }
-  const now = <li className="tm-now">{t('ui.today')} · {t.date(today)}</li>
+  const now = <li className="tm-now">{t('ui.today')}: {t.date(today)}</li>
   // Jump back to the top so the family sees their results on that date.
   const see = (d: string) => { setAsOf(d); window.scrollTo({ top: 0, behavior: 'smooth' }) }
 
   return (
     <section className="card timeline" aria-labelledby="tm-title">
-      <h2 id="tm-title" className="card-title"><History size={20} aria-hidden="true" /> {t('ui.tmTitle')}</h2>
+      <h2 id="tm-title" className="card-title">{t('ui.tmTitle')}</h2>
       <p className="help">{t('ui.tmIntro', { from: t.date(MIN_DATE), to: t.date(MAX_DATE) })}</p>
       {asOf !== today && (
         <p className="note-info" role="status">{t('ui.tmBetween', { date: t.date(asOf), n: changes.filter((c) => between(c.date)).length })}</p>

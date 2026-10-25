@@ -7,8 +7,9 @@ import Start from './components/Start'
 import HouseholdForm from './components/HouseholdForm'
 import Results from './components/Results'
 import Plan from './components/Plan'
+import Legal from './components/Legal'
 
-export type View = 'start' | 'household' | 'results' | 'plan'
+export type View = 'start' | 'household' | 'results' | 'plan' | 'privacy' | 'terms'
 
 // The "as of" picker only offers dates our rules data covers.
 export const MIN_DATE = '2025-10-01'
@@ -105,6 +106,7 @@ export default function App() {
             onBack={() => go('household')} onPlan={() => go('plan')} zip={household.zip} example={household === example.current}
             onNew={() => { setHousehold(emptyHousehold()); isExample.current = false; go('household') }} />
         )}
+        {(view === 'privacy' || view === 'terms') && <Legal page={view} />}
         {view === 'plan' && <Plan screening={screening} today={todayISO()} zip={household.zip} onBack={() => go('results')} />}
       </main>
       <footer className="footer no-print">
@@ -112,6 +114,10 @@ export default function App() {
           <p className="footer-brand"><Logo size={28} /> {t('ui.appName')}</p>
           <p>{t('ui.footerMade')}</p>
           <p>{rulesDraft ? t('ui.footerDraft') : t('ui.footerData', { date: t.date(lastFullCheck) })}</p>
+          <nav className="footer-links" aria-label={t('ui.footerLinks')}>
+            <button type="button" className="link-btn" onClick={() => go('privacy')}>{t('ui.privacyLink')}</button>
+            <button type="button" className="link-btn" onClick={() => go('terms')}>{t('ui.termsLink')}</button>
+          </nav>
         </div>
       </footer>
     </I18n.Provider>

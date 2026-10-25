@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { ChevronDown, ExternalLink, Landmark, Phone, TramFront } from 'lucide-react'
+import { ChevronDown, ExternalLink, Landmark, Phone, TramFront } from './Icons'
 import { useT } from '../i18n'
 import { help, zips } from '../data'
 

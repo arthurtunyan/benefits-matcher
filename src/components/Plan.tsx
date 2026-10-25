@@ -1,5 +1,5 @@
 import { useMemo, useState, type ReactNode } from 'react'
-import { ArrowLeft, Printer, ShieldCheck } from 'lucide-react'
+import { ArrowLeft, Printer } from './Icons'
 import { I18n, makeT, useT, type T } from '../i18n'
 import type { Screening } from '../engine'
 import { applyGroups, Deadlines, type ApplyGroup } from './Results'
@@ -25,7 +25,7 @@ function Item({ g, n }: { g: ApplyGroup; n: number }) {
         <p className="plan-program">
           {g.programs.map(({ r, possibly }, i) => (
             <span key={r.program.id}>
-              {i > 0 && ' · '}<strong lang="en">{r.program.name}</strong>
+              {i > 0 && ', '}<strong lang="en">{r.program.name}</strong>
               {possibly && <> <span className="badge badge-possibly">{t('ui.possiblyShort')}</span></>}
             </span>
           ))}
@@ -89,14 +89,14 @@ export default function Plan({ screening: s, today, zip, onBack }: { screening: 
       {helpers.map((h) => (
         <li key={h.id}>
           <strong lang="en">{h.name}</strong>
-          {h.phone && <span className="nowrap"> · {h.phone}</span>}
-          {h.address && <span> · {h.address}</span>}
+          {h.phone && <span className="nowrap">, {h.phone}</span>}
+          {h.address && <span>, {h.address}</span>}
         </li>
       ))}
     </ul>
   </>], ['end', (tt) => <>
     <p className="disclaimer">{tt('ui.disclaimer')}</p>
-    <p className="small muted"><ShieldCheck size={14} aria-hidden="true" /> {tt('ui.planPrivacy')}</p>
+    <p className="small muted">{tt('ui.planPrivacy')}</p>
   </>])
 
   return (
@@ -112,7 +112,7 @@ export default function Plan({ screening: s, today, zip, onBack }: { screening: 
       <div className={`paper ${cols.length > 1 ? 'paper-both' : ''}`}>
         <div className="paper-head">
           <Logo size={32} />
-          <strong>{t('ui.appName')}</strong> <span className="muted">· {t('ui.appPlace')}</span>
+          <strong>{t('ui.appName')}</strong> <span className="muted">{t('ui.appPlace')}</span>
         </div>
         {rows.map(([key, render]) => (
           <div key={key} className={`plan-row row-${key.split('-')[0]}`}>

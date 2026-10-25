@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { Check, Plus, X } from 'lucide-react'
+import { Check, Plus, X } from './Icons'
 
 // The house drawing shared by the start screen, the questions, and the results.
 // Parts of the house are buttons laid over the drawing; positions are % of the 400 x 320 drawing.
@@ -28,11 +28,10 @@ export interface HouseWindow {
   removeLabel?: string
 }
 
-// Drawn like a neighborhood sign-painter would: ink lines a little off-true, flat fills, a sun, a green blob behind.
+// Drawn like a neighborhood sign-painter would: ink lines a little off-true, flat fills, a sun.
 function Art() {
   return (
     <svg className="house-art" viewBox="0 0 400 320" aria-hidden="true" focusable="false">
-      <path className="h-blob" d="M44 168C34 96 112 34 214 38c98 4 170 52 162 138-6 76-62 122-170 120C102 294 52 238 44 168z" />
       <circle className="h-sun ln" cx="112" cy="62" r="17" />
       <path className="ln" d="M112 31v-8M112 101v-8M81 62h-8M151 62h-8M90 40l-6-6M140 90l-6-6M134 40l6-6M84 90l6-6" />
       {/* ground */}

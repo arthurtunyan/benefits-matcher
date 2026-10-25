@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react'
-import { ArrowLeft, ArrowRight, Check, Flame, Mail, MapPin, Plus, ShoppingBasket, Siren, Zap } from 'lucide-react'
+import { ArrowLeft, Check, Flame, Mail, MapPin, Plus, ShoppingBasket, Siren, Zap } from './Icons'
 import { useT, type T } from '../i18n'
 import { inLACounty, type Household, type Person, type Status, type Utility } from '../engine'
 import { zips } from '../data'
@@ -423,7 +423,7 @@ export default function HouseholdForm({ household: h, setHousehold, onDone }: {
       <div className="action-bar">
         {at > 0 && <button type="button" className="btn btn-secondary" onClick={() => go(order[at - 1])}><ArrowLeft size={18} aria-hidden="true" /> {t('ui.back')}</button>}
         {!last && <button type="button" className="btn btn-ghost" onClick={onDone}>{t('ui.seeResults')}</button>}
-        <button type="submit" className="btn btn-primary btn-lg">{last ? t('ui.seeResults') : t('ui.next')} <ArrowRight size={20} aria-hidden="true" /></button>
+        <button type="submit" className="btn btn-primary btn-lg">{last ? t('ui.seeResults') : t('ui.next')}</button>
       </div>
     </form>
   )
