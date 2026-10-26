@@ -1,8 +1,15 @@
 # Demo video script, click by click (2:00)
 
-**Length:** the official 2026 rules say the video "should be 1-3 minutes long", and judges may penalize videos that go over ([rules PDF](https://www.congressionalappchallenge.us/wp-content/uploads/2026/05/2026-CAC-Rules.pdf)). This script runs **2:00**, with one narrator.
+One narrator, no code on screen, one example family (Ana and Leo). Each section below covers one of the six things the video has to include:
 
-**The video must include:** the name of every team member (so say Aiden's and Tejas Deepak's names too, even though only you record), the app name, its purpose in one sentence, who it's for, the tools and languages, and a demo. Sections 1–2 cover the required parts. Upload to YouTube as **Public** (Unlisted doesn't count).
+1. Your names and the name of your app
+2. The purpose of your app and who it is for
+3. The tools and coding languages used to build it
+4. A demonstration of what the app does and how it works
+5. A coding or technical difficulty you faced and how you solved it
+6. What still needs to be improved
+
+The official rules allow 1–3 minutes, and judges may penalize longer videos ([rules PDF](https://www.congressionalappchallenge.us/wp-content/uploads/2026/05/2026-CAC-Rules.pdf)). Upload to YouTube as **Public** (Unlisted doesn't count).
 
 Lines marked **SAY** are a starting point. Say them in your own words.
 
@@ -10,27 +17,31 @@ Lines marked **SAY** are a starting point. Say them in your own words.
 
 ## Before you hit record
 
-1. **Chrome:** open https://arthurtunyan.github.io/benefits-matcher/ in a new window with no other tabs open. Hide the bookmarks bar (Cmd+Shift+B), set zoom to 100% (Cmd+0), and make the window fill the screen.
-2. **Load the fonts first:** click **Español**, then **Հայերեն**, then **English**. Then reload (Cmd+R) so the app starts fresh on the start page. (This keeps font downloads out of the Network tab in section 8.)
-3. **Set up DevTools:** press Cmd+Option+I, click the **Network** tab, then press Cmd+Option+I again to close it. Chrome remembers the tab, so it opens straight to Network in section 8.
-4. Turn on **Do Not Disturb** so no notifications pop up.
-5. Sections 1 and 9 are you on camera. Record the screen part (sections 2–8) in one take with QuickTime (Cmd+Shift+5 → Record Entire Screen, mic on), then put the camera clips at the start and end.
+1. **Chrome:** open https://arthurtunyan.github.io/benefits-matcher/ in a new window with no other tabs open, and reload once (Cmd+R) so it shows "Open Door". Hide the bookmarks bar (Cmd+Shift+B), set zoom to 100% (Cmd+0), and make the window fill the screen.
+2. Turn on **Do Not Disturb** so no notifications pop up.
+3. Sections 1 and 7 are you on camera. Record the screen part (sections 2–6) in one take with QuickTime (Cmd+Shift+5 → Record Entire Screen, mic on), then put the camera clips at the start and end.
 
 ---
 
-## 1 · On camera: names, app, purpose (0:00–0:14)
+## 1 · Names and app name (0:00–0:10)
 
 **DO:** You on camera.
 
-**SAY:** "Hi, I'm Arthur. With my teammates Aiden and Tejas Deepak, we created Open Door, which is a benefits matcher. It shows LA County families what each person at home may qualify for, under today's rules."
+**SAY:** "Hi, I'm Arthur. With my teammates Aiden and Tejas Deepak, we created Open Door, a benefits matcher."
 
-## 2 · Who it's for, tools (0:14–0:25)
+## 2 · Purpose and who it's for (0:10–0:24)
 
 **DO:** Chrome on the start page ("See what help your family can get"). Move the mouse slowly over the headline, then over **Check what you qualify for**.
 
-**SAY:** "It's for immigrant and mixed-status families in our district, where kids often qualify even when a parent doesn't. We built it with React and TypeScript."
+**SAY:** "Open Door shows LA County families what each person at home may qualify for, under today's rules. It's for immigrant and mixed-status families, where kids often qualify even when a parent doesn't."
 
-## 3 · Enter a family (0:25–0:48)
+## 3 · Tools and languages (0:24–0:34)
+
+**DO:** Scroll down slowly to show the three lines under the buttons: **Nothing leaves your phone**, **Every person is checked**, **Every answer shows its source**. Then scroll back to the top.
+
+**SAY:** "We built it in TypeScript with React and Vite. Each rule is a JSON file with its official source, and everything runs on your phone."
+
+## 4a · Demo: enter a family (0:34–0:56)
 
 **DO:**
 1. Click **Check what you qualify for**.
@@ -39,58 +50,39 @@ Lines marked **SAY** are a starting point. Say them in your own words.
 4. Click the **Y** window in the middle of the house. This skips the questions in between on purpose.
 5. Name: **Ana**. Age: **31**. Scroll down a little and click **Green card, less than 5 years**.
 6. Scroll up and click the dashed **+** window next to Ana's. (Don't click the small **×** on a window, which removes that person.)
-7. Name: **Leo**. Age: **3**. Scroll down a little and click **U.S. citizen (including born in the U.S.)**.
-8. Click **See results** (bottom right). Point at **Ana: 2 likely** and **Leo: 4 likely** in "Your family at a glance".
+7. Name: **Leo**. Age: **3**. **Leave his immigration status on "Prefer not to say."**
+8. Click **See results** (bottom right).
 
-**SAY:** "You answer by tapping the house. The ZIP code fills in the utility companies. You can skip anything, and a skipped answer never counts as a 'no.' Ana has a green card, and her son Leo was born here. Each person gets their own results."
+**SAY:** "You answer by tapping the house. The ZIP fills in the utility companies, and you can skip anything. Ana has had a green card for under five years. Her son Leo is three, and we'll leave his status blank."
 
-## 4 · The mixed-status family (0:48–1:11)
-
-**DO:**
-1. Click the **Open Door** logo (top left), then **See an example family**.
-2. In "Your family at a glance", point at **Sofia: 3 likely, 2 possibly**, then click **Sofia**.
-3. At the top of Sofia's card, open the **Immigration status** dropdown and pick **U.S. citizen (including born in the U.S.)**.
-4. Scroll up to "Your family at a glance". Sofia now shows **5 likely, 0 possibly**, with new lines **CalFresh: up to $1,217 a month** and **CalWORKs: up to $1,659 a month**. Point at **Maria**, who still shows **1 likely, 0 possibly**.
-
-(The example banner disappears after the edit. That's normal.)
-
-**SAY:** "Here's a harder case: Maria is undocumented, with four kids whose status we left blank. So two-year-old Sofia gets two 'possibly' results. Make her a U.S. citizen, and CalFresh and CalWORKs become likely, while Maria's results don't change. That's the case most screeners get wrong."
-
-## 5 · Why, and how it works (1:11–1:32)
+## 4b · Demo: results (0:56–1:12)
 
 **DO:**
-1. In "Your family at a glance", click **Maria**. Her card shows **Restricted Medi-Cal (emergency and pregnancy care)**.
-2. Click **Why?** under it. Move the mouse down the "What we checked" list, then over **Official source** and "In effect since January 1, 2026". Don't click the source link, because it opens a new tab.
+1. In "Your family at a glance", point at **Ana: 2 likely, 0 possibly** and **Leo: 3 likely, 1 possibly**.
+2. Scroll down to Ana's card. Under **Likely eligible**, point at **Medi-Cal** and **CFAP (California Food Assistance Program)**.
+3. Keep scrolling to Leo's card. Point at **Medi-Cal**, **WIC**, and **Head Start · Early Head Start · State Preschool** under Likely eligible.
 
-**SAY:** "Tap 'Why?' to see the rule in plain English, every condition we checked, and the official source. Behind this, each rule is data with start and end dates, and a skipped answer counts as 'unknown,' so you get 'possibly,' never a wrong 'no.'"
+**SAY:** "Each person gets their own results. Ana has to wait five years for CalFresh, so the app finds CFAP, California's food aid for her. Leo gets Medi-Cal, WIC, and free preschool."
 
-## 6 · Rules over time (1:32–1:42)
-
-**DO:**
-1. Scroll down past the people cards until you see the closed row **How rule changes reach your family** (just under "Rules as of"). Click it to open.
-2. Point at **January 1, 2026 · Maria · Medi-Cal**: "Likely · Full-scope Medi-Cal" → "Likely · Restricted Medi-Cal" (the second one is amber because it's a loss).
-
-**SAY:** "So the app can replay the family through every law change. Maria lost full Medi-Cal on January 1st, 2026."
-
-## 7 · Spanish (1:42–1:48)
-
-**DO:** Scroll to the top and click **ES** in the header. The whole page switches to Spanish.
-
-**SAY:** "And it all works in Spanish and Armenian."
-
-## 8 · Privacy proof (1:48–1:56)
+## 5 · Technical difficulty and how we solved it (1:12–1:38)
 
 **DO:**
-1. Press Cmd+Option+I. DevTools opens on the empty **Network** tab.
-2. Click **EN** in the header. In the overview, click **Mateo** and set his status to **U.S. citizen**.
-3. Point at the bottom of the Network panel: **0 requests**.
+1. Still on Leo's card, scroll to **Possibly eligible**: **CalFresh**, "Depends on answers you left out: immigration status". Click **Why?** under it.
+2. Under "What we checked", point at **Immigration status: U.S. citizen (you skipped this)**, then at **Household income at or below $3,607 a month (yours: $2,400)**.
+3. Scroll up to the **Immigration status** dropdown at the top of Leo's card and pick **U.S. citizen (including born in the U.S.)**. CalFresh moves up into **Likely eligible**, and Leo's card now says **4 likely, 0 possibly**.
 
-**SAY:** "And here's the network tab while the app re-checks the family: zero requests. Nothing leaves your phone."
+**SAY:** "Our hardest problem was blank answers. A normal yes-or-no check turns a skipped question into 'not eligible.' So we made every check return pass, fail, or unknown. Here, income passes but immigration status is unknown, so CalFresh says 'possibly.' Mark Leo a citizen, and it's likely. Rules also carry start and end dates, because laws keep changing."
 
-> Practice this once before recording. If anything shows up in the Network tab, it will be a font file. Repeat the font warm-up from "Before you hit record" and try again.
+## 6 · What still needs to be improved (1:38–1:54)
 
-## 9 · On camera: wrap-up (1:56–2:00)
+**DO:**
+1. Press Cmd+↓ to jump to the bottom of the page. Point at the footer line: **"Every rule links to its official source; our team is still checking each one by hand."**
+2. Press Cmd+↑ to jump back to the top, and click **ES** in the header. The page switches to Spanish.
+
+**SAY:** "What still needs work: we're checking every rule by hand against its source, our Spanish and Armenian need review by native speakers, and the food estimate doesn't count rent or child care yet."
+
+## 7 · On camera: wrap-up (1:54–2:00)
 
 **DO:** You on camera.
 
-**SAY:** "Thanks for watching!"
+**SAY:** "Open Door is free and live today. Thanks for watching!"
