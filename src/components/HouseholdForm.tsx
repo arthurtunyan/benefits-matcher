@@ -78,14 +78,21 @@ const NO_GAS = '__none__'
 const shortUtility = (u: Utility, other: string | undefined, t: T) =>
   u === 'other' && other?.trim() && other !== NO_GAS ? other.trim() : t(`utility.${u}`).replace(/\s*\(.*\)$/, '')
 
-// Money typed as text: "1500." stays as typed while the number underneath updates.
+// Money typed as text: "1500." stays as typed while the number underneath updates; "abc" or "-5" gets a note.
 function MoneyInput({ value, onChange }: { value?: number; onChange: (n?: number) => void }) {
   const t = useT()
   const [raw, setRaw] = useState(value?.toString() ?? '')
+  const bad = raw.trim() !== '' && parseMoney(raw) === undefined
   return (
-    <input id="income" className="input-big" inputMode="decimal" autoComplete="off" placeholder={t('ui.incomePlaceholder')}
-      value={raw} aria-describedby="income-help"
-      onChange={(e) => { setRaw(e.target.value); onChange(parseMoney(e.target.value)) }} />
+    <>
+      <div className="money-input">
+        <span aria-hidden="true">$</span>
+        <input id="income" className="input-big" inputMode="decimal" autoComplete="off" placeholder={t('ui.incomePlaceholder')}
+          value={raw} aria-invalid={bad} aria-describedby="income-note income-help"
+          onChange={(e) => { setRaw(e.target.value); onChange(parseMoney(e.target.value)) }} />
+      </div>
+      <p id="income-note" className="note-warn" role="status">{bad ? t('ui.incomeInvalid') : ''}</p>
+    </>
   )
 }
 
@@ -165,13 +172,15 @@ export default function HouseholdForm({ household: h, setHousehold, onDone }: {
   const order: Part[] = ['zip', 'electric', 'gas', 'income', 'benefits', 'disaster', ...h.people.map((p) => `p:${p.id}` as Part)]
   const gotBenefits = BENEFITS.filter((b) => h.benefits[b])
   const answered: Record<string, boolean> = {
-    zip: !!h.zip, electric: h.electric !== 'unknown', gas: h.gas !== 'unknown',
+    zip: h.zip?.length === 5, electric: h.electric !== 'unknown', gas: h.gas !== 'unknown',
     income: h.monthlyIncome !== undefined, benefits: gotBenefits.length > 0 || !!h.benefits.none, disaster: h.disaster !== undefined,
   }
   const done = (p: Part) => (p.startsWith('p:') ? h.people.find((x) => `p:${x.id}` === p)?.age !== undefined : answered[p])
   // Coming back to edit: open at the first question still unanswered.
   const [part, setPart] = useState<Part>(() => order.find((p) => !done(p)) ?? 'zip')
   const [helper, setHelper] = useState(false)
+  // The age as typed, while it isn't a usable age ("200" stays on screen with a note instead of vanishing).
+  const [ageRaw, setAgeRaw] = useState<string>()
   const current: Part = order.includes(part) ? part : 'zip'
   const at = order.indexOf(current)
   const last = at === order.length - 1
@@ -183,6 +192,7 @@ export default function HouseholdForm({ household: h, setHousehold, onDone }: {
   // A new part: screen readers hear the question; on phones the question scrolls into view.
   useEffect(() => {
     setHelper(false)
+    setAgeRaw(undefined)
     if (!moved.current) return
     heading.current?.focus({ preventScroll: true })
     // Phones: bring the question into view. Wide screens: everything fits, so go back to the top.
@@ -249,8 +259,9 @@ export default function HouseholdForm({ household: h, setHousehold, onDone }: {
         <label htmlFor="zip" className="sr-only">{t('ui.zip')}</label>
         <input id="zip" className="input-zip input-big" inputMode="numeric" autoComplete="off" value={h.zip ?? ''}
           placeholder={t('ui.zipPlaceholder')} aria-describedby="zip-help zip-note" onChange={(e) => set(zipAnswer(e.target.value))} />
-        <p id="zip-note" aria-live="polite" className={outside ? 'note-warn' : 'note-ok'}>
-          {outside ? t('ui.zipOutside') : zipInfo ? t('ui.zipArea', { city: zipInfo.city }) : ''}
+        <p id="zip-note" aria-live="polite" className={outside ? 'note-warn' : answered.zip || !h.zip ? 'note-ok' : 'note-ok note-short'}>
+          {outside ? t('ui.zipOutside') : zipInfo ? t('ui.zipArea', { city: zipInfo.city })
+            : inLACounty(h.zip) ? t('ui.zipArea', { city: t('ui.appPlace') }) : h.zip ? t('ui.zipShort') : ''}
         </p>
         <p className="help" id="zip-help">{t('ui.zipHelp')}</p>
       </div>
@@ -294,10 +305,7 @@ export default function HouseholdForm({ household: h, setHousehold, onDone }: {
       <>
         <div className="field">
           <label htmlFor="income" className="sr-only">{t('ui.income')}</label>
-          <div className="money-input">
-            <span aria-hidden="true">$</span>
-            <MoneyInput value={h.monthlyIncome} onChange={(monthlyIncome) => set({ monthlyIncome })} />
-          </div>
+          <MoneyInput value={h.monthlyIncome} onChange={(monthlyIncome) => set({ monthlyIncome })} />
           <p className="help" id="income-help">{t('ui.incomeHelp')}</p>
         </div>
         {/* A real yes/no: "no" matters for the tax credits, and an unchecked box can't say it. */}
@@ -357,6 +365,7 @@ export default function HouseholdForm({ household: h, setHousehold, onDone }: {
     const p = h.people[n]
     const label = personLabel(p, n, t)
     const canBePregnant = p.age === undefined || (p.age >= 10 && p.age <= 55)
+    const badAge = !!ageRaw?.trim() && p.age === undefined
     const flags = FLAGS.filter((f) => canBePregnant || (f !== 'pregnant' && f !== 'recentBirth'))
     partName = t('ui.peopleTitle')
     title = label
@@ -365,15 +374,18 @@ export default function HouseholdForm({ household: h, setHousehold, onDone }: {
         <div className="person-editor-row">
           <div className="field">
             <label htmlFor={`p${p.id}-name`}>{t('ui.personName')}</label>
-            <input id={`p${p.id}-name`} value={p.name} placeholder={t('ui.personNamePlaceholder')} autoComplete="off"
+            <input id={`p${p.id}-name`} value={p.name} maxLength={40} placeholder={t('ui.personNamePlaceholder')} autoComplete="off"
               onChange={(e) => updatePerson({ ...p, name: e.target.value })} />
           </div>
           <div className="field field-age">
             <label htmlFor={`p${p.id}-age`}>{t('ui.age')}</label>
-            <input id={`p${p.id}-age`} type="number" inputMode="numeric" min={0} max={120} value={p.age ?? ''}
-              aria-describedby="age-help" onChange={(e) => updatePerson(withAge(p, e.target.value))} />
+            {/* Text, not type="number": a mouse wheel can't change it, and "200" isn't wiped while typing. */}
+            <input id={`p${p.id}-age`} inputMode="numeric" autoComplete="off" value={ageRaw ?? p.age?.toString() ?? ''}
+              aria-invalid={badAge} aria-describedby="age-note age-help"
+              onChange={(e) => { setAgeRaw(e.target.value); updatePerson(withAge(p, e.target.value)) }} />
           </div>
         </div>
+        <p id="age-note" className="note-warn" role="status">{badAge ? t('ui.ageInvalid') : ''}</p>
         <p className="help" id="age-help">{t('ui.ageHelp')}</p>
         <p className="question-sub" id="status-q">{t('ui.status')}</p>
         <div className="tiles tiles-compact" role="group" aria-labelledby="status-q">

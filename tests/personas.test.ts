@@ -52,3 +52,16 @@ describe.each(personas as unknown as Persona[])('$id — $title', (p) => {
 })
 
 it('has at least 30 personas', () => expect(personas.length).toBeGreaterThanOrEqual(30))
+
+// Every rule must be the one that says "likely" or "possibly" for at least one persona, so no rule ships untested.
+it('every rule grants something to at least one persona', () => {
+  const granted = new Set<string>()
+  for (const p of personas as unknown as Persona[]) {
+    const s = screen({ electric: 'unknown', gas: 'unknown', benefits: {}, ...p.household }, programs, tables, p.asOf)
+    for (const [who, want] of Object.entries(p.expect)) {
+      const rs = who === 'household' ? s.household : s.people.find((x) => x.person.id === who)!.results
+      rs.filter((r) => want[r.program.id] && r.outcome !== 'not').forEach((r) => granted.add(r.best.rule.id))
+    }
+  }
+  expect(programs.flatMap((p) => p.rules.map((r) => r.id)).filter((id) => !granted.has(id))).toEqual([])
+})

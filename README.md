@@ -9,7 +9,7 @@
 English · Español · Հայերեն
 
 [![CI](https://github.com/arthurtunyan/benefits-matcher/actions/workflows/ci.yml/badge.svg)](https://github.com/arthurtunyan/benefits-matcher/actions/workflows/ci.yml)
-![Tests](https://img.shields.io/badge/tests-770%2B%20passing-1d7348)
+![Tests](https://img.shields.io/badge/tests-795%20passing-1d7348)
 ![Privacy](https://img.shields.io/badge/data%20sent-0%20bytes-0b5d6b)
 ![License](https://img.shields.io/badge/license-MIT-e07a2e)
 
@@ -114,7 +114,7 @@ src/
   i18n.tsx, i18n/      English, Spanish, Armenian
   components/          Start, HouseholdForm, Results, ProgramCard, Plan, Help
 tests/
-  personas.json        61 households with expected results and sources
+  personas.json        68 households with expected results and sources
   personas.test.ts     the answer key
   rules.test.ts        rule linter: schema, sources, dates, 90-day verification, translations
   engine.test.ts       three-valued logic, dated tables, and a no-network check

@@ -91,17 +91,12 @@
   --shadow-lg: 0 0 #0000;
   color-scheme: dark;
 }
-/* Before the app loads (it then sets data-theme), follow the phone's setting. */
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme]) { --bg: #141312; --text: #eeece8; color-scheme: dark; }
-}
-
 /* ---------- Base ---------- */
 *, *::before, *::after { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; }
 body {
   margin: 0; background: var(--bg); color: var(--text);
-  font: 400 var(--text-base)/1.6 var(--font);
+  font: 400 var(--text-base)/1.6 var(--font); overflow-wrap: break-word; /* a long name wraps instead of widening the page */
   -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility;
 }
 h1, h2, h3, h4 { margin: 0; color: var(--text); text-wrap: balance; }
@@ -268,6 +263,7 @@ main.view-start, main.view-household { max-width: 1120px; }
 }
 .note-warn:empty { display: none; }
 .note-ok { min-height: 1.5em; color: var(--likely-text); font-size: var(--text-md); font-weight: 500; }
+.note-short { color: var(--text-2); font-weight: 400; } /* "A ZIP code has 5 digits" while typing: a hint, not an error */
 .note-info { display: flex; gap: 10px; align-items: flex-start; margin: var(--s-4) 0; padding: 12px 16px; background: var(--primary-soft); color: var(--text); }
 .note-info svg { flex: none; margin-top: 3px; color: var(--primary-text); }
 .empty-state { display: grid; justify-items: center; gap: var(--s-3); padding: var(--s-10) var(--s-6); text-align: center; color: var(--text-2); }
@@ -282,6 +278,7 @@ input:not([type='checkbox']), select {
 }
 input:not([type='checkbox']):hover, select:hover { border-color: var(--text-2); }
 input:not([type='checkbox']):focus, select:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 4px var(--ring); }
+input[aria-invalid='true'], input[aria-invalid='true']:hover, input[aria-invalid='true']:focus { border-color: var(--warn-text); }
 ::placeholder { color: var(--text-2); opacity: .8; font-weight: 400; letter-spacing: 0; }
 .input-big { min-height: 60px !important; font-size: var(--text-xl) !important; font-weight: 500; font-variant-numeric: tabular-nums; }
 .input-zip { max-width: 200px; letter-spacing: .06em; }
@@ -349,11 +346,13 @@ input:not([type='checkbox']):focus, select:focus { border-color: var(--primary);
 .window-wrap { position: relative; display: inline-grid; }
 /* Small X to remove a person: shows on hover, on keyboard focus, and on the selected window (phones can't hover). */
 .window-x {
-  position: absolute; top: -9px; left: -9px; z-index: 2; display: grid; place-items: center; width: 22px; height: 22px; padding: 0; border: 0; border-radius: 50%;
+  position: absolute; top: -14px; left: -14px; z-index: 2; display: grid; place-items: center; width: 22px; height: 22px; padding: 0; border: 0; border-radius: 50%;
   background: var(--text); color: var(--surface); box-shadow: 0 0 0 2px var(--h-wall); opacity: 0; transform: scale(.6); pointer-events: none;
 }
-.window-x::before { content: ''; position: absolute; inset: -11px; } /* 44px tap area */
-.window-wrap:hover .window-x, .window-wrap-active .window-x, .window-x:focus-visible { opacity: 1; transform: none; pointer-events: auto; }
+/* Only the part outside the window takes taps (grown up and to the left): tapping a person must never remove them. */
+.window-x::before { content: ''; position: absolute; inset: -11px 8px 8px -11px; }
+.window-wrap:hover .window-x, .window-wrap-active .window-x, .window-x:focus-visible { opacity: 1; transform: none; }
+.window-wrap:hover .window-x::before, .window-wrap-active .window-x::before, .window-x:focus-visible::before { pointer-events: auto; }
 .window-x:hover { background: var(--danger); color: #fff; }
 .window { position: relative; display: grid; justify-items: center; padding: 0; border: 0; background: none; color: var(--text); }
 .window-pane {
@@ -361,6 +360,13 @@ input:not([type='checkbox']):focus, select:focus { border-color: var(--primary);
   background: var(--h-glass); color: var(--text); font-size: clamp(14px, 4.6cqw, 22px); font-weight: 650; line-height: 1;
 }
 .windows:has(> :nth-child(6)) .window-pane { width: clamp(24px, 8cqw, 42px); font-size: clamp(12px, 3.6cqw, 17px); border-width: 2px; }
+/* Big families (10+ people): smaller windows so every row stays inside the walls. */
+.windows:has(> :nth-child(11)) { gap: 1.2cqw; }
+.windows:has(> :nth-child(11)) .window-pane { width: clamp(16px, 5.5cqw, 32px); font-size: clamp(10px, 2.6cqw, 14px); border-radius: 4px; }
+.windows:has(> :nth-child(11)) .window-x { top: -13px; left: -13px; width: 16px; height: 16px; }
+.windows:has(> :nth-child(11)) .window-x::before { inset: -11px 3px 3px -11px; }
+.windows:has(> :nth-child(22)) { gap: 1cqw; }
+.windows:has(> :nth-child(22)) .window-pane { width: clamp(13px, 4.2cqw, 24px); font-size: clamp(8px, 2cqw, 11px); border-width: 1.5px; }
 .window-pane:empty {
   background: linear-gradient(var(--h-line), var(--h-line)) center / 2px 100% no-repeat,
               linear-gradient(var(--h-line), var(--h-line)) center / 100% 2px no-repeat, var(--h-glass);
@@ -656,8 +662,8 @@ input:not([type='checkbox']):focus, select:focus { border-color: var(--primary);
   .home-panel { padding: var(--s-6) var(--s-5); border-radius: var(--r-lg); }
   .household .action-bar .btn-ghost { display: none; } /* the step bar at the top already goes to Results */
   .action-bar { flex-wrap: nowrap; padding-block: 10px; }
-  .action-bar .btn-primary { flex: 1; padding: 0 16px; }
-  .action-bar .btn { white-space: nowrap; }
+  .action-bar .btn-primary { flex: 1 1 auto; padding: 0 16px; } /* auto, not 0: a long Back label can't crush it */
+  .action-bar .btn { min-width: 0; line-height: 1.25; } /* long labels (Armenian) wrap instead of pushing off-screen */
   .action-bar .btn-secondary { padding: 0 14px; }
   .hero-cta .btn { flex: 1 1 100%; }
   .trust { display: grid; grid-template-columns: 1fr 1fr; width: 100%; }
@@ -688,7 +694,7 @@ input:not([type='checkbox']):focus, select:focus { border-color: var(--primary);
 @media print {
   :root { color-scheme: light; font-size: 13px; } /* rem-based sizes shrink with it */
   body { background: #fff; color: #000; font-size: 9.5pt; line-height: 1.35; }
-  .no-print, .footer, .skip { display: none !important; }
+  .no-print, .footer, .skip, .action-bar { display: none !important; }
   main { padding: 0; max-width: none; }
   .paper { padding: 0; border: 0; border-radius: 0; box-shadow: none; background: #fff; --text: #000; --text-2: #333; --border: #999; --border-2: #666; }
   .paper-head { padding-bottom: 6px; margin-bottom: 8px; }

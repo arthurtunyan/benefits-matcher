@@ -712,5 +712,68 @@
     "household": { "zip": "91605", "electric": "ladwp", "gas": "socalgas", "monthlyIncome": 2000, "hasEarnedIncome": true,
       "people": [{ "id": "a", "age": 30, "status": "citizen" }, { "id": "k", "age": 3 }] },
     "expect": { "household": { "federal-eitc": "possibly" } }
+  },
+  {
+    "id": "covered-ca-2027-citizen",
+    "title": "Glendale citizen (40) at 226% of poverty in March 2027: too much for adult Medi-Cal (138%), Covered California with help",
+    "source": "https://www.congress.gov/bill/119th-congress/house-bill/1/text ; https://www.law.cornell.edu/uscode/text/26/36B",
+    "asOf": "2027-03-01",
+    "household": { "zip": "91205", "electric": "gwp", "gas": "socalgas", "monthlyIncome": 3000, "hasEarnedIncome": true,
+      "people": [{ "id": "a", "age": 40, "status": "citizen" }] },
+    "expect": { "a": { "covered-california": "likely:withHelp", "medi-cal": "not" } }
+  },
+  {
+    "id": "calworks-pregnant-no-children",
+    "title": "Pregnant citizen (24) with no other children and no income: CalWORKs for the pregnancy, pregnancy Medi-Cal",
+    "source": "https://my.dpss.lacounty.gov/public/en/home/epolicy/program/calworks/composition/minimum-basic-standard-of-adequate-care.html",
+    "asOf": "2026-10-07",
+    "household": { "zip": "91605", "electric": "ladwp", "gas": "socalgas", "monthlyIncome": 0,
+      "people": [{ "id": "a", "age": 24, "status": "citizen", "pregnant": true }] },
+    "expect": { "a": { "calworks": "likely", "medi-cal": "likely:full", "wic": "likely" } }
+  },
+  {
+    "id": "head-start-100-to-130",
+    "title": "4-year-old at 111% of poverty in May 2026 (before State Preschool's new limits): Head Start may enroll some families up to 130%",
+    "source": "https://eclkc.ohs.acf.hhs.gov/policy/45-cfr-chap-xiii/1302-12-determining-verifying-documenting-eligibility",
+    "asOf": "2026-05-01",
+    "household": { "zip": "91605", "electric": "ladwp", "gas": "socalgas", "monthlyIncome": 2000, "hasEarnedIncome": true,
+      "people": [{ "id": "p", "age": 30, "status": "citizen" }, { "id": "k", "age": 4, "status": "citizen" }] },
+    "expect": { "k": { "early-learning": "possibly:headStart" } }
+  },
+  {
+    "id": "sce-care-family-of-three",
+    "title": "West Hollywood family of three earning $48,000 a year, under the $54,640 CARE limit: CARE, not FERA",
+    "source": "https://www.sce.com/save-money/income-qualified-programs/care-fera",
+    "asOf": "2026-10-07",
+    "household": { "zip": "90069", "electric": "sce", "gas": "socalgas", "monthlyIncome": 4000, "hasEarnedIncome": true,
+      "people": [{ "id": "a", "age": 35, "status": "citizen" }, { "id": "b", "age": 33, "status": "citizen" }, { "id": "k", "age": 6, "status": "citizen" }] },
+    "expect": { "household": { "sce-care-fera": "likely:care" } }
+  },
+  {
+    "id": "tax-ctc-high-earner-ty2024",
+    "title": "ITIN parent earning $300,000 with a citizen child, filing in 2025 (tax year 2024): over the $200,000 single limit but under the joint one, so possibly",
+    "source": "https://www.law.cornell.edu/uscode/text/26/24",
+    "asOf": "2025-06-01",
+    "household": { "zip": "91605", "electric": "ladwp", "gas": "socalgas", "monthlyIncome": 25000, "hasEarnedIncome": true,
+      "people": [{ "id": "p", "age": 35, "status": "undocumented" }, { "id": "c8", "age": 8, "status": "citizen" }] },
+    "expect": { "household": { "child-tax-credit": "possibly" } }
+  },
+  {
+    "id": "tax-ctc-phased-out-ty2024",
+    "title": "Parent earning $441,600 with one child, filing in 2025 (tax year 2024, $2,000 a child): past the $440,000 joint phase-out end",
+    "source": "https://www.law.cornell.edu/uscode/text/26/24",
+    "asOf": "2025-06-01",
+    "household": { "zip": "91605", "electric": "ladwp", "gas": "socalgas", "monthlyIncome": 36800, "hasEarnedIncome": true,
+      "people": [{ "id": "p", "age": 40, "status": "citizen" }, { "id": "c8", "age": 8, "status": "citizen" }] },
+    "expect": { "household": { "child-tax-credit": "not" } }
+  },
+  {
+    "id": "disaster-lost-work-dua",
+    "title": "Altadena citizen (38) who lost work in a disaster 15 days ago: Disaster Unemployment Assistance is still open (30 days)",
+    "source": "https://www.law.cornell.edu/cfr/text/20/625.8",
+    "asOf": "2026-10-25",
+    "household": { "zip": "91001", "electric": "sce", "gas": "socalgas", "monthlyIncome": 0, "disaster": true, "disasterDate": "2026-10-10",
+      "disasterLoss": { "work": true }, "people": [{ "id": "a", "age": 38, "status": "citizen" }] },
+    "expect": { "household": { "dua": "possibly", "sba-disaster-loan": "not" } }
   }
 ]

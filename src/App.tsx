@@ -61,9 +61,9 @@ export default function App() {
     return () => removeEventListener('popstate', onPop)
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
   const [asOf, setAsOf] = useState(todayISO)
-  // Light or dark. Starts from the phone's setting; the button in the top bar flips it.
+  // Light or dark. Always starts light; the button in the top bar flips it.
   // Kept in memory only, like everything else, so nothing is saved on the device.
-  const [dark, setDark] = useState(() => window.matchMedia('(prefers-color-scheme: dark)').matches)
+  const [dark, setDark] = useState(false)
   useEffect(() => { document.documentElement.dataset.theme = dark ? 'dark' : 'light' }, [dark])
   const t = useMemo(() => makeT(lang), [lang])
   const screening = useMemo(() => screen(household, programs, tables, asOf), [household, asOf])
