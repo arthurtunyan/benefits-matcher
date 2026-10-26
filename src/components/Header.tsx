@@ -1,4 +1,4 @@
-import { LogOut, Moon, Sun } from './Icons'
+import { LogOut } from './Icons'
 import { LANGS, useT, type Lang } from '../i18n'
 import type { View } from '../App'
 
@@ -27,9 +27,8 @@ const STEPS: { view: View; key: string }[] = [
   { view: 'plan', key: 'ui.stepPlan' },
 ]
 
-export default function Header({ view, setView, setLang, canSee, dark, toggleDark }: {
+export default function Header({ view, setView, setLang, canSee }: {
   view: View; setView: (v: View) => void; setLang: (l: Lang) => void; canSee: boolean
-  dark: boolean; toggleDark: () => void
 }) {
   const t = useT()
   return (
@@ -57,10 +56,6 @@ export default function Header({ view, setView, setLang, canSee, dark, toggleDar
               {LANGS.map((l) => <option key={l} value={l} lang={l}>{l === 'hy' ? 'ՀԱՅ' : l.toUpperCase()}</option>)}
             </select>
           </>}
-          <button className="theme-btn" onClick={toggleDark} aria-pressed={dark} aria-label={t('ui.darkMode')}
-            title={dark ? t('ui.lightMode') : t('ui.darkMode')}>
-            {dark ? <Sun size={20} aria-hidden="true" /> : <Moon size={20} aria-hidden="true" />}
-          </button>
           {/* No aria-label: the visible word is the name (the hidden one is skipped by screen readers). */}
           <button className="exit" onClick={quickExit}>
             <LogOut size={18} aria-hidden="true" />

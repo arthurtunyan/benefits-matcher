@@ -29,8 +29,6 @@ export const ExternalLink = ArrowUpRight
 export const ChevronDown = make('chevron-down', <path d="M6 9.5l6 6 6-6" />)
 export const ChevronRight = make('chevron-right', <path d="M9.5 6l6 6-6 6" />)
 export const Phone = make('phone', <path d="M7.2 3.8l2.4.4 1.3 3.6-1.8 1.4a11 11 0 0 0 5.7 5.7l1.4-1.8 3.6 1.3.4 2.4c-.2 1.6-1.6 2.6-3.2 2.4C10.6 18.4 5.6 13.4 5 7c-.2-1.6.7-3 2.2-3.2z" />)
-export const Moon = make('moon', <path d="M19.5 14.5A8 8 0 1 1 9.5 4.5a6.5 6.5 0 0 0 10 10z" />)
-export const Sun = make('sun', <><circle cx="12" cy="12" r="4" /><path d="M12 2.5V5M12 19v2.5M2.5 12H5M19 12h2.5M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M5.3 18.7l1.8-1.8M16.9 7.1l1.8-1.8" /></>)
 // A door with an arrow walking out of it.
 export const LogOut = make('exit', <><path d="M13.5 4.5H6.5v15h7" /><path d="M10 12h10M16.5 8.5L20 12l-3.5 3.5" /></>)
 export const MapPin = make('pin', <><path d="M12 21s6.5-5.8 6.5-11a6.5 6.5 0 0 0-13 0c0 5.2 6.5 11 6.5 11z" /><circle cx="12" cy="10" r="2.3" /></>)

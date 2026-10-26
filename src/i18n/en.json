@@ -186,8 +186,6 @@
     "steps": "Steps",
     "next": "Next",
     "qZip": "What's your ZIP code?",
-    "darkMode": "Dark mode",
-    "lightMode": "Light mode",
     "tapHouse": "Tap any part of the house to answer it.",
     "partsDone": "{n} of {total} done",
     "stepZip": "ZIP code",

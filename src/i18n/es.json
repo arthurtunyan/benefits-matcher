@@ -178,8 +178,6 @@
     "steps": "Pasos",
     "next": "Siguiente",
     "qZip": "¿Cuál es su código postal?",
-    "darkMode": "Modo oscuro",
-    "lightMode": "Modo claro",
     "tapHouse": "Toque cualquier parte de la casa para responder.",
     "partsDone": "{n} de {total} listos",
     "stepZip": "Código postal",

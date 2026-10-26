@@ -131,6 +131,9 @@ describe('LA County ZIP check', () => {
     expect(inLACounty('90740')).toBe(false) // Seal Beach, Orange County
     expect(inLACounty('90638')).toBe(true) // La Mirada
     expect(inLACounty('93243')).toBe(true) // Gorman
+    expect(inLACounty('91360')).toBe(false) // Thousand Oaks, Ventura County
+    expect(inLACounty('91377')).toBe(false) // Oak Park, Ventura County
+    expect(inLACounty('91364')).toBe(true) // Woodland Hills
     expect(inLACounty(undefined)).toBeUndefined()
   })
 })

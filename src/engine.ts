@@ -293,13 +293,16 @@ const anyOf = (xs: (boolean | undefined)[]): boolean | undefined =>
 const LA_COUNTY_AV = new Set(['93243', '93510', '93532', '93534', '93535', '93536', '93543', '93544', '93550', '93551', '93552', '93553', '93563', '93591'])
 // Orange County ZIPs that share LA's 906/907 prefixes (Buena Park, La Palma, Cypress, La Habra, Stanton, Los Alamitos, Seal Beach).
 const NOT_LA_OC = new Set(['90620', '90621', '90622', '90623', '90624', '90630', '90631', '90632', '90633', '90680', '90720', '90721', '90740', '90742', '90743'])
+// Ventura County ZIPs that share LA's 913 prefix (Thousand Oaks, Newbury Park, Oak Park). 91361/91362 also cover the
+// small LA County city of Westlake Village; the ZIP note says "may be outside", which fits both.
+const NOT_LA_913 = new Set(['91319', '91320', '91358', '91359', '91360', '91361', '91362', '91377'])
 const NOT_LA_917 = new Set(['91701', '91708', '91709', '91710', '91729', '91730', '91737', '91739', '91743', '91752', '91758', '91759', '91761', '91762', '91763', '91764', '91784', '91785', '91786'])
 
 // ponytail: ZIP-prefix check for LA County; swap for a full ZIP list if edge ZIPs matter.
 export function inLACounty(zip?: string): boolean | undefined {
   if (!zip || !/^\d{5}$/.test(zip)) return undefined
   const p = Number(zip.slice(0, 3))
-  return (p >= 900 && p <= 918 && !NOT_LA_917.has(zip) && !NOT_LA_OC.has(zip)) || LA_COUNTY_AV.has(zip)
+  return (p >= 900 && p <= 918 && !NOT_LA_913.has(zip) && !NOT_LA_917.has(zip) && !NOT_LA_OC.has(zip)) || LA_COUNTY_AV.has(zip)
 }
 
 // Statuses that come with a work-eligible Social Security number and count for FEMA, SBA, and DUA.

@@ -141,7 +141,7 @@ PROGRESS.md            what's done, what's left, and who does it
 
 ## Accessibility
 
-Plain language (about 6th-grade level), 48px tap targets, WCAG 2.1 AA color contrast in light and dark mode, labels on every input, keyboard and screen-reader friendly, respects reduced motion, works offline after the first visit, installable as an app.
+Plain language (about 6th-grade level), 48px tap targets, WCAG 2.1 AA color contrast, labels on every input, keyboard and screen-reader friendly, respects reduced motion, works offline after the first visit, installable as an app.
 
 ## Disclaimer
 
