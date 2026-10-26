@@ -2,7 +2,7 @@
 
 <img src="public/icon.svg" width="88" alt="" />
 
-# Benefits Matcher · LA County
+# Open Door · LA County
 
 **A private, multilingual screener that shows LA County families which public benefits *each person* in their household may qualify for, under the rules in effect today.**
 
@@ -149,6 +149,6 @@ This is a screening tool. Only the agency that runs a program can decide eligibi
 
 ## Credits
 
-Built by Arthur and Aiden for the 2026 Congressional App Challenge (CA-30). AI assistance is disclosed in [docs/SUBMISSION.md](docs/SUBMISSION.md#ai-disclosure). Icons are drawn for this project. Fonts: [Bricolage Grotesque](https://fonts.google.com/specimen/Bricolage+Grotesque) and Noto Sans Armenian (both SIL OFL), bundled through Fontsource.
+Built by Arthur, Aiden, and Tejas Deepak for the 2026 Congressional App Challenge (CA-30). AI assistance is disclosed in [docs/SUBMISSION.md](docs/SUBMISSION.md#ai-disclosure). Icons are drawn for this project. Fonts: [Bricolage Grotesque](https://fonts.google.com/specimen/Bricolage+Grotesque) and Noto Sans Armenian (both SIL OFL), bundled through Fontsource.
 
 License: [MIT](LICENSE)

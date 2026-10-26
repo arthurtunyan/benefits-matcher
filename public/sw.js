@@ -2,7 +2,7 @@
 // everything else stale-while-revalidate (built files have hashed names, so they never go stale).
 // It never sees household answers: screening happens in memory, not over the network.
 // ponytail: old hashed files pile up in this cache; bump the name when that matters (activate deletes old caches).
-const CACHE = 'benefits-matcher-v2'
+const CACHE = 'open-door-v3'
 
 self.addEventListener('install', () => self.skipWaiting())
 

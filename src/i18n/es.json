@@ -1,7 +1,7 @@
 {
   "lang": { "en": "English", "es": "Español", "hy": "Հայերեն", "ko": "한국어", "zh": "中文", "tl": "Tagalog", "ru": "Русский" },
   "ui": {
-    "appName": "Benefits Matcher",
+    "appName": "Open Door",
     "appPlace": "Condado de Los Ángeles",
     "eyebrow": "Para familias del Condado de Los Ángeles",
     "heroTitle": "Vea qué ayuda puede recibir su familia",
@@ -548,13 +548,13 @@
   },
   "legal": {
     "updated": "Última actualización: {date}",
-    "privacy1": "Sus respuestas se quedan en su aparato. Benefits Matcher funciona por completo en su navegador. Nada de lo que escribe se envía a nosotros ni a nadie más.",
+    "privacy1": "Sus respuestas se quedan en su aparato. Open Door funciona por completo en su navegador. Nada de lo que escribe se envía a nosotros ni a nadie más.",
     "privacy2": "No hay cuentas, cookies, anuncios ni estadísticas de uso. Nunca pedimos su dirección ni su ubicación. Los nombres son opcionales y solo aparecen en su pantalla.",
     "privacy3": "Cuando cierra la página, sus respuestas desaparecen. La aplicación guarda una copia de sus propios archivos en su aparato para funcionar sin internet. Nunca guarda sus respuestas.",
     "privacy4": "La página está configurada para no poder comunicarse con ningún otro servidor, así que ni siquiera un error en nuestro código podría enviar sus respuestas a otro servidor.",
     "privacy5": "Los enlaces a sitios de las agencias, los números de teléfono y las direcciones en autobús o tren (Google Maps) abren otros servicios. Esos servicios tienen sus propias reglas de privacidad.",
     "privacy6": "Salida rápida borra la pantalla y abre una búsqueda del clima, para que esta página no quede abierta en un teléfono compartido.",
-    "terms1": "Benefits Matcher es una herramienta gratuita hecha por estudiantes. No es un sitio del gobierno y ninguna agencia la maneja.",
+    "terms1": "Open Door es una herramienta gratuita hecha por estudiantes. No es un sitio del gobierno y ninguna agencia la maneja.",
     "terms2": "Los resultados son un cálculo aproximado. Solo la agencia que maneja cada programa puede decidir si usted califica y cuánto recibe.",
     "terms3": "Revisamos cada regla con su fuente oficial, pero las reglas cambian y podemos cometer errores. Revise las fechas y fuentes que mostramos y confirme con la agencia antes de tomar decisiones.",
     "terms4": "Esta herramienta no da asesoría legal. Para preguntas sobre su estatus migratorio, hable con un grupo de ayuda legal, como los que aparecen en la sección de ayuda cercana.",

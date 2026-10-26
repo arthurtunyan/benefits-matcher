@@ -9,7 +9,7 @@
     "ru": "Русский"
   },
   "ui": {
-    "appName": "Benefits Matcher",
+    "appName": "Open Door",
     "appPlace": "LA County",
     "eyebrow": "For families in LA County",
     "heroTitle": "See what help your family can get",
@@ -556,13 +556,13 @@
   },
   "legal": {
     "updated": "Last updated {date}",
-    "privacy1": "Your answers stay on your device. Benefits Matcher runs entirely in your browser. Nothing you type is sent to us or to anyone else.",
+    "privacy1": "Your answers stay on your device. Open Door runs entirely in your browser. Nothing you type is sent to us or to anyone else.",
     "privacy2": "There are no accounts, cookies, ads, or analytics. We never ask for your street address or your location. Names are optional and only appear on your screen.",
     "privacy3": "When you close the page, your answers are gone. The app keeps a copy of its own files on your device so it can work offline. It never saves your answers.",
     "privacy4": "The page is set up to block itself from contacting any other server, so even a mistake in our code could not send your answers to another server.",
     "privacy5": "Links to agency websites, phone numbers, and bus or rail directions (Google Maps) open other services. They have their own privacy rules.",
     "privacy6": "Quick exit clears the screen and opens a weather search, so this page is not left open on a shared phone.",
-    "terms1": "Benefits Matcher is a free screening tool made by students. It is not a government website and no agency runs it.",
+    "terms1": "Open Door is a free screening tool made by students. It is not a government website and no agency runs it.",
     "terms2": "Results are an estimate. Only the agency that runs a program can decide if you qualify and how much you get.",
     "terms3": "We check each rule against its official source, but rules change and we can make mistakes. Check the dates and sources shown, and confirm with the agency before you make decisions.",
     "terms4": "This tool does not give legal advice. For questions about immigration status, talk to a legal aid group, like the ones listed under help nearby.",

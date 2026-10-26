@@ -2,7 +2,7 @@
 
 **Length:** the official 2026 rules say the video "should be 1-3 minutes long", and judges may penalize videos that go over ([rules PDF](https://www.congressionalappchallenge.us/wp-content/uploads/2026/05/2026-CAC-Rules.pdf)). This script runs **2:00**, with one narrator.
 
-**The video must include:** the name of every team member (so say Aiden's name too, even though only you record), the app name, its purpose in one sentence, who it's for, the tools and languages, and a demo. Sections 1–2 cover the required parts. Upload to YouTube as **Public** (Unlisted doesn't count).
+**The video must include:** the name of every team member (so say Aiden's and Tejas Deepak's names too, even though only you record), the app name, its purpose in one sentence, who it's for, the tools and languages, and a demo. Sections 1–2 cover the required parts. Upload to YouTube as **Public** (Unlisted doesn't count).
 
 Lines marked **SAY** are a starting point. Say them in your own words.
 
@@ -18,19 +18,19 @@ Lines marked **SAY** are a starting point. Say them in your own words.
 
 ---
 
-## 1 · On camera: names, app, purpose (0:00–0:12)
+## 1 · On camera: names, app, purpose (0:00–0:14)
 
 **DO:** You on camera.
 
-**SAY:** "Hi, I'm Arthur. My teammate Aiden and I built Benefits Matcher. It shows LA County families what benefits each person at home may qualify for, under today's rules."
+**SAY:** "Hi, I'm Arthur. With my teammates Aiden and Tejas Deepak, we created Open Door, which is a benefits matcher. It shows LA County families what each person at home may qualify for, under today's rules."
 
-## 2 · Who it's for, tools (0:12–0:24)
+## 2 · Who it's for, tools (0:14–0:25)
 
 **DO:** Chrome on the start page ("See what help your family can get"). Move the mouse slowly over the headline, then over **Check what you qualify for**.
 
 **SAY:** "It's for immigrant and mixed-status families in our district, where kids often qualify even when a parent doesn't. We built it with React and TypeScript."
 
-## 3 · Enter a family (0:24–0:47)
+## 3 · Enter a family (0:25–0:48)
 
 **DO:**
 1. Click **Check what you qualify for**.
@@ -44,10 +44,10 @@ Lines marked **SAY** are a starting point. Say them in your own words.
 
 **SAY:** "You answer by tapping the house. The ZIP code fills in the utility companies. You can skip anything, and a skipped answer never counts as a 'no.' Ana has a green card, and her son Leo was born here. Each person gets their own results."
 
-## 4 · The mixed-status family (0:47–1:10)
+## 4 · The mixed-status family (0:48–1:11)
 
 **DO:**
-1. Click the **Benefits Matcher** logo (top left), then **See an example family**.
+1. Click the **Open Door** logo (top left), then **See an example family**.
 2. In "Your family at a glance", point at **Sofia: 3 likely, 2 possibly**, then click **Sofia**.
 3. At the top of Sofia's card, open the **Immigration status** dropdown and pick **U.S. citizen (including born in the U.S.)**.
 4. Scroll up to "Your family at a glance". Sofia now shows **5 likely, 0 possibly**, with new lines **CalFresh: up to $1,217 a month** and **CalWORKs: up to $1,659 a month**. Point at **Maria**, who still shows **1 likely, 0 possibly**.
@@ -56,7 +56,7 @@ Lines marked **SAY** are a starting point. Say them in your own words.
 
 **SAY:** "Here's a harder case: Maria is undocumented, with four kids whose status we left blank. So two-year-old Sofia gets two 'possibly' results. Make her a U.S. citizen, and CalFresh and CalWORKs become likely, while Maria's results don't change. That's the case most screeners get wrong."
 
-## 5 · Why, and how it works (1:10–1:31)
+## 5 · Why, and how it works (1:11–1:32)
 
 **DO:**
 1. In "Your family at a glance", click **Maria**. Her card shows **Restricted Medi-Cal (emergency and pregnancy care)**.
@@ -64,7 +64,7 @@ Lines marked **SAY** are a starting point. Say them in your own words.
 
 **SAY:** "Tap 'Why?' to see the rule in plain English, every condition we checked, and the official source. Behind this, each rule is data with start and end dates, and a skipped answer counts as 'unknown,' so you get 'possibly,' never a wrong 'no.'"
 
-## 6 · Rules over time (1:31–1:42)
+## 6 · Rules over time (1:32–1:42)
 
 **DO:**
 1. Scroll down past the people cards until you see the closed row **How rule changes reach your family** (just under "Rules as of"). Click it to open.

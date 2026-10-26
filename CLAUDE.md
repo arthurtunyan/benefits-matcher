@@ -1,4 +1,4 @@
-# Benefits Matcher
+# Open Door (a benefits matcher)
 
 Private, client-only benefits screener for LA County (2026 Congressional App Challenge, CA-30). React + Vite + TypeScript, no backend.
 
