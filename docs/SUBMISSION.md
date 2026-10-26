@@ -4,6 +4,8 @@ Everything here is a **starting point**. Judges can tell when answers aren't wri
 
 ## Demo video script (about 3 minutes)
 
+Click-by-click version with every action and line: [VIDEO_SCRIPT.md](VIDEO_SCRIPT.md).
+
 The official rules make the video "the most critical component" and require, in the video: **every team member's name, the app's name, its purpose in one sentence, who it's for, the tools and languages used, and a demo**. Keep it between 1 and 3 minutes and set it to **Public** on YouTube (not Unlisted). The sample judging rubric has a whole row for **explaining your code** ("Video does not explain code" scores 1 of 5), so one of you must explain the engine on screen, in your own words.
 
 Before recording: use the live site (or `npm run build && npm run preview`), set the browser to 1280×800, close other tabs.
